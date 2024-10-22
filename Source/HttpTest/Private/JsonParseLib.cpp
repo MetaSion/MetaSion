@@ -4,44 +4,102 @@
 #include "JsonParseLib.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonWriter.h"
-
-FString UJsonParseLib::JsonParse(const FString& json)
+#include "JsonObjectConverter.h"
+// Login ----------------------------------------------------------------------------
+FString UJsonParseLib::Login_Convert_StructToJson(const FLogin& LoginStrcut)
 {
-	// 리더기를 만들고
-	TSharedRef<TJsonReader<TCHAR>> reader = TJsonReaderFactory<TCHAR>::Create(json);
-	// 파싱 결과를 담을 변수 선언
-	TSharedPtr<FJsonObject> result = MakeShareable(new FJsonObject());
-	// 해석을 한다.
-	FString returnValue;
-	if (FJsonSerializer::Deserialize(reader, result))
-	{
-		TArray<TSharedPtr<FJsonValue>> parseDataList = result->GetArrayField(TEXT("items"));
-		for (TSharedPtr<FJsonValue> data : parseDataList)
-		{
-			// 책의 이름과 저자
-			FString bookName = data->AsObject()->GetStringField("bk_nm");
-			FString authorName = data->AsObject()->GetStringField("aut_nm");
-			returnValue.Append(FString::Printf(TEXT("BookName : %s / AuthorName : %s\n"), *bookName, *authorName));
-		}
-	}
-	// 반환한다.
-	return returnValue;
+	//Json 문자열을 저장할 변수
+	FString JsonString;
+
+	//구조체를 JSON 문자열로 변환
+	FJsonObjectConverter::UStructToJsonObjectString(LoginStrcut, JsonString, 0, 0);
+
+	//완성된 Json 반환
+	return JsonString;
 }
 
-FString UJsonParseLib::MakeJson(const TMap<FString, FString> source)
+
+FLogin UJsonParseLib::Login_Convert_JsonToStruct(const FString& JsonString)
 {
-	// source를 JsonObject 형식으로 만든다.
-	TSharedPtr<FJsonObject> jsonObject = MakeShareable(new FJsonObject());
+	FLogin loginJson;
 
-	for (TPair<FString, FString> pair : source)
-	{
-		jsonObject->SetStringField(pair.Key, pair.Value);
-	}
+	//Json을 구조체로 변환
+	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &loginJson, 0, 0);
 
-	// writer를 만들어서 JsonObject를 인코딩해서 
-	FString json;
-	TSharedRef<TJsonWriter<TCHAR>> writer = TJsonWriterFactory<TCHAR>::Create(&json);
-	FJsonSerializer::Serialize(jsonObject.ToSharedRef(), writer);
-	// 반환한다.
-	return json;
+	//변환된 구조체를 반환
+	return loginJson;
 }
+
+// Login End----------------------------------------------------------------------------
+
+// Sign up ----------------------------------------------------------------------------
+FString UJsonParseLib::SignUp_Convert_StructToJson(const FSign_up& SignUpStruct)
+{
+	
+	FString JsonString;
+	//Json을 구조체로 변환
+	FJsonObjectConverter::UStructToJsonObjectString(SignUpStruct, JsonString, 0, 0);
+	//변환된 구조체를 반환
+	return JsonString;
+}
+
+FSign_up UJsonParseLib::SignUp_Convert_JsonToStruct(const FString& JsonString)
+{
+	FSign_up signUpStruct;
+	//Json을 구조체로 변환
+	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &signUpStruct, 0, 0);
+	//변환된 구조체를 반환
+	return signUpStruct;
+}
+// Sign up End----------------------------------------------------------------------------
+
+// User ----------------------------------------------------------------------------
+FString UJsonParseLib::User_Convert_StructToJson(const FUser& UserStrcut)
+{
+	//Json 문자열을 저장할 변수
+	FString JsonString;
+
+	//구조체를 JSON 문자열로 변환
+	FJsonObjectConverter::UStructToJsonObjectString(UserStrcut, JsonString, 0, 0);
+
+	//완성된 Json 반환
+	return JsonString;
+}
+
+FUser UJsonParseLib::User_Convert_JsonToStruct(const FString& JsonString)
+{
+	FUser UserJson;
+
+	//Json을 구조체로 변환
+	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &UserJson, 0, 0);
+
+	//변환된 구조체를 반환
+	return UserJson;
+
+}
+// User End----------------------------------------------------------------------------
+
+// User_Like ----------------------------------------------------------------------------
+FString UJsonParseLib::UserLike_Convert_StructToJson(const FUser_like& User_LikeStrcut)
+{
+	//Json 문자열을 저장할 변수
+	FString JsonString;
+
+	//구조체를 JSON 문자열로 변환
+	FJsonObjectConverter::UStructToJsonObjectString(User_LikeStrcut, JsonString, 0, 0);
+
+	//완성된 Json 반환
+	return JsonString;
+
+}
+
+FUser_like UJsonParseLib::UserLike_Convert_JsonToStruct(const FString& JsonString)
+{
+	FUser_like UserLikeJson;
+	//Json을 구조체로 변환
+	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &UserLikeJson, 0, 0);
+	//변환된 구조체를 반환
+	return UserLikeJson;
+
+}
+// User_Like End ----------------------------------------------------------------------------
