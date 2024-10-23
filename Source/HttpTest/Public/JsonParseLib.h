@@ -179,6 +179,9 @@ class HTTPTEST_API UJsonParseLib : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 	
 public:
+
+	static FString MakeJson(const TMap<FString, FString> source);
+
 	//Struct To Json : Req
 	static FString Login_Convert_StructToJson(const FLogin& LoginStrcut);
 	//Json To Struct : Response
