@@ -49,6 +49,59 @@ struct FMyCreatedRoom
 	FString RoomNum;
 };
 
+// MyWorld Setting 시, 수신된 정보 저장
+USTRUCT(BlueprintType)
+struct FMyWorldRoomInfo
+{
+	GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadWrite)
+    int32 MyRoomNum;
+
+    UPROPERTY(BlueprintReadWrite)
+    FString MyRoomName;
+};
+USTRUCT(BlueprintType)
+struct FMyRGBColor
+{
+	GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadWrite)
+    float R;
+
+    UPROPERTY(BlueprintReadWrite)
+    float G;
+
+    UPROPERTY(BlueprintReadWrite)
+    float B;
+};
+USTRUCT(BlueprintType)
+struct FMyWorldSetting
+{
+	GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadWrite)
+    FMyRGBColor RGB;
+
+    UPROPERTY(BlueprintReadWrite)
+    TArray<FMyRGBColor> RGB18;
+
+    UPROPERTY(BlueprintReadWrite)
+    FString UserMusic;
+
+    UPROPERTY(BlueprintReadWrite)
+    FString Weather;
+
+    UPROPERTY(BlueprintReadWrite)
+    FString ParticleNum;
+
+    UPROPERTY(BlueprintReadWrite)
+    FString Result;
+
+    UPROPERTY(BlueprintReadWrite)
+    TArray<FMyWorldRoomInfo> MyRooms;
+};
+
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSearchSignature, const struct FRoomInfo&, info);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSessionSearchComplete);
@@ -101,7 +154,6 @@ public:
 	void OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString);
 
 	
-	
 
 	/* --------------------------------------------------------------------------------------------------------------------------- */
 	// UserId 할당
@@ -126,7 +178,12 @@ public:
 	FString NetInfoCharacterTOLobby;
 	void SetNetInfoCharacterTOLobby(FString info);
 	FString GetNetInfoCharacterTOLobby();
+
 	/* --------------------------------------------------------------------------------------------------------------------------- */
+	// MyWorld Setting 시 필요한 정보 저장한 구조체의 변수
+	// WorldSetting variable to store the parsed JSON data
+    UPROPERTY(BlueprintReadWrite)
+    FMyWorldSetting WorldSetting;
 
 	/* --------------------------------------------------------------------------------------------------------------------------- */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="PlayerController")

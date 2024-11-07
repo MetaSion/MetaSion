@@ -8,7 +8,7 @@
 #include "JsonParseLib.generated.h"
 
 USTRUCT(BlueprintType) 
-struct FLogin //·Î±×ÀÎ
+struct FLogin //ï¿½Î±ï¿½ï¿½ï¿½
 {
 	GENERATED_BODY()
 
@@ -17,7 +17,7 @@ struct FLogin //·Î±×ÀÎ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Login/Struct")
 	FString userpass;
 
-	//±âº» »ý¼ºÀÚ
+	//ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	FLogin() : 
 			  userId(TEXT("")), 
 			  userpass(TEXT(""))
@@ -25,7 +25,7 @@ struct FLogin //·Î±×ÀÎ
 };
 
 USTRUCT(BlueprintType) 
-struct FSign_up // È¸¿ø°¡ÀÔ
+struct FSign_up // È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	GENERATED_BODY()
 
@@ -34,7 +34,7 @@ struct FSign_up // È¸¿ø°¡ÀÔ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sign_up/Struct")
 	FString userpass;
 
-	//±âº» »ý¼ºÀÚ
+	//ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	FSign_up() : 
 				userId(TEXT("")), 
 				userpass(TEXT("")) 
@@ -42,7 +42,7 @@ struct FSign_up // È¸¿ø°¡ÀÔ
 };
 
 USTRUCT(BlueprintType)
-struct FUser // À¯Àú Å×ÀÌºí
+struct FUser // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½
 {
 	GENERATED_BODY()
 
@@ -94,7 +94,7 @@ struct FUser // À¯Àú Å×ÀÌºí
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "User/Struct")
 	bool IsRecommended;
 
-	// ±âº» »ý¼ºÀÚ
+	// ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	FUser() 
 		: userId(TEXT("")), 
 		  LoginTime(FDateTime::Now()), 
@@ -124,7 +124,7 @@ struct FChangeIndex //Index
 	FString room_num;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WallPaper/Struct")
     FString updatedWallpaperNum;
-	//±âº» »ý¼ºÀÚ
+	//ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	FChangeIndex() : room_num(TEXT("")), updatedWallpaperNum(TEXT("")) {}
 };
 
@@ -175,7 +175,7 @@ struct FMyRoomInfo
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
     FString Particle_num4;
 
-    // ±âº» »ý¼ºÀÚ
+    // ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	FMyRoomInfo()
 		: RoomName(TEXT("")),
 		RoomDescription(TEXT("")),
@@ -217,7 +217,7 @@ struct FMyCreateRoomInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyCreateRoomInfo/Struct")
 	FString Analysiscontent;
 
-	// ±âº» »ý¼ºÀÚ
+	// ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	FMyCreateRoomInfo()
 		: UserId(TEXT(""))        
 		, RoomNum(0)                          
@@ -236,7 +236,7 @@ struct FRoomData
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomData")
     FString UserId;
-	// ¹æ ¹øÈ£
+	// ï¿½ï¿½ ï¿½ï¿½È£
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomData")
     FString RoomNum;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomData")
@@ -245,7 +245,7 @@ public:
     FString LikeNum;
 
 
-    // ±âº» »ý¼ºÀÚ
+    // ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     FRoomData()
         : UserId(TEXT("")),
 		RoomNum(TEXT("")),

@@ -85,6 +85,15 @@ void AJS_RoomController::BeginPlay()
         }
         SessionGI->bSuccess = false; // 사용 후 상태 초기화
     }
+
+
+    // 마이월드 테스트용 -------------------------------------------------------------   추후 삭제해용!! 
+    FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+    if (LevelName == "Main_Sky")
+    {
+        SpawnAndSwitchToCamera();
+    }
+    // ------------------------------------------------------------------------------------------------
 }
 
 void AJS_RoomController::SetupInputComponent()
@@ -236,7 +245,7 @@ void AJS_RoomController::PlayUIAnimation()
 void AJS_RoomController::ShowHeartUITimer()
 {
     if (R_UI) {
-        R_UI->VTB_Heart->SetVisibility(ESlateVisibility::Visible);
+        //R_UI->VTB_Heart->SetVisibility(ESlateVisibility::Visible);
     }
     
 }
@@ -273,7 +282,7 @@ void AJS_RoomController::OnMouseClick()
                     HideCreateRoomUI();
                     ShowRoomUI();
                     //hide until end anim
-                    R_UI->VTB_Heart->SetVisibility(ESlateVisibility::Hidden);
+                    //R_UI->VTB_Heart->SetVisibility(ESlateVisibility::Hidden);
                     PlayUIAnimation();
                     ScreenCapture();
                     R_UI->SendChangeIndexData();
@@ -446,8 +455,9 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
     if (LevelName == "Main_Sky")
     {
         // �ϴ� ���� ��ġ�� ȸ�� ����
-        CameraLocation = FVector(-470047.589317, 643880.898148, 648118.610643);
-        CameraRotation = FRotator(9.157953, 200.435537, 0.000001);
+        CameraLocation = FVector(-470047.589317, 643880.89814, 648118.610643);
+        CameraRotation = FRotator(9.157953, 200.435537, 0.000001); 
+        //CameraRotation = FRotator(0, 0, 0);
     }
     else if (LevelName == "Main_Room")
     {
@@ -466,7 +476,7 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
     ACameraActor* TargetCamera = GetWorld()->SpawnActor<ACameraActor>(ACameraActor::StaticClass(), CameraLocation, CameraRotation, SpawnParams);
 
     if (LevelName == "Main_Room") {
-        TargetCamera->GetCameraComponent()->SetFieldOfView(43);
+        TargetCamera->GetCameraComponent()->SetFieldOfView(90);
     }
     if (TargetCamera)
     {
