@@ -38,7 +38,7 @@ void AHttpActor::BeginPlay()
 	Super::BeginPlay();
 
     pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-   
+
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
     // SessionGameInstance 할당
@@ -281,9 +281,29 @@ void AHttpActor::MyRoomInfoReqPost(FString url, FString json)
     req->ProcessRequest();
 }
 
-
 void AHttpActor::MyRoomInfoResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
+    //if (!Response.IsValid())
+    //{
+    //    UE_LOG(LogTemp, Warning, TEXT("Invalid Response"));
+    //    return;
+    //}
+    //// ��û�� ���������� �Ϸ�Ǿ����� Ȯ��
+    //if (bConnectedSuccessfully && EHttpResponseCodes::IsOk(Response->GetResponseCode()))
+    //{
+    //    // ������ ���ڿ��� ��������
+    //    FString result = Response->GetContentAsString();
+    //    FMyRoomInfo MyRoomInfoData = UJsonParseLib::MyRoomInfo_Convert_JsonToStruct(result);
+
+    //    // �������� ��ȯ�� �����͸� �α׷� ���
+    //    UE_LOG(LogTemp, Log, TEXT("Response Received: RoomName = %s, room_pp = %s"),
+    //        *MyRoomInfoData.RoomName,
+    //        MyRoomInfoData.room_pp ? TEXT("true") : TEXT("false"));
+    //}
+    //else
+    //{
+    //    UE_LOG(LogTemp, Warning, TEXT("OnResPostTest Failed..."));
+    //}
     if (!Response.IsValid())
     {
         UE_LOG(LogTemp, Warning, TEXT("Invalid Response"));
@@ -293,10 +313,12 @@ void AHttpActor::MyRoomInfoResPost(FHttpRequestPtr Request, FHttpResponsePtr Res
     if (bConnectedSuccessfully && EHttpResponseCodes::IsOk(Response->GetResponseCode()))
     {
         FString JsonResponse = Response->GetContentAsString();
-        FMyRoomInfo MyRoomData = UJsonParseLib::MyRoomInfo_Convert_JsonToStruct(JsonResponse);
-       
-        UE_LOG(LogTemp, Warning, TEXT("MyRoomData = %s"), *JsonResponse);
-      
+        RoomData = UJsonParseLib::RoomData_Convert_JsonToStruct(JsonResponse);
+
+        UE_LOG(LogTemp, Warning, TEXT("RoomData initialized: %s"), *RoomData.userMusic);
+
+        // RoomData가 초기화되었음을 알리기 위해 델리게이트 호출
+        OnRoomDataInitialized.Broadcast(RoomData);
     }
     else
     {
@@ -376,17 +398,16 @@ void AHttpActor::RoomDataResPost(FHttpRequestPtr Request, FHttpResponsePtr Respo
     // ��û�� ���������� �Ϸ�Ǿ����� Ȯ��
     if (bConnectedSuccessfully && EHttpResponseCodes::IsOk(Response->GetResponseCode()))
     {
-        FString JsonResponse = Response->GetContentAsString();
-        RoomData = UJsonParseLib::RoomData_Convert_JsonToStruct(JsonResponse);
+        // ������ ���ڿ��� ��������
+        FString result = Response->GetContentAsString();
+        FRoomData LocalRoomData = UJsonParseLib::RoomData_Convert_JsonToStruct(result);
 
-        UE_LOG(LogTemp, Warning, TEXT("RoomData initialized: %s"), *RoomData.userMusic);
-
-        // RoomData가 초기화되었음을 알리기 위해 델리게이트 호출
-        OnRoomDataInitialized.Broadcast(RoomData);
+        // �������� ��ȯ�� �����͸� �α׷� ���
+        UE_LOG(LogTemp, Log, TEXT("Response RoomName = %s"), *LocalRoomData.LikeNum);
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("Request Failed: %d"), Response->GetResponseCode());
+        UE_LOG(LogTemp, Warning, TEXT("OnResPostTest Failed..."));
     }
 }
 // RoomData -------------------------------------------------------------------------------
