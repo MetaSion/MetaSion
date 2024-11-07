@@ -71,7 +71,9 @@ void UJS_CreateRoomWidget::CompleteCreateRoom()
 		//이쪽에 보내는 로직 추가
 		SwitchToWidget(2);
 		ShowUIForLimitedTime(3);
-		widgetActor->SetActorVisibilityVisible();
+		if (widgetActor) {
+			widgetActor->SetActorVisibilityVisible();
+		}
 		SendCompleteRoomData();
 	}
 }
