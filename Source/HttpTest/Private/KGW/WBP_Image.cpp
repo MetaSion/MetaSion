@@ -33,11 +33,11 @@ void UWBP_Image::GetImage()
 
 }
 
-void UWBP_Image::SetTextLog(FString explain)
-{
-    Text_Explain->SetText(FText::FromString(explain));
-
-}
+// void UWBP_Image::SetTextLog(FString explain)
+// {
+//     Text_Explain->SetText(FText::FromString(explain));
+// 
+// }
 
 void UWBP_Image::SendTextPost()
 {

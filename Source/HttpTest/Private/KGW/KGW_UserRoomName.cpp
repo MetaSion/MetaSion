@@ -6,14 +6,14 @@
 #include "JsonParseLib.h"
 #include "CJS/SessionGameInstance.h"
 
-void UKGW_UserRoomName::UpdateInfo(const FMyCreatedRoom& info)
+void UKGW_UserRoomName::UpdateInfo(const FMyWorldRoomInfo& info)
 {
 
     if (Text_RoomName)
     {
         // RoomName¸¸ Ç¥½Ã
-        Text_RoomName->SetText(FText::FromString(info.RoomName));
-        UE_LOG(LogTemp, Log, TEXT("RoomName set to: %s"), *info.RoomName);
+        Text_RoomName->SetText(FText::FromString(info.MyRoomName));
+        UE_LOG(LogTemp, Log, TEXT("RoomName set to: %s"), *info.MyRoomName);
     }
     else
     {

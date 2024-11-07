@@ -19,6 +19,6 @@ public:
  		UPROPERTY(meta=(BindWidget))
 	class UTextBlock* Text_RoomName;
 
-	void UpdateInfo(const struct FMyCreatedRoom& info);
+	void UpdateInfo(const struct FMyWorldRoomInfo& info);
 
 };

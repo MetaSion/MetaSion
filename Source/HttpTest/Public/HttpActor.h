@@ -136,4 +136,5 @@ public:
 
 	void OnResPostRoomList(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
+
 };

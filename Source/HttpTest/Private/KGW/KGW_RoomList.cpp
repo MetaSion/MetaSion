@@ -6,8 +6,22 @@
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include "HttpActor.h"
+#include "Components/MultiLineEditableTextBox.h"
+#include "Components/Button.h"
+#include "Kismet/GameplayStatics.h"
 
-void UKGW_RoomList::AddSessionSlotWidget(const TArray<FMyCreatedRoom>& RoomInfos)
+void UKGW_RoomList::NativeConstruct()
+{
+    Super::NativeConstruct();
+       
+       
+       btn_InnerWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickInnerWorld);
+        Btn_MultiWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickMultiWorld);
+
+        
+}
+
+void UKGW_RoomList::AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos)
 {
 
     if (!ScrollBox)
@@ -16,7 +30,7 @@ void UKGW_RoomList::AddSessionSlotWidget(const TArray<FMyCreatedRoom>& RoomInfos
         return;
     }
 //     ScrollBox->ClearChildren();
-    for (const FMyCreatedRoom& Room : RoomInfos)
+    for (const FMyWorldRoomInfo& Room : RoomInfos)
     {
         auto* RoomSlot = CreateWidget<UKGW_UserRoomName>(this, UserRoomNameFactory);
         if (RoomSlot)
@@ -29,6 +43,52 @@ void UKGW_RoomList::AddSessionSlotWidget(const TArray<FMyCreatedRoom>& RoomInfos
     UE_LOG(LogTemp, Log, TEXT("Room list updated with %d rooms."), RoomInfos.Num());
 
 }
+
+void UKGW_RoomList::SetTextLog(FString explain)
+{
+    TxtBox_Report->SetText(FText::FromString(explain));
+    
+}
+void UKGW_RoomList::SetWheaterNumb(FString TempNUmb)
+{
+    WheatherNum = TempNUmb;
+}
+
+
+void UKGW_RoomList::OnClickInnerWorld()
+{   
+    if (!WheatherNum.IsEmpty())
+    { 
+    
+    if (WheatherNum == TEXT("1"))
+    {
+        UGameplayStatics::OpenLevel(this, FName("LV_Spring"));
+
+    }
+    else if (WheatherNum == TEXT("2"))
+    {
+        UGameplayStatics::OpenLevel(this, FName("LV_Summer"));
+
+    }
+    else if (WheatherNum == TEXT("3"))
+    {
+        UGameplayStatics::OpenLevel(this, FName("LV_Fall"));
+
+    }
+    else if (WheatherNum == TEXT("4"))
+    {
+        UGameplayStatics::OpenLevel(this, FName("LV_Winter"));
+
+    }
+    }
+
+}
+
+void UKGW_RoomList::OnClickMultiWorld()
+{
+    OpenActor->StartHttpMultyWorld();
+}
+
 
 // void UKGW_RoomList::SetFindActive(bool value)
 // {

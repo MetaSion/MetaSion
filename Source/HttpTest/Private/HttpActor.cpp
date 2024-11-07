@@ -444,6 +444,13 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
         // JSON 문자열을 JSON 객체로 파싱
         TSharedPtr<FJsonObject> JsonObject;
         TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(StoredJsonResponse);
+        USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
+        AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+        UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
+        UKGW_RoomList* Showlist = Cast<UKGW_RoomList>(WidgetComp->GetUserWidgetObject());
+
+
+
 
         if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
         {
@@ -497,7 +504,7 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
             // Store the parsed data in GameInstance or other persistent storage
             if (UGameInstance* GameInstance = GetGameInstance())
             {
-                USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GameInstance);
+//                 USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GameInstance);
                 if (SessionGameInstance)
                 {
                     SessionGameInstance->WorldSetting = WorldSetting;
@@ -529,10 +536,47 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
 
             // 4.추천 음악을 튼다
 
-            // 5.AI 분석 결과를 UI에 넣는다.
+
 
             // 6.방 목록의 제목을 UI에 넣는다.
+            if (SessionGameInstance)
+            {
+                SessionGameInstance->InitRoomNameNum(WorldSetting.MyRooms); // 데이터가 제대로 저장되었는지 로그로 확인
+                UE_LOG(LogTemp, Error, TEXT("GameInstance->InitRoomInfoList size: %d"), SessionGameInstance->RoomInfoList.Num());
+                TArray<FMyWorldRoomInfo> Result;
+                Result = SessionGameInstance->GettRoomNameNum(); // 데이터가 제대로 저장되었는지 로그로 확인
+                UE_LOG(LogTemp, Error, TEXT("GameInstance->GEtRoomInfoList size: %d"), Result.Num());
+                if (ListActor)
+                {
+                    if (WidgetComp)
+                    {
+                        if (Showlist)
+                        {
+                            // RoomInfoList 데이터를 위젯에 추가
+                            Showlist->AddSessionSlotWidget(SessionGameInstance->GettRoomNameNum());
+                            UE_LOG(LogTemp, Log, TEXT("Showlist updated successfully."));
+                            // 5.AI 분석 결과를 UI에 넣는다.
 
+                            Showlist->SetTextLog(WorldSetting.Result);
+                            // move to sugested tmeplate room 방이동
+                            Showlist->SetWheaterNumb(WorldSetting.Weather);
+
+                        }
+                        else
+                        {
+                            UE_LOG(LogTemp, Error, TEXT("Showlist is null! Make sure the widget is correctly set in BP_ListActor."));
+                        }
+                    }
+                    else
+                    {
+                        UE_LOG(LogTemp, Error, TEXT("WidgetComponent not found on BP_ListActor."));
+                    }
+                }
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("GameInstance is null!"));
+            }
 
         }
         else
@@ -766,10 +810,16 @@ void AHttpActor::StartHttpMultyWorld()
 {
     //JS ReWrite 이쪽에 방 데이터 송수신 하는 부분 넣고 수신 하는 부분에서 방 이동
     FString UserId;
+    USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
+    SessionGI = SessionGameInstance;
     if (SessionGI)
     {
         UserId = SessionGI->MySessionName;
         UE_LOG(LogTemp, Warning, TEXT("Assigned UserId from MySessionName: %s"), *UserId);
+    }
+    else
+    {
+        return;
     }
 
     // 사용자 데이터를 맵에 추가
@@ -784,7 +834,7 @@ void AHttpActor::StartHttpMultyWorld()
     UE_LOG(LogTemp, Warning, TEXT("Json Request: %s"), *JsonRequest);
 
     // 서버로 요청 전송
-    ReqPostClickMyRoom(EntryMultiWorldURL, JsonRequest);
+    ReqPostClickMultiWorld(EntryMultiWorldURL, JsonRequest);
 }
 void AHttpActor::ReqPostClickMultiWorld(FString url, FString json)
 {
@@ -901,11 +951,6 @@ void AHttpActor::OnResPostTest(FHttpRequestPtr Request, FHttpResponsePtr Respons
 {
     if (bConnectedSuccessfully)
     {
-        // 성공
-        FString result = Response->GetContentAsString();
-
-        // 필요한 정보만 뽑아서 화면에 출력하고싶다.
-        ImageUI->SetTextLog(result);
     }
     else {
         // 실패
@@ -938,67 +983,67 @@ void AHttpActor::ReqPostRoomList(FString url, FString json)
 void AHttpActor::OnResPostRoomList(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
     
-    if (bConnectedSuccessfully && Response.IsValid())
-    {
-        FString ResponseContent = Response->GetContentAsString();
-        UE_LOG(LogTemp, Warning, TEXT("Response: %s"), *ResponseContent);
-        	
-
-        // JSON 파싱 함수 호출 및 반환 값 저장
-        TArray<FMyCreatedRoom> ParsedResult = UJsonParseLib::JsonParseRoomList(ResponseContent);
-
-        // 파싱된 결과를 문자열로 변환하여 출력
-        FString ParsedString;
-        for (const FMyCreatedRoom& Room : ParsedResult)
-        {
-            ParsedString.Append(FString::Printf(TEXT("roomNum: %s, roomName: %s\n"), *Room.RoomNum, *Room.RoomName));
-        }
-
-        // 파싱된 결과 출력
-        UE_LOG(LogTemp, Log, TEXT("Parsed Room Data:\n%s"), *ParsedString);
-
-        USessionGameInstance* GameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
-        if (GameInstance)
-        {
-            GameInstance->InitRoomNameNum(ParsedResult); // 데이터가 제대로 저장되었는지 로그로 확인
-            UE_LOG(LogTemp, Error, TEXT("GameInstance->InitRoomInfoList size: %d"), GameInstance->RoomInfoList.Num());
-            TArray<FMyCreatedRoom> Result;
-            Result=  GameInstance->GettRoomNameNum(); // 데이터가 제대로 저장되었는지 로그로 확인
-            UE_LOG(LogTemp, Error, TEXT("GameInstance->GEtRoomInfoList size: %d"), Result.Num());
-            AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
-            if (ListActor)
-            {
-                UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
-                if (WidgetComp)
-                {
-                    UKGW_RoomList* Showlist = Cast<UKGW_RoomList>(WidgetComp->GetUserWidgetObject());
-                    if (Showlist)
-                    {
-                        // RoomInfoList 데이터를 위젯에 추가
-                        Showlist->AddSessionSlotWidget(GameInstance->GettRoomNameNum());
-                        UE_LOG(LogTemp, Log, TEXT("Showlist updated successfully."));
-                    }
-                    else
-                    {
-                        UE_LOG(LogTemp, Error, TEXT("Showlist is null! Make sure the widget is correctly set in BP_ListActor."));
-                    }
-                }
-                else
-                {
-                    UE_LOG(LogTemp, Error, TEXT("WidgetComponent not found on BP_ListActor."));
-                }
-            }
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("GameInstance is null!"));
-        }
-
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Failed to receive a valid response from the server."));
-    }
-
+//     if (bConnectedSuccessfully && Response.IsValid())
+//     {
+//         FString ResponseContent = Response->GetContentAsString();
+//         UE_LOG(LogTemp, Warning, TEXT("Response: %s"), *ResponseContent);
+//         	
+// 
+//         // JSON 파싱 함수 호출 및 반환 값 저장
+//         TArray<FMyCreatedRoom> ParsedResult = UJsonParseLib::JsonParseRoomList(ResponseContent);
+// 
+//         // 파싱된 결과를 문자열로 변환하여 출력
+//         FString ParsedString;
+//         for (const FMyCreatedRoom& Room : ParsedResult)
+//         {
+//             ParsedString.Append(FString::Printf(TEXT("roomNum: %s, roomName: %s\n"), *Room.RoomNum, *Room.RoomName));
+//         }
+// 
+//         // 파싱된 결과 출력
+//         UE_LOG(LogTemp, Log, TEXT("Parsed Room Data:\n%s"), *ParsedString);
+// 
+//         USessionGameInstance* GameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
+//         if (GameInstance)
+//         {
+//             GameInstance->InitRoomNameNum(ParsedResult); // 데이터가 제대로 저장되었는지 로그로 확인
+//             UE_LOG(LogTemp, Error, TEXT("GameInstance->InitRoomInfoList size: %d"), GameInstance->RoomInfoList.Num());
+//             TArray<FMyCreatedRoom> Result;
+//             Result=  GameInstance->GettRoomNameNum(); // 데이터가 제대로 저장되었는지 로그로 확인
+//             UE_LOG(LogTemp, Error, TEXT("GameInstance->GEtRoomInfoList size: %d"), Result.Num());
+//             AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+//             if (ListActor)
+//             {
+//                 UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
+//                 if (WidgetComp)
+//                 {
+//                     UKGW_RoomList* Showlist = Cast<UKGW_RoomList>(WidgetComp->GetUserWidgetObject());
+//                     if (Showlist)
+//                     {
+//                         // RoomInfoList 데이터를 위젯에 추가
+//                         Showlist->AddSessionSlotWidget(GameInstance->GettRoomNameNum());
+//                         UE_LOG(LogTemp, Log, TEXT("Showlist updated successfully."));
+//                     }
+//                     else
+//                     {
+//                         UE_LOG(LogTemp, Error, TEXT("Showlist is null! Make sure the widget is correctly set in BP_ListActor."));
+//                     }
+//                 }
+//                 else
+//                 {
+//                     UE_LOG(LogTemp, Error, TEXT("WidgetComponent not found on BP_ListActor."));
+//                 }
+//             }
+//         }
+//         else
+//         {
+//             UE_LOG(LogTemp, Error, TEXT("GameInstance is null!"));
+//         }
+// 
+//     }
+//     else
+//     {
+//         UE_LOG(LogTemp, Error, TEXT("Failed to receive a valid response from the server."));
+//     }
+// 
 
 }
