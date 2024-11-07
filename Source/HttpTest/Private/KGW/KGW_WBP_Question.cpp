@@ -66,12 +66,12 @@ void UKGW_WBP_Question::OnClickSelect()
 // 		UE_LOG(LogTemp, Error, TEXT("GameInstance is null! Make sure it is initialized properly."));
 // 
 // 	}	
-	ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
-	if (ListActor)
-	{
-		FVector NewListLocation(-471190.0f, 643810.0f, 648270.0f);
-		ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
-	}	
+ 	ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+ 	if (ListActor)
+ 	{
+ 		FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
+ 		ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
+ 	}	
 	EnterRoomActor = Cast<AKGW_EnterRoomActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_EnterRoomActor::StaticClass()));
 	if (EnterRoomActor)
 	{

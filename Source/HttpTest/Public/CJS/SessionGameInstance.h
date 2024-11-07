@@ -166,9 +166,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FString GetMySessionName();
 
-	void InitRoomNameNum(TArray<FMyCreatedRoom> list);
+	void InitRoomNameNum(TArray<FMyWorldRoomInfo> list);
 
-	TArray<FMyCreatedRoom> GettRoomNameNum();
+	TArray<FMyWorldRoomInfo> GettRoomNameNum();
 
 	// Lobby Ref MultiRoom Info 전달
 	//UPROPERTY()
@@ -201,7 +201,7 @@ public:
 
 	 // 방 정보 저장용 구조체 배열
     UPROPERTY()
-    TArray<FMyCreatedRoom> RoomInfoList; 
+    TArray<FMyWorldRoomInfo> RoomInfoList;
 
 
 	//JS
