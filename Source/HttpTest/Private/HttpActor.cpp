@@ -23,6 +23,8 @@
 #include "KGW/KGW_RoomlistActor.h"
 #include "Components/WidgetComponent.h"
 #include "KGW/KGW_RoomList.h"
+#include "JS_SoundActor.h"
+#include "CJS/CJS_InnerWorldParticleActor.h"
 
 
 // Sets default values
@@ -51,6 +53,20 @@ void AHttpActor::BeginPlay()
     else
     {
         UE_LOG(LogTemp, Error, TEXT("USessionGameInstance is not set"));
+    }
+
+    // Find and reference the Sound Actor in the level
+    SoundActor = Cast<AJS_SoundActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AJS_SoundActor::StaticClass()));
+    if (!SoundActor)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("SoundActor not found in the level."));
+    }
+
+    // Find and reference the Roomlist Actor in the level
+    MyWorldPlayer = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+    if (!MyWorldPlayer)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("MyWorldPlayer not found in the level."));
     }
 }
 
@@ -501,17 +517,24 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
             }
             UE_LOG(LogTemp, Warning, TEXT("Successfully parsed and stored WorldSetting"));
         
+            // 2.추천 음악을 튼다
+            SetBackgroundSound();
+            // 3.캐릭터 색상을 변경한다.
+            if (MyWorldPlayer)
+            {
+                FMyRGBColor RGB = SessionGI->WorldSetting.RGB;
+                FLinearColor ColorToSet(RGB.R, RGB.G, RGB.B);
+                UE_LOG(LogTemp, Warning, TEXT("Setting Material Color: R=%f, G=%f, B=%f"), ColorToSet.R, ColorToSet.G, ColorToSet.B);
 
-            // 2.캐릭터 색상을 변경한다.
-
-            // 3.파티클 색을 변경한다 +  감정 파티클을 변경한다.
-
-            // 4.추천 음악을 튼다
+                MyWorldPlayer->SetMaterialColor(ColorToSet);
+            }
+            // 4.파티클 색을 변경한다 +  감정 파티클을 변경한다.
+            ApplyMyWorldPointLightColors();
+            ApplyMyWorldNiagaraAssets();
 
             // 5.AI 분석 결과를 UI에 넣는다.
 
             // 6.방 목록의 제목을 UI에 넣는다.
-
 
         }
         else
@@ -763,7 +786,7 @@ void AHttpActor::StartHttpMultyWorld()
     UE_LOG(LogTemp, Warning, TEXT("Json Request: %s"), *JsonRequest);
 
     // 서버로 요청 전송
-    ReqPostClickMyRoom(EntryMultiWorldURL, JsonRequest);
+    ReqPostClickMultiWorld(EntryMultiWorldURL, JsonRequest);
 }
 void AHttpActor::ReqPostClickMultiWorld(FString url, FString json)
 {
@@ -785,9 +808,9 @@ void AHttpActor::OnResPostClickMultiWorld(FHttpRequestPtr Request, FHttpResponse
     {
         FString ResponseContent = Response->GetContentAsString();
         UE_LOG(LogTemp, Log, TEXT("POST Response: %s"), *ResponseContent);
-        //StoredJsonResponse = ResponseContent;  // <-- 실제 통신 시
+        StoredJsonResponse = ResponseContent;  // <-- 실제 통신 시
         UE_LOG(LogTemp, Warning, TEXT("Stored JSON Response: %s"), *StoredJsonResponse);
-        StoredJsonResponse = StoredJsonResponsetest;  // <-- 테스트 시   
+        //StoredJsonResponse = StoredJsonResponsetest;  // <-- 테스트 시   
         if (SessionGI)
         {
             UE_LOG(LogTemp, Warning, TEXT("SessionGM is OK"));
@@ -800,6 +823,90 @@ void AHttpActor::OnResPostClickMultiWorld(FHttpRequestPtr Request, FHttpResponse
         }
     }
 
+}
+
+// 추천 음악 틀기
+void AHttpActor::SetBackgroundSound()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SetBackgroundSound()"));
+    if (SessionGI && SoundActor)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SetBackgroundSound() SessionGI && SoundActor OK"));
+        // Get UserMusic from WorldSetting and play it
+        FString UserMusic = SessionGI->WorldSetting.UserMusic;
+        SoundActor->SetBackgroundSoundByFileName(UserMusic);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::SetBackgroundSound() SessionGI && SoundActor NO"));
+    }
+}
+
+void AHttpActor::ApplyMyWorldPointLightColors()
+{
+    if (!SessionGI)
+    {
+        UE_LOG(LogTemp, Error, TEXT("SessionGameInstance is not valid."));
+        return;
+    }
+
+    // Reference to WorldSetting's RGB18 array
+    const TArray<FMyRGBColor>& RGB18Array = SessionGI->WorldSetting.RGB18;
+
+    // Assuming ACJS_InnerWorldParticleActor is an actor in the world, find and reference it
+    ACJS_InnerWorldParticleActor* InnerWorldParticleActor = Cast<ACJS_InnerWorldParticleActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_InnerWorldParticleActor::StaticClass()));
+
+    if (InnerWorldParticleActor)
+    {
+        // Iterate over RGB18 and apply each color to corresponding PointLight
+        for (int32 i = 0; i < RGB18Array.Num(); i++)
+        {
+            if (i < InnerWorldParticleActor->PointLights.Num())  // Check if PointLight index exists
+            {
+                FLinearColor LightColor(RGB18Array[i].R, RGB18Array[i].G, RGB18Array[i].B);
+                InnerWorldParticleActor->UpdateInnerWorldPointLights(LightColor, i);
+                UE_LOG(LogTemp, Warning, TEXT("Applying color to PointLight%d: R=%f, G=%f, B=%f"), i, LightColor.R, LightColor.G, LightColor.B);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("No corresponding PointLight for RGB18[%d]"), i);
+            }
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("ACJS_InnerWorldParticleActor not found in the level."));
+    }
+}
+
+void AHttpActor::ApplyMyWorldNiagaraAssets()
+{
+    if (!SessionGI)
+    {
+        UE_LOG(LogTemp, Error, TEXT("SessionGameInstance is not valid."));
+        return;
+    }
+
+    // Reference to WorldSetting's Weather value
+    FString ParticleNumString = SessionGI->WorldSetting.ParticleNum;
+
+    // Convert the Weather string to int32
+    int32 ParticleIndex = FCString::Atoi(*ParticleNumString);
+
+    // Assuming ACJS_InnerWorldParticleActor is an actor in the world, find and reference it
+    ACJS_InnerWorldParticleActor* InnerWorldParticleActor = Cast<ACJS_InnerWorldParticleActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_InnerWorldParticleActor::StaticClass()));
+
+    if (InnerWorldParticleActor)
+    {
+        //ParticleIndex = 2;
+        // Call UpdateInnerWorldNiagaraAsset with the converted WeatherIndex
+        InnerWorldParticleActor->UpdateInnerWorldNiagaraAsset(ParticleIndex);
+        UE_LOG(LogTemp, Warning, TEXT("Calling UpdateInnerWorldNiagaraAsset with ParticleIndex: %d"), ParticleIndex);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("ACJS_InnerWorldParticleActor not found in the level."));
+    }
 }
 
 //Getter 함수

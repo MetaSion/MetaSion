@@ -37,7 +37,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UHttpWidget> Sign_Factory;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UUserWidget> QuestionUIFactory;
 
@@ -111,6 +111,16 @@ public:
 	void StartHttpMultyWorld();
 	void ReqPostClickMultiWorld(FString url, FString json);
 	void OnResPostClickMultiWorld(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+
+	//마이월드 인입 시 셋팅
+	class AJS_SoundActor* SoundActor;
+	void SetBackgroundSound();
+
+	class AKGW_RoomlistActor* MyWorldPlayer;
+
+	void ApplyMyWorldPointLightColors();
+	void ApplyMyWorldNiagaraAssets();
+
 
 
 
