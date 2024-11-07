@@ -173,7 +173,7 @@ FRoomData UJsonParseLib::RoomData_Convert_JsonToStruct(const FString& JsonString
 
 FString UJsonParseLib::MakeJson(const TMap<FString, FString>& source)
 {
-	// source�� JsonObject �������� �����.
+	// source�� JsonObject �������� �����?
 	TSharedPtr<FJsonObject> jsonObject = MakeShareable(new FJsonObject());
 
 	for (TPair<FString, FString> pair : source)
@@ -181,7 +181,7 @@ FString UJsonParseLib::MakeJson(const TMap<FString, FString>& source)
 		jsonObject->SetStringField(pair.Key, pair.Value);
 	}
 
-	// writer�� ���� JsonObject�� ���ڵ��ؼ� 
+	// writer�� �����?JsonObject�� ���ڵ��ؼ� 
 	FString json;
 	TSharedRef<TJsonWriter<TCHAR>> writer = TJsonWriterFactory<TCHAR>::Create(&json);
 	FJsonSerializer::Serialize(jsonObject.ToSharedRef(), writer);
@@ -192,9 +192,9 @@ FString UJsonParseLib::MakeJson(const TMap<FString, FString>& source)
 TArray<FMyCreatedRoom>  UJsonParseLib::JsonParseRoomList(const FString& json)
 {
 	TArray<FMyCreatedRoom> RoomInfos;
-	// �����⸦ �����
+	// �����⸦ �����?
 	TSharedRef<TJsonReader<TCHAR>> reader = TJsonReaderFactory<TCHAR>::Create(json);
-	// �Ľ� ����� ���� ���� ����
+	// �Ľ� �����?���� ���� ����
 	TSharedPtr<FJsonObject> result = MakeShareable(new FJsonObject());
 	// �ؼ��� �Ѵ�.
 	FString returnValue;

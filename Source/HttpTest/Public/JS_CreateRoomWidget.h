@@ -95,7 +95,7 @@ public:
     void HideUI();
 
     UFUNCTION()
-	void SendSetPrivateRoom(int32 Room_pp);
+	void SendCompleteRoomData();
 
     UFUNCTION()
     void OnTextChanged_SingleLine(const FText& Text);

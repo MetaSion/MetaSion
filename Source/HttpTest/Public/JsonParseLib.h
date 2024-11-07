@@ -133,64 +133,68 @@ struct FMyRoomInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
-    FString RoomName;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
+    FString UserId;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
-    FString RoomDescription;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
-    FString RoomPP;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UltraSky")
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
     FString UltraSky_TimeOfDay;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
-    FString UltraWeather_CloudCoverage;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
+    FString UltraWheather_CloudCoverage;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
-    FString UltraWeather_Fog;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
+    FString UltraWheather_Fog;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
-    FString UltraWeather_Rain;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
+    FString UltraWheather_Rain;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
-    FString UltraWeather_Snow;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
+    FString UltraWheather_Snow;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
-    FString UltraWeather_Dust;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
+    FString UltraWheather_Dust;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
-    FString UltraWeather_Thunder;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
+    FString UltraWheather_Thunder;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
-    FString Particle_num1;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Environment")
+    FString MainObject;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
-    FString Particle_num2;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Environment")
+    FString SubObject;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
-    FString Particle_num3;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Environment")
+    FString Background;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
-    FString Particle_num4;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Particles")
+    FString Particle_num;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Room Info")
+    FString RoomName;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Room Info")
+    FString RoomDescription;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Room Info")
+    FString RoomPP;
 
     // �⺻ ������
 	FMyRoomInfo()
-		: RoomName(TEXT("")),
-		RoomDescription(TEXT("")),
-		RoomPP(TEXT("")),
-		UltraSky_TimeOfDay(TEXT("")),
-		UltraWeather_CloudCoverage(TEXT("")),
-		UltraWeather_Fog(TEXT("")),
-		UltraWeather_Rain(TEXT("")),
-		UltraWeather_Snow(TEXT("")),
-		UltraWeather_Dust(TEXT("")),
-		UltraWeather_Thunder(TEXT("")),
-		Particle_num1(TEXT("")),
-		Particle_num2(TEXT("")),
-		Particle_num3(TEXT("")),
-		Particle_num4(TEXT(""))
+		: UserId(TEXT(""))
+		, UltraSky_TimeOfDay(TEXT(""))
+		, UltraWheather_CloudCoverage(TEXT(""))
+		, UltraWheather_Fog(TEXT(""))
+		, UltraWheather_Rain(TEXT(""))
+		, UltraWheather_Snow(TEXT(""))
+		, UltraWheather_Dust(TEXT(""))
+		, UltraWheather_Thunder(TEXT(""))
+		, MainObject(TEXT(""))
+		, SubObject(TEXT(""))
+		, Background(TEXT(""))
+		, Particle_num(TEXT(""))
+		, RoomName(TEXT(""))
+		, RoomDescription(TEXT(""))
+		, RoomPP(TEXT(""))
     {}
 };
 
