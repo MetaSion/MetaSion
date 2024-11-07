@@ -132,7 +132,9 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 
 	FString json = UJsonParseLib::MyRoomInfo_Convert_StructToJson(MyRoomInfo);
 
-	httpActor->MyRoomInfoReqPost(httpActor->MyRoomURL, json);
+	if (httpActor) {
+		httpActor->MyRoomInfoReqPost(httpActor->MyRoomURL, json);
+	}
 }
 
 void UJS_CreateRoomWidget::OnTextChanged_SingleLine(const FText& Text)

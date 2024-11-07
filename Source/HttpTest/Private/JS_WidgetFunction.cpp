@@ -80,11 +80,15 @@ void AJS_WidgetFunction::PlayShowImageAnimation()
 
 void AJS_WidgetFunction::SetActorVisibilityHidden()
 {
-    boxComp->SetVisibility(false);
+    if (boxComp) {
+        boxComp->SetVisibility(false);
+    }
 }
 
 void AJS_WidgetFunction::SetActorVisibilityVisible()
 {
-    boxComp->SetVisibility(true);
+    if (boxComp) {
+        boxComp->SetVisibility(true);
+    }
 }
 
