@@ -11,6 +11,11 @@ AKGW_RoomlistActor::AKGW_RoomlistActor()
 void AKGW_RoomlistActor::BeginPlay()
 {
     Super::BeginPlay();
+
+    FVector NewListLocation(0.0f, 0.0f, 0.0f);
+    SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
+
+    
 }
 
 void AKGW_RoomlistActor::SetMaterialColor(FLinearColor newColor)

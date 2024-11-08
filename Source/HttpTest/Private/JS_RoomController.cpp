@@ -25,6 +25,7 @@
 #include "HttpActor.h"
 #include "HttpActor.h"
 #include "CJS/CJS_JS_WidgetFunction.h"
+#include "KGW/KGW_RoomlistActor.h"
 
 AJS_RoomController::AJS_RoomController()
 {
@@ -94,6 +95,10 @@ void AJS_RoomController::BeginPlay()
         SpawnAndSwitchToCamera();
     }
     // ------------------------------------------------------------------------------------------------
+
+    FTimerHandle TimerHandle;
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AJS_RoomController::SetActorLocationAfterLevelLoad, 1.0f, false);
+
 }
 
 void AJS_RoomController::SetupInputComponent()
@@ -257,6 +262,20 @@ void AJS_RoomController::OpenMultiWorld()
     HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
     HttpActor->StartHttpMultyWorld();
 }
+void AJS_RoomController::SetActorLocationAfterLevelLoad()
+{
+    AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+    if (ListActor)
+    {
+        FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
+        ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
+        UE_LOG(LogTemp, Log, TEXT("ListActor location set successfully."));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("ListActor not found in the new level."));
+    }
+}
 
 
 
@@ -293,6 +312,7 @@ void AJS_RoomController::OnMouseClick()
             {
 				UE_LOG(LogTemp, Warning, TEXT("Lobby Hit - Loading lobby level"));
                 UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+                SetActorLocationAfterLevelLoad();
 
                  // 서버가 있는 로비로 돌아가기 위한 ClientTravel 사용
 			   /* APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
@@ -315,7 +335,7 @@ void AJS_RoomController::OnMouseClick()
                 //{
                 //    UE_LOG(LogTemp, Error, TEXT("Failed to get SessionGameInstance"));
                 //}
-                UGameplayStatics::OpenLevel(this, FName("Main_Lobby"));
+                //UGameplayStatics::OpenLevel(this, FName("Main_Lobby"));
             }
             else if (HitActor->ActorHasTag(TEXT("EnterCreateRoom")))
             {
