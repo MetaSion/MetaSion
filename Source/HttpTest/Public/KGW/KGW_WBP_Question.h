@@ -37,8 +37,10 @@ public:
 
 					UPROPERTY()
 	class AKGW_EnterRoomActor* EnterRoomActor;
+						UPROPERTY()
+	class ACJS_InnerWorldParticleActor* EffectActor;
 
 
-
+	
 
 };

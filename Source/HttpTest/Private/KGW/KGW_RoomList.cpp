@@ -62,22 +62,21 @@ void UKGW_RoomList::OnClickInnerWorld()
     
     if (WheatherNum == TEXT("1"))
     {
-        UGameplayStatics::OpenLevel(this, FName("LV_Spring"));
-
+        UGameplayStatics::OpenLevel(this, FName("Main_LV_Spring"));
     }
     else if (WheatherNum == TEXT("2"))
     {
-        UGameplayStatics::OpenLevel(this, FName("LV_Summer"));
+        UGameplayStatics::OpenLevel(this, FName("Main_LV_Summer"));
 
     }
     else if (WheatherNum == TEXT("3"))
     {
-        UGameplayStatics::OpenLevel(this, FName("LV_Fall"));
+        UGameplayStatics::OpenLevel(this, FName("Main_LV_Fall"));
 
     }
     else if (WheatherNum == TEXT("4"))
     {
-        UGameplayStatics::OpenLevel(this, FName("LV_Winter"));
+        UGameplayStatics::OpenLevel(this, FName("Main_LV_Winter"));
 
     }
     }
