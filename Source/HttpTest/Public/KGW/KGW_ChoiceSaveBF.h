@@ -46,7 +46,7 @@ class HTTPTEST_API UKGW_ChoiceSaveBF : public UBlueprintFunctionLibrary
 
     public:
 UFUNCTION(BlueprintCallable, Category = "Save")
-    void SaveChoicesToJsonFile(UObject* WorldContextObject);
+    static void SaveChoicesToJsonFile(UObject* WorldContextObject);
     UFUNCTION(BlueprintCallable, Category = "Save")
     static void AddChoice(const FChoiceData& ChoiceData);
 

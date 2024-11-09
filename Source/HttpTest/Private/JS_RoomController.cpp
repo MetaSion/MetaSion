@@ -92,12 +92,12 @@ void AJS_RoomController::BeginPlay()
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
     if (LevelName == "Main_Sky")
     {
-        SpawnAndSwitchToCamera();
+        //SpawnAndSwitchToCamera();
     }
     // ------------------------------------------------------------------------------------------------
 
-    FTimerHandle TimerHandle;
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AJS_RoomController::SetActorLocationAfterLevelLoad, 1.0f, false);
+    //FTimerHandle TimerHandle;
+    //GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AJS_RoomController::SetActorLocationAfterLevelLoad, 1.0f, false);
 
 }
 
