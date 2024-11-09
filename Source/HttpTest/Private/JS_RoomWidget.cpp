@@ -24,7 +24,7 @@ void UJS_RoomWidget::SendChangeIndexData()
 
     FChangeIndex ChangeIndexData;
     //지금은 서버가 없어서 임시로 임의의 값을 넣음.
-    //ChangeIndexData.room_num = "3";
+    ChangeIndexData.room_num = "3";
 
     FString json = UJsonParseLib::ChangeIndex_Convert_StructToJson(ChangeIndexData);
     UE_LOG(LogTemp, Warning, TEXT("JSON Request Sent: %s"), *json);

@@ -315,6 +315,9 @@ void AJS_RoomController::OnMouseClick()
                 //{
                 //    UE_LOG(LogTemp, Error, TEXT("Failed to get SessionGameInstance"));
                 //}
+                
+            }
+            else if (HitActor->ActorHasTag(TEXT("Lobby"))) {
                 UGameplayStatics::OpenLevel(this, FName("Main_Lobby"));
             }
             else if (HitActor->ActorHasTag(TEXT("EnterCreateRoom")))
