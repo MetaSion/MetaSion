@@ -26,6 +26,7 @@
 #include "HttpActor.h"
 #include "CJS/CJS_JS_WidgetFunction.h"
 #include "KGW/KGW_RoomlistActor.h"
+#include "CJS/CJS_InnerWorldSettingWidget.h"
 
 AJS_RoomController::AJS_RoomController()
 {
@@ -123,6 +124,7 @@ void AJS_RoomController::SetupInputComponent()
     if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
     {
          EnhancedInputComponent->BindAction(IA_LeftMouse, ETriggerEvent::Triggered, this, &AJS_RoomController::OnMouseClick);
+         EnhancedInputComponent->BindAction(IA_SettingUI, ETriggerEvent::Started, this, &AJS_RoomController::ShowSettingUI);
     }
 }
 
@@ -467,6 +469,7 @@ void AJS_RoomController::OnMouseHoverEnd(AActor* HoveredActor)
 
 void AJS_RoomController::SpawnAndSwitchToCamera()
 {
+    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SpawnAndSwitchToCamera()"));
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
     FVector CameraLocation;
@@ -477,13 +480,18 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
         // �ϴ� ���� ��ġ�� ȸ�� ����
         CameraLocation = FVector(-470047.589317, 643880.89814, 648118.610643);
         CameraRotation = FRotator(9.157953, 200.435537, 0.000001); 
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SpawnAndSwitchToCamera() Set Main_Sky Camera Transform"));
         //CameraRotation = FRotator(0, 0, 0);
     }
-    else if (LevelName == "Main_Room")
+    //else if (LevelName == "Main_Room")
+    else if (LevelName.Contains("Main_LV"))
     {
         // �� ���� ��ġ�� ȸ�� ����
-        CameraLocation = FVector(3004.710844, -40.193309, 83.381573);
-        CameraRotation = FRotator(4.510870, 1980.785016, 0);
+        //CameraLocation = FVector(3004.710844, -40.193309, 83.381573);
+        //CameraRotation = FRotator(4.510870, 1980.785016, 0);
+        CameraLocation = FVector(-100.266574, 3428.386539, -455.570113);
+        CameraRotation = FRotator(2.600000, -90.800001, 0.0);
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SpawnAndSwitchToCamera() Set Main_LV Camera Transform"));
     }
     else
     {
@@ -495,13 +503,15 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     ACameraActor* TargetCamera = GetWorld()->SpawnActor<ACameraActor>(ACameraActor::StaticClass(), CameraLocation, CameraRotation, SpawnParams);
 
-    if (LevelName == "Main_Room") {
-        TargetCamera->GetCameraComponent()->SetFieldOfView(90);
+    //if (LevelName == "Main_Room") {
+    if (LevelName.Contains("Main_LV"))
+    {
+        TargetCamera->GetCameraComponent()->SetFieldOfView(50);
     }
     if (TargetCamera)
     {
         SetViewTarget(TargetCamera);
-        UE_LOG(LogTemp, Log, TEXT("Camera view switched to target camera successfully."));
+        UE_LOG(LogTemp, Warning, TEXT("Camera view switched to target camera successfully."));
 
         // ī�޶� ��ȯ�� �Ϸ�Ǹ� Ÿ�̸� ����
         GetWorldTimerManager().ClearTimer(LevelCheckTimerHandle);
@@ -548,4 +558,49 @@ void AJS_RoomController::ExecuteWallPaperPython()
     }
 }
 //Wallpaper Python Auto Execute End ------------------------------------------------------------------------
+
+// Inner World Setting UI Start ----------------------------------------------------------------------------
+void AJS_RoomController::ShowSettingUI()
+{
+    // SettingUIFactory가 유효하고 SettingUI가 생성되지 않은 경우에만 생성
+    if (SettingUIFactory && !SettingUI)
+    {
+        SettingUI = CreateWidget<UCJS_InnerWorldSettingWidget>(GetWorld(), SettingUIFactory);
+
+        if (SettingUI)
+        {
+            // 화면에 추가
+            SettingUI->AddToViewport();
+            UE_LOG(LogTemp, Warning, TEXT("Setting UI shown"));
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("Failed to create Setting UI"));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to create SettingUIFactory"));
+    }
+}
+void AJS_RoomController::HideSettingUI()
+{
+    if (SettingUI)
+    {
+        // SettingUI를 화면에서 제거
+        SettingUI->RemoveFromParent();
+
+        // SettingUI 포인터를 nullptr로 설정하여 다시 ShowSettingUI에서 새로 생성할 수 있도록 함
+        SettingUI = nullptr;
+
+        UE_LOG(LogTemp, Warning, TEXT("Setting UI hidden"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to create Setting UI"));
+    }
+}
+// Inner World Setting UI End ------------------------------------------------------------------------------
+
+
 
