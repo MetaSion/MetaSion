@@ -93,6 +93,8 @@ public:
 
     void OpenMultiWorld();
 
+    void SetActorLocationAfterLevelLoad();
+
 
     AActor* CurrentHoveredActor = nullptr;
 

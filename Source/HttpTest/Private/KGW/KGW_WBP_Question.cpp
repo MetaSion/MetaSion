@@ -11,6 +11,7 @@
 #include "KGW/KGW_RoomlistActor.h"
 #include "Components/WidgetComponent.h"
 #include "KGW/KGW_EnterRoomActor.h"
+#include "CJS/CJS_InnerWorldParticleActor.h"
 
 void UKGW_WBP_Question::NativeConstruct()
 {
@@ -65,19 +66,29 @@ void UKGW_WBP_Question::OnClickSelect()
 // 	{
 // 		UE_LOG(LogTemp, Error, TEXT("GameInstance is null! Make sure it is initialized properly."));
 // 
-// 	}	
+// 	}	ACJS_InnerWorldParticleActor
  	ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
  	if (ListActor)
  	{
  		FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
  		ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
- 	}	
+ 		//ListActor->SetActorVisibilityHidden();
+		//ListActor->SetActorVisibilityVisible();
+	}
+ 	
 	EnterRoomActor = Cast<AKGW_EnterRoomActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_EnterRoomActor::StaticClass()));
 	if (EnterRoomActor)
 	{
 		FVector NewRoomLocation(-470930.0f, 643100.0f, 648150.0f);
 		EnterRoomActor->SetActorLocation(NewRoomLocation, true, nullptr, ETeleportType::TeleportPhysics);
+	}	
+	EffectActor = Cast<ACJS_InnerWorldParticleActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_InnerWorldParticleActor::StaticClass()));
+	if (EffectActor)
+	{
+		FVector NewRoomLocation(-471220.0f, 644140.0f, 648530.0f);
+		EffectActor->SetActorLocation(NewRoomLocation, true, nullptr, ETeleportType::TeleportPhysics);
 	}
+
 
 
 // 	 ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));

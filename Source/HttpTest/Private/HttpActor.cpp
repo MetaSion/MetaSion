@@ -134,7 +134,11 @@ void AHttpActor::LoginResPost(FHttpRequestPtr Request, FHttpResponsePtr Response
             if (SessionGI) {
                 SessionGI->bSuccess = true; // GameInstance에 상태 저장
             }
+
             UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+           
+
+           
         }
     }
     else
