@@ -62,38 +62,48 @@ void AJS_RoomController::BeginPlay()
 {
     Super::BeginPlay();
 
-    /*USessionGameInstance* SessionGI = Cast<USessionGameInstance>(GetGameInstance());
-    if (SessionGI)
+    HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
+    if (HttpActor)
     {
-        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay()::USessionGameInstance is set"));
-        SessionGI->HandleMapChange(GetWorld());
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() Set HttpActor"));
     }
     else
     {
-        UE_LOG(LogTemp, Error, TEXT("USessionGameInstance is not set"));
-    }*/
-    HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
+        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() No HttpActor"));
+    }
     InitializeUIWidgets();
-
     CheckDate();
     SetInputMode(FInputModeGameOnly());
-
     GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, true);
 
-    USessionGameInstance* SessionGI = Cast<USessionGameInstance>(GetGameInstance());
-    if (SessionGI && SessionGI->bSuccess) {
-        if (HttpActor) {
-            HttpActor->ShowQuestionUI();
-        }
-        SessionGI->bSuccess = false; // 사용 후 상태 초기화
-    }
-
-
-    // 마이월드 테스트용 -------------------------------------------------------------   추후 삭제해용!! 
+    SessionGI = Cast<USessionGameInstance>(GetGameInstance());
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
-    if (LevelName == "Main_Sky")
+    if (LevelName.Contains("Main_LV"))
     {
-        //SpawnAndSwitchToCamera();
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_LV"));
+        if (SessionGI) {
+            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_LV-> SessionGI exsited"));
+            InitInnerWorldSetting();
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
+        }
+    }
+    else if (LevelName.Contains("Sky"))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky"));
+        if (SessionGI && SessionGI->bSuccess) {
+            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky-> SessionGI exsited"));
+            if (HttpActor) {
+                HttpActor->ShowQuestionUI();
+            }
+            SessionGI->bSuccess = false; // 사용 후 상태 초기화
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
+        }
     }
     // ------------------------------------------------------------------------------------------------
 
@@ -259,11 +269,11 @@ void AJS_RoomController::ShowHeartUITimer()
 //Room --------------------------------------------------------------------------
 
 //myWorld -> MultiWorld:: Make Session
-void AJS_RoomController::OpenMultiWorld()
-{
-    HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
-    HttpActor->StartHttpMultyWorld();
-}
+//void AJS_RoomController::OpenMultiWorld()
+//{
+//    HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
+//    HttpActor->StartHttpMultyWorld();
+//}
 void AJS_RoomController::SetActorLocationAfterLevelLoad()
 {
     AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
@@ -344,7 +354,7 @@ void AJS_RoomController::OnMouseClick()
 
                 UE_LOG(LogTemp, Warning, TEXT("Lobby Hit - Loading lobby level"));
 //              UGameplayStatics::OpenLevel(this, FName("Main_Lobby"));
-                OpenMultiWorld();
+                //OpenMultiWorld();
 
             }
             else if (HitActor->ActorHasTag(TEXT("ChatWidget")))  //  <-- 채팅 위젯 추가
@@ -559,7 +569,39 @@ void AJS_RoomController::ExecuteWallPaperPython()
 }
 //Wallpaper Python Auto Execute End ------------------------------------------------------------------------
 
-// Inner World Setting UI Start ----------------------------------------------------------------------------
+//Initial Inner World Setting Start ------------------------------------------------------------------------
+void AJS_RoomController::InitInnerWorldSetting()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::InitInnerWorldSetting()"));
+    //1. 템플릿에 따른 Setting UI 값 설정 
+    FString timeOfDay = SessionGI->WorldSetting.TimeOfDay;
+    FString cloudCoverage = SessionGI->WorldSetting.CloudCoverage;
+    FString fog = SessionGI->WorldSetting.Fog;
+    FString rain = SessionGI->WorldSetting.Rain;
+    FString snow = SessionGI->WorldSetting.Snow;
+    FString dust = SessionGI->WorldSetting.Dust;
+    FString thunder = SessionGI->WorldSetting.Thunder;
+    FString mainObject = SessionGI->WorldSetting.MainObject;
+    FString subObject = SessionGI->WorldSetting.SubObject;
+    FString background = SessionGI->WorldSetting.Background;
+
+    if (SettingUI)
+    {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitInnerWorldSetting() SettingUI is existed"));
+        // 블루프린트 이벤트 호출
+        //SettingUI->OnValueSet.Broadcast(timeOfDay, cloudCoverage, fog, rain, snow, dust, thunder, mainObject, subObject, background);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::InitInnerWorldSetting() No SettingUI"));
+    }
+    //2. 파티클 색 + 감정 파티클 적용
+    HttpActor->ApplyMyWorldPointLightColors();
+    HttpActor->ApplyMyWorldNiagaraAssets();
+}
+//Initial Inner World Setting End --------------------------------------------------------------------------
+
+//Inner World Setting UI Start -----------------------------------------------------------------------------
 void AJS_RoomController::ShowSettingUI()
 {
     // SettingUIFactory가 유효하고 SettingUI가 생성되지 않은 경우에만 생성

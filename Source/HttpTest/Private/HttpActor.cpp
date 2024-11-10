@@ -455,9 +455,6 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
         UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
         UKGW_RoomList* Showlist = Cast<UKGW_RoomList>(WidgetComp->GetUserWidgetObject());
 
-
-
-
         if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
         {
             // 1.요소마다 받아서 SessionGameInstance에 저장을 한다.
@@ -485,8 +482,19 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
             }
             // Parse UserMusic
             WorldSetting.UserMusic = JsonObject->GetStringField(TEXT("userMusic"));
-            // Parse Weather
+            // Parse Quadrant
             WorldSetting.Quadrant = JsonObject->GetStringField(TEXT("Quadrant"));
+            // Parse Initial Room Info
+            WorldSetting.TimeOfDay = JsonObject->GetStringField(TEXT("UltraSky_TimeOfDay"));
+            WorldSetting.CloudCoverage = JsonObject->GetStringField(TEXT("UltraWeather_CloudCoverage"));
+            WorldSetting.Fog = JsonObject->GetStringField(TEXT("UltraWeather_Fog"));
+            WorldSetting.Rain = JsonObject->GetStringField(TEXT("UltraWeather_Rain"));
+            WorldSetting.Snow = JsonObject->GetStringField(TEXT("UltraWeather_Snow"));
+            WorldSetting.Dust = JsonObject->GetStringField(TEXT("UltraWeather_Dust"));
+            WorldSetting.Thunder = JsonObject->GetStringField(TEXT("UltraWeather_Thunder"));
+            WorldSetting.MainObject = JsonObject->GetStringField(TEXT("MainObject"));
+            WorldSetting.SubObject = JsonObject->GetStringField(TEXT("SubObject"));
+            WorldSetting.Background = JsonObject->GetStringField(TEXT("Background"));
             // Parse ParticleNum
             WorldSetting.ParticleNum = JsonObject->GetStringField(TEXT("Particle_num"));
             // Parse Result
@@ -514,7 +522,7 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                 if (SessionGameInstance)
                 {
                     SessionGameInstance->WorldSetting = WorldSetting;
-                    SessionGameInstance->bmyWorldPageOn = true;  // 마이페이지 UI 
+                    //SessionGameInstance->bmyWorldPageOn = true;  // 마이페이지 UI 
 
                     // 로그 출력
                     UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB: R=%f, G=%f, B=%f"),
@@ -526,6 +534,16 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                     }
                     UE_LOG(LogTemp, Warning, TEXT("WorldSetting UserMusic: %s"), *WorldSetting.UserMusic);
                     UE_LOG(LogTemp, Warning, TEXT("WorldSetting Quadrant: %s"), *WorldSetting.Quadrant);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting TimeOfDay: %s"), *WorldSetting.TimeOfDay);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting CloudCoverage: %s"), *WorldSetting.CloudCoverage);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Fog: %s"), *WorldSetting.Fog);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Rain: %s"), *WorldSetting.Rain);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Snow: %s"), *WorldSetting.Snow);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Dust: %s"), *WorldSetting.Dust);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Thunder: %s"), *WorldSetting.Thunder);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting MainObject: %s"), *WorldSetting.MainObject);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting SubObject: %s"), *WorldSetting.SubObject);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Background: %s"), *WorldSetting.Background);
                     UE_LOG(LogTemp, Warning, TEXT("WorldSetting ParticleNum: %s"), *WorldSetting.ParticleNum);
                     UE_LOG(LogTemp, Warning, TEXT("WorldSetting Result: %s"), *WorldSetting.Result);
                     for (const FMyWorldRoomInfo& Room : WorldSetting.MyRooms)
@@ -544,15 +562,12 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                 FMyRGBColor RGB = SessionGI->WorldSetting.RGB;
                 FLinearColor ColorToSet(RGB.R, RGB.G, RGB.B);
                 UE_LOG(LogTemp, Warning, TEXT("Setting Material Color: R=%f, G=%f, B=%f"), ColorToSet.R, ColorToSet.G, ColorToSet.B);
-
                 MyWorldPlayer->SetMaterialColor(ColorToSet);
             }
             // 4.파티클 색을 변경한다 +  감정 파티클을 변경한다.
             ApplyMyWorldPointLightColors();
             ApplyMyWorldNiagaraAssets();
-
-
-            // 6.방 목록의 제목을 UI에 넣는다.
+            // 5.방 목록의 제목을 UI에 넣는다.
             if (SessionGameInstance)
             {
                 SessionGameInstance->InitRoomNameNum(WorldSetting.MyRooms); // 데이터가 제대로 저장되었는지 로그로 확인
@@ -570,8 +585,7 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                             Showlist->AddSessionSlotWidget(SessionGameInstance->GettRoomNameNum());
                             UE_LOG(LogTemp, Warning, TEXT("Showlist updated successfully."));
 
-
-                            // 5.AI 분석 결과를 UI에 넣는다.
+                            // 6.AI 분석 결과를 UI에 넣는다.
                             Showlist->SetTextLog(WorldSetting.Result);
                             // move to sugested tmeplate room 방이동
                             Showlist->SetWheaterNumb(WorldSetting.Quadrant);
