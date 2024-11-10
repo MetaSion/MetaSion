@@ -582,8 +582,8 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                         if (Showlist)
                         {
                             // RoomInfoList 데이터를 위젯에 추가
-                            Showlist->AddSessionSlotWidget(SessionGameInstance->GettRoomNameNum());
-                            UE_LOG(LogTemp, Warning, TEXT("Showlist updated successfully."));
+                            Showlist->AddSessionSlotWidget(Result);
+                            UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() Showlist updated successfully."));
 
                             // 6.AI 분석 결과를 UI에 넣는다.
                             Showlist->SetTextLog(WorldSetting.Result);
@@ -1016,6 +1016,104 @@ void AHttpActor::SetMyWorldUIOff()
     else
     {
         UE_LOG(LogTemp, Error, TEXT("AHttpActor::SetMyWorldUIOn() MyWorldPlayer is not found in the level."));
+    }
+}
+
+void AHttpActor::CallHttpClickMyRoomList(FString room_num)
+{
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::CallHttpClickMyRoomList()"));
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::CallHttpClickMyRoomList()  room_num : %s"), *room_num);
+
+    // room_num을 makeJson()으로 변환
+    TMap<FString, FString> MyRoomNum;
+    MyRoomNum.Add("room_num", room_num);
+
+    // JSON 형식으로 변환
+    FString JsonRequest = UJsonParseLib::MakeJson(MyRoomNum);
+    
+    ReqPostClickMyRoomList(ClickMyRoomURL, JsonRequest);
+}
+void AHttpActor::ReqPostClickMyRoomList(FString url, FString json)
+{
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ReqPostClickMyRoomList()"));
+    FHttpModule& httpModule = FHttpModule::Get();
+    TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
+
+    req->SetURL(url);
+    req->SetVerb(TEXT("POST"));
+    req->SetHeader(TEXT("content-type"), TEXT("application/json"));
+    req->SetContentAsString(json);
+    req->SetTimeout(60.0f); // 타임아웃 설정
+
+    req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::OnResPostClickMyRoomList);
+
+    if (req->ProcessRequest())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Http Request processed successfully"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Http Request failed to process"));
+    }
+}
+void AHttpActor::OnResPostClickMyRoomList(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
+{
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostClickMyRoomList()"));
+    if (!Response.IsValid())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Invalid Response"));
+        return;
+    }
+
+    if (bConnectedSuccessfully && EHttpResponseCodes::IsOk(Response->GetResponseCode()))
+    {
+        // 응답에서 JSON 문자열 얻기
+        FString JsonResponse = Response->GetContentAsString();
+        UE_LOG(LogTemp, Warning, TEXT("MyRoom Response JSON: %s"), *JsonResponse);
+
+        /*
+        LogTemp: Warning: MyRoom Response JSON: 
+{"roomNum":3,
+"roomId":"testuser",
+"roomName":"얼어붙는 겨울",
+"roomMusic":"Music_01",
+"userQuestions":"3",
+"roomTimeOfDay":"2000",
+"roomCloudCoverage":"1",
+"roomFog":"2",
+"roomRain":"3",
+"roomSnow":"4",
+"roomDust":"5",
+"roomWindIntensity":"2",
+"roomThunder":"7",
+"roomPp":"true",
+"createdAt":"2024-10-27T06:32:15",
+"wallpaperNum":"5",
+"main_object":null,
+"sub_object":null,
+"background":null,
+"particle_num":null,
+"room_description":null,
+"r1":null,"
+g1":null,"b1":null,"r2":null,"g2":null"b2":null,"r3":null,"g3":null,"b3":null,"r4":null,"g4":null,"b4":null,"r5":null,"g5":null,"b5":null,"r6":null,"g6":null,"b6":null,
+"result":null}
+        */
+
+
+        //// FRoomData 구조체로 변환
+        //RoomData = UJsonParseLib::RoomData_Convert_JsonToStruct(JsonResponse);
+        //SessionGI->RoomMusicData = RoomData.userMusic;
+        //UE_LOG(LogTemp, Warning, TEXT("RecommendedMusic: %s"), *SessionGI->RoomMusicData);
+
+        ////MyRoom으로 이동
+        //APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+        //if (PlayerController) {
+        //    PlayerController->ClientTravel("/Game/Main/Maps/Main_Room", ETravelType::TRAVEL_Absolute);
+        //}
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Request Failed: %d"), Response->GetResponseCode());
     }
 }
 
