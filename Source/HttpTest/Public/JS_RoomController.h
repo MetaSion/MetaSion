@@ -31,6 +31,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* IA_LeftMouse;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UInputAction* IA_SettingUI;
+
 
     // �������̽��� ���� UI
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
@@ -84,7 +87,6 @@ public:
 
     //Mouse Hover
     void OnMouseHover(AActor* HoveredActor);
-
     void OnMouseHoverEnd(AActor* HoveredActor);
 
     //myWorld -> MultiWorld:: Make Session
@@ -92,18 +94,24 @@ public:
 	class AHttpActor* HttpActor;*/
 
     void OpenMultiWorld();
-
     void SetActorLocationAfterLevelLoad();
-
-
     AActor* CurrentHoveredActor = nullptr;
 
-    //Screen Capture + Wallpaper Python Auto Execute
+
+    /* Screen Capture + Wallpaper Python Auto Execute */
     void ScreenCapture();
     void ExecuteWallPaperPython();
-
 
     /* Chat Widget */
     UPROPERTY(EditDefaultsOnly, Category = "Heart")
 	class ACJS_JS_WidgetFunction* ChatActorFactory;
+
+    /* Inner World Setting UI */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UCJS_InnerWorldSettingWidget> SettingUIFactory;
+    UPROPERTY()
+	class UCJS_InnerWorldSettingWidget* SettingUI;
+
+    void ShowSettingUI();
+    void HideSettingUI();
 };

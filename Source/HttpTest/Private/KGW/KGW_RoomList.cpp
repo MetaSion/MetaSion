@@ -15,8 +15,8 @@ void UKGW_RoomList::NativeConstruct()
     Super::NativeConstruct();
        
        
-       btn_InnerWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickInnerWorld);
-        Btn_MultiWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickMultiWorld);
+       Btn_InnerWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickInnerWorld);
+       Btn_MultiWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickMultiWorld);
 
         
 }
@@ -35,7 +35,7 @@ void UKGW_RoomList::AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInf
         auto* RoomSlot = CreateWidget<UKGW_UserRoomName>(this, UserRoomNameFactory);
         if (RoomSlot)
         {
-            // RoomWidgetÀÇ Á¤º¸¸¦ ¾÷µ¥ÀÌÆ® (¿¹: ¹æ ÀÌ¸§ ¼³Á¤)
+            // RoomWidgetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® (ï¿½ï¿½: ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½)
             RoomSlot->UpdateInfo(Room);
             ScrollBox->AddChild(RoomSlot);
         }
@@ -57,41 +57,42 @@ void UKGW_RoomList::SetWheaterNumb(FString TempNUmb)
 
 void UKGW_RoomList::OnClickInnerWorld()
 {   
+    UE_LOG(LogTemp, Warning, TEXT("UKGW_RoomList::OnClickInnerWorld()"));
     if (!WheatherNum.IsEmpty())
     { 
     
-    if (WheatherNum == TEXT("1"))
-    {
-        UGameplayStatics::OpenLevel(this, FName("Main_LV_Spring"));
-    }
-    else if (WheatherNum == TEXT("2"))
-    {
-        UGameplayStatics::OpenLevel(this, FName("Main_LV_Summer"));
+		if (WheatherNum == TEXT("1"))
+		{
+			UGameplayStatics::OpenLevel(this, FName("Main_LV_Spring"));
+		}
+		else if (WheatherNum == TEXT("2"))
+		{
+			UGameplayStatics::OpenLevel(this, FName("Main_LV_Summer"));
 
-    }
-    else if (WheatherNum == TEXT("3"))
-    {
-        UGameplayStatics::OpenLevel(this, FName("Main_LV_Fall"));
+		}
+		else if (WheatherNum == TEXT("3"))
+		{
+			UGameplayStatics::OpenLevel(this, FName("Main_LV_Fall"));
 
-    }
-    else if (WheatherNum == TEXT("4"))
-    {
-        UGameplayStatics::OpenLevel(this, FName("Main_LV_Winter"));
+		}
+		else if (WheatherNum == TEXT("4"))
+		{
+			UGameplayStatics::OpenLevel(this, FName("Main_LV_Winter"));
 
+		}
     }
-    }
-
 }
 
 void UKGW_RoomList::OnClickMultiWorld()
 {
+    UE_LOG(LogTemp, Warning, TEXT("UKGW_RoomList::OnClickMultiWorld()"));
     OpenActor->StartHttpMultyWorld();
 }
 
 
 // void UKGW_RoomList::SetFindActive(bool value)
 // {
-// 	//Ã£±â°¡ ³¡³ª¸é Empty ÅØ½ºÆ® ¾Èº¸ÀÌ°Ô ÇÏ°í½Í´Ù.
+// 	//Ã£ï¿½â°¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Empty ï¿½Ø½ï¿½Æ® ï¿½Èºï¿½ï¿½Ì°ï¿½ ï¿½Ï°ï¿½Í´ï¿½.
 // 	if (value) {
 // 		Text_Finding->SetVisibility(ESlateVisibility::Visible);
 // 

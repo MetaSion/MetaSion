@@ -81,10 +81,10 @@ public:
 	void OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
 	void ShowQuestionUI();
+	void HidQuestionUI();
 
 	UFUNCTION(BlueprintCallable, Category = "JSON")
     FString StoreJsonResponse();
-
 
 	FString LoginURL = "mirrora.duckdns.org:3326/api/auth/login";
 	FString EnteryLobbyURL = "mirrora.duckdns.org:3326/api/auth/processAndSendData";
@@ -94,7 +94,7 @@ public:
 	FString EntryMultiWorldURL = "mirrora.duckdns.org:3326/api/auth/";  // <-- BE 작업 완료 후 추가하기
 	
 
-	/* Sunny */
+	/* Sunny start ------------------------------------------------------------------------------------- */ 
 	//캐릭터생성 -> 로비 입장 시 초기 설정
 	UPROPERTY()
 	class USessionGameInstance* SessionGI;
@@ -117,10 +117,11 @@ public:
 	void SetBackgroundSound();
 
 	class AKGW_RoomlistActor* MyWorldPlayer;
-
 	void ApplyMyWorldPointLightColors();
 	void ApplyMyWorldNiagaraAssets();
-
+	void SetMyWorldUIOn();
+	void SetMyWorldUIOff();
+	/* Sunny  end------------------------------------------------------------------------------------ */
 
 
 

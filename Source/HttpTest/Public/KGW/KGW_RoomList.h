@@ -31,7 +31,7 @@ public:
 	class UMultiLineEditableTextBox* TxtBox_Report;
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* btn_InnerWorld;
+	class UButton* Btn_InnerWorld;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_MultiWorld;

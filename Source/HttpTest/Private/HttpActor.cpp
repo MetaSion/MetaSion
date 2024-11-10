@@ -75,11 +75,22 @@ void AHttpActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+    // Tick 함수에서 MyWorldPlayer를 다시 찾기 시도
+    if (!MyWorldPlayer)
+    {
+        MyWorldPlayer = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+
+        if (MyWorldPlayer)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("MyWorldPlayer successfully found in Tick."));
+        }
+    }
 }
 
 //Login -------------------------------------------------------------
 void AHttpActor::LoginReqPost(FString url, FString json)
 {
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::LoginReqPost()"));
     FHttpModule& httpModule = FHttpModule::Get();
     TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
 
@@ -94,7 +105,6 @@ void AHttpActor::LoginReqPost(FString url, FString json)
     // ������ ��û
     req->ProcessRequest();
 }
-
 void AHttpActor::LoginResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::LoginResPost()"));
@@ -129,16 +139,13 @@ void AHttpActor::LoginResPost(FHttpRequestPtr Request, FHttpResponsePtr Response
         {
             UE_LOG(LogTemp, Error, TEXT("AHttpActor::LoginResPost():: No SessionGM"));
         }
-        UE_LOG(LogTemp, Warning, TEXT("Login Post Request Success: %s"), *result);
+
         if (pc) {
             if (SessionGI) {
                 SessionGI->bSuccess = true; // GameInstance에 상태 저장
             }
-
             UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
-           
-
-           
+            //SetMyWorldUIOff();
         }
     }
     else
@@ -479,7 +486,7 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
             // Parse UserMusic
             WorldSetting.UserMusic = JsonObject->GetStringField(TEXT("userMusic"));
             // Parse Weather
-            WorldSetting.Weather = JsonObject->GetStringField(TEXT("Weather"));
+            WorldSetting.Quadrant = JsonObject->GetStringField(TEXT("Quadrant"));
             // Parse ParticleNum
             WorldSetting.ParticleNum = JsonObject->GetStringField(TEXT("Particle_num"));
             // Parse Result
@@ -507,6 +514,7 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                 if (SessionGameInstance)
                 {
                     SessionGameInstance->WorldSetting = WorldSetting;
+                    SessionGameInstance->bmyWorldPageOn = true;  // 마이페이지 UI 
 
                     // 로그 출력
                     UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB: R=%f, G=%f, B=%f"),
@@ -517,7 +525,7 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                         UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB18[%d]: R=%f, G=%f, B=%f"), i, Color.R, Color.G, Color.B);
                     }
                     UE_LOG(LogTemp, Warning, TEXT("WorldSetting UserMusic: %s"), *WorldSetting.UserMusic);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Weather: %s"), *WorldSetting.Weather);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Quadrant: %s"), *WorldSetting.Quadrant);
                     UE_LOG(LogTemp, Warning, TEXT("WorldSetting ParticleNum: %s"), *WorldSetting.ParticleNum);
                     UE_LOG(LogTemp, Warning, TEXT("WorldSetting Result: %s"), *WorldSetting.Result);
                     for (const FMyWorldRoomInfo& Room : WorldSetting.MyRooms)
@@ -560,13 +568,13 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                         {
                             // RoomInfoList 데이터를 위젯에 추가
                             Showlist->AddSessionSlotWidget(SessionGameInstance->GettRoomNameNum());
-                            UE_LOG(LogTemp, Log, TEXT("Showlist updated successfully."));
+                            UE_LOG(LogTemp, Warning, TEXT("Showlist updated successfully."));
 
 
                             // 5.AI 분석 결과를 UI에 넣는다.
                             Showlist->SetTextLog(WorldSetting.Result);
                             // move to sugested tmeplate room 방이동
-                            Showlist->SetWheaterNumb(WorldSetting.Weather);
+                            Showlist->SetWheaterNumb(WorldSetting.Quadrant);
 
                         }
                         else
@@ -599,7 +607,7 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
 // MyWorld Setting Data End ------------------------------------------------
 
 void AHttpActor::ShowQuestionUI()
-{
+{    
     // MyWidgetClass�� ��ȿ���� Ȯ��
     if (QuestionUIFactory && !QuestionUI)
     {
@@ -613,6 +621,15 @@ void AHttpActor::ShowQuestionUI()
         }
     }
 }
+void AHttpActor::HidQuestionUI()
+{
+    if (QuestionUIFactory && QuestionUI)
+    {
+        QuestionUI->RemoveFromParent();
+        //SetMyWorldUIOn();
+    }    
+}
+
 FString AHttpActor::StoreJsonResponse()
 {
     FString JsonString = StoredJsonResponsetest;
@@ -960,6 +977,31 @@ void AHttpActor::ApplyMyWorldNiagaraAssets()
     else
     {
         UE_LOG(LogTemp, Error, TEXT("ACJS_InnerWorldParticleActor not found in the level."));
+    }
+}
+void AHttpActor::SetMyWorldUIOn()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SetMyWorldUIOn()"));
+    if (MyWorldPlayer)
+    {
+        MyWorldPlayer->ShowMyWorldUI();
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::SetMyWorldUIOn() MyWorldPlayer is not found in the level."));
+    }
+}
+void AHttpActor::SetMyWorldUIOff()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SetMyWorldUIOff()"));
+    if (MyWorldPlayer)
+    {
+        MyWorldPlayer->HideMyWorldUI();
+
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::SetMyWorldUIOn() MyWorldPlayer is not found in the level."));
     }
 }
 

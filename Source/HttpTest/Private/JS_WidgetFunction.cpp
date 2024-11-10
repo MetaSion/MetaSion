@@ -29,12 +29,12 @@ AJS_WidgetFunction::AJS_WidgetFunction()
     BillboardComp->SetupAttachment(RootComponent);
 
 
-    // À§Á¬ ÄÄÆ÷³ÍÆ® »ý¼º ¹× ÃÊ±âÈ­
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ê±ï¿½È­
     WidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComp"));
     WidgetComponent->SetupAttachment(RootComponent);
 
 
-    // À§Á¬ Å¬·¡½º ¼³Á¤ (Blueprint¿¡¼­ WBP_Image·Î ¼³Á¤ÇØÁÖ¾î¾ß ÇÔ)
+    // ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (Blueprintï¿½ï¿½ï¿½ï¿½ WBP_Imageï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾ï¿½ï¿½ ï¿½ï¿½)
     static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClass(TEXT("/Game/Path/To/WBP_Image"));
     if (WidgetClass.Succeeded())
     {
@@ -46,7 +46,7 @@ AJS_WidgetFunction::AJS_WidgetFunction()
 void AJS_WidgetFunction::BeginPlay()
 {
 	Super::BeginPlay();
-    SetActorVisibilityHidden();
+    //SetActorVisibilityHidden();
 }
 
 // Called every frame
@@ -60,14 +60,14 @@ void AJS_WidgetFunction::PlayShowImageAnimation()
 {
     if (WidgetComponent)
     {
-        // À§Á¬À» °¡Á®¿À±â
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         UUserWidget* Widget = WidgetComponent->GetWidget();
         if (Widget)
         {
-            // WBP_Image·Î Ä³½ºÆÃ
+            // WBP_Imageï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½
             if (UWBP_Image* WBPImage = Cast<UWBP_Image>(Widget))
             {
-                // ¾Ö´Ï¸ÞÀÌ¼Ç Àç»ý
+                // ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½
                 if (WBPImage->ShowImage)
                 {
                     WBPImage->PlayAnimation(WBPImage->ShowImage, 0.0f, 1, EUMGSequencePlayMode::Forward, 1.0f);
@@ -80,15 +80,19 @@ void AJS_WidgetFunction::PlayShowImageAnimation()
 
 void AJS_WidgetFunction::SetActorVisibilityHidden()
 {
+    UE_LOG(LogTemp, Warning, TEXT("AJS_WidgetFunction::SetActorVisibilityHidden()"));
     if (boxComp) {
         boxComp->SetVisibility(false);
+        UE_LOG(LogTemp, Warning, TEXT("AJS_WidgetFunction::SetActorVisibilityHidden() boxComp->SetVisibility(false);"));
     }
 }
 
 void AJS_WidgetFunction::SetActorVisibilityVisible()
 {
+    UE_LOG(LogTemp, Warning, TEXT("AJS_WidgetFunction::SetActorVisibilityVisible()"));
     if (boxComp) {
         boxComp->SetVisibility(true);
+        UE_LOG(LogTemp, Warning, TEXT("AJS_WidgetFunction::SetActorVisibilityHidden() boxComp->SetVisibility(true);"));
     }
 }
 

@@ -90,7 +90,7 @@ struct FMyWorldSetting
     FString UserMusic;
 
     UPROPERTY(BlueprintReadWrite)
-    FString Weather;
+    FString Quadrant;
 
     UPROPERTY(BlueprintReadWrite)
     FString ParticleNum;
@@ -185,6 +185,8 @@ public:
     UPROPERTY(BlueprintReadWrite)
     FMyWorldSetting WorldSetting;
 
+	bool bmyWorldPageOn = false;
+
 	/* --------------------------------------------------------------------------------------------------------------------------- */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="PlayerController")
 	TSubclassOf<APlayerController> LobbyControllerClass;
@@ -206,5 +208,6 @@ public:
 
 	//JS
 	bool bSuccess = false; // 상태 유지 변수
+
 };
 

@@ -2,6 +2,14 @@
 
 
 #include "KGW/KGW_RoomlistActor.h"
+#include "CJS/SessionGameInstance.h"
+
+#include "Components/BoxComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/BillboardComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "CJS/CJS_InnerWorldParticleActor.h"
 
 AKGW_RoomlistActor::AKGW_RoomlistActor()
 {
@@ -13,9 +21,18 @@ void AKGW_RoomlistActor::BeginPlay()
     Super::BeginPlay();
 
     FVector NewListLocation(0.0f, 0.0f, 0.0f);
-    SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
-
-    
+    SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);   
+    //HideMyWorldUI();
+    EffectActor = Cast<ACJS_InnerWorldParticleActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_InnerWorldParticleActor::StaticClass()));
+    if (EffectActor)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::BeginPlay() Set EffectActor"));
+        HideMyWorldParticle();
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AKGW_RoomlistActor::BeginPlay() No EffectActor"));
+    }
 }
 
 void AKGW_RoomlistActor::SetMaterialColor(FLinearColor newColor)
@@ -37,5 +54,91 @@ void AKGW_RoomlistActor::SetMaterialColor(FLinearColor newColor)
     else
     {
         UE_LOG(LogTemp, Error, TEXT("Failed to create dynamic material instance for MeshComp."));
+    }
+}
+
+void AKGW_RoomlistActor::ShowMyWorldUI()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::ShowMyWorldUI()"));
+	/*USessionGameInstance* GameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
+    if (GameInstance)
+    {
+        if(!GameInstance->bmyWorldPageOn)
+        {
+            GameInstance->bmyWorldPageOn = true;
+            UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::ShowMyWorldUI() GameInstance->bmyWorldPageOn = true"));
+       */
+            // 전체 보이도록 설정하기
+            if (boxComp) boxComp->SetVisibility(true);
+            if (meshComp) meshComp->SetVisibility(true);
+            if (BillboardComp) BillboardComp->SetVisibility(true);
+            if (WidgetComponent) WidgetComponent->SetVisibility(true);
+            UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::ShowMyWorldUI() - All components are now visible"));
+    /*    }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("AKGW_RoomlistActor::ShowMyWorldUI() Failed to !GameInstance->bmyWorldPageOn"));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AKGW_RoomlistActor::ShowMyWorldUI() Failed to GameInstance"));
+    }*/
+}
+void AKGW_RoomlistActor::HideMyWorldUI()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::HideMyWorldUI()"));
+   /* USessionGameInstance* GameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
+    if (GameInstance)
+    {
+        if (!GameInstance->bmyWorldPageOn)
+        {
+            GameInstance->bmyWorldPageOn = true;*/
+            //UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::ShowMyWorldUI() GameInstance->bmyWorldPageOn = true"));
+
+            // 전체 보이도록 설정하기
+            if (boxComp) boxComp->SetVisibility(true);
+            if (meshComp) meshComp->SetVisibility(true);
+            if (BillboardComp) BillboardComp->SetVisibility(true);
+            if (WidgetComponent) WidgetComponent->SetVisibility(true);
+            UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::HideMyWorldUI() - All components are now hidden"));
+
+           
+   /*     }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("AKGW_RoomlistActor::ShowMyWorldUI() Failed to !GameInstance->bmyWorldPageOn"));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AKGW_RoomlistActor::ShowMyWorldUI() Failed to GameInstance"));
+    }*/
+}
+
+void AKGW_RoomlistActor::ShowMyWorldParticle()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::ShowMyWorldParticle()"));
+    if (EffectActor)
+    {
+        EffectActor->SetActorHiddenInGame(false);
+        UE_LOG(LogTemp, Warning, TEXT("EffectActor is now hidden"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AKGW_RoomlistActor::BeginPlay() No EffectActor"));
+    }
+}
+void AKGW_RoomlistActor::HideMyWorldParticle()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::HideMyWorldParticle()"));    
+    if (EffectActor)
+    {
+        EffectActor->SetActorHiddenInGame(true);
+        UE_LOG(LogTemp, Warning, TEXT("EffectActor is now hidden"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AKGW_RoomlistActor::BeginPlay() No EffectActor"));
     }
 }
