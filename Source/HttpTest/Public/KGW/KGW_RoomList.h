@@ -38,7 +38,7 @@ public:
 
 	
 
-		void AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos);
+	void AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos);
 
 	// 	void SetRecomendRoomName(const )
 
@@ -50,10 +50,10 @@ public:
 
 	void SetTextLog(FString explain);
 
-			UFUNCTION()
+	UFUNCTION()
 	void OnClickInnerWorld();
 
-			UFUNCTION()
+	UFUNCTION()
 	void OnClickMultiWorld();
 
 	FString WheatherNum;

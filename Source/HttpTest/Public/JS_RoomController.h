@@ -93,7 +93,7 @@ public:
  /*   UPROPERTY()
 	class AHttpActor* HttpActor;*/
 
-    void OpenMultiWorld();
+    //void OpenMultiWorld();
     void SetActorLocationAfterLevelLoad();
     AActor* CurrentHoveredActor = nullptr;
 
@@ -107,6 +107,8 @@ public:
 	class ACJS_JS_WidgetFunction* ChatActorFactory;
 
     /* Inner World Setting UI */
+    UPROPERTY()
+    class USessionGameInstance* SessionGI;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UCJS_InnerWorldSettingWidget> SettingUIFactory;
     UPROPERTY()
@@ -114,4 +116,7 @@ public:
 
     void ShowSettingUI();
     void HideSettingUI();
+
+    UFUNCTION()
+    void InitInnerWorldSetting();
 };
