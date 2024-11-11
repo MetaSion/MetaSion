@@ -25,6 +25,7 @@
 #include "KGW/KGW_RoomList.h"
 #include "JS_SoundActor.h"
 #include "CJS/CJS_InnerWorldParticleActor.h"
+#include "CJS/CJS_SubObjectActor.h"
 
 
 // Sets default values
@@ -601,11 +602,51 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                         UE_LOG(LogTemp, Error, TEXT("WidgetComponent not found on BP_ListActor."));
                     }
                 }
+                else
+                {
+                    UE_LOG(LogTemp, Error, TEXT("No BP_ListActor."));
+                }
             }
             else
             {
                 UE_LOG(LogTemp, Error, TEXT("GameInstance is null!"));
             }
+
+            //7. 방 요소 정보 할당
+            //FString timeOfDay = SessionGI->WorldSetting.TimeOfDay;
+            //FString cloudCoverage = SessionGI->WorldSetting.CloudCoverage;
+            //FString fog = SessionGI->WorldSetting.Fog;
+            //FString rain = SessionGI->WorldSetting.Rain;
+            //FString snow = SessionGI->WorldSetting.Snow;
+            //FString dust = SessionGI->WorldSetting.Dust;
+            //FString thunder = SessionGI->WorldSetting.Thunder;
+            //FString mainObject = SessionGI->WorldSetting.MainObject;
+            //FString subObject = SessionGI->WorldSetting.SubObject;
+            //FString background = SessionGI->WorldSetting.Background;
+
+            ////각 변수 값에 대한 로그 출력
+            //UE_LOG(LogTemp, Warning, TEXT("timeOfDay: %s"), *timeOfDay);
+            //UE_LOG(LogTemp, Warning, TEXT("cloudCoverage: %s"), *cloudCoverage);
+            //UE_LOG(LogTemp, Warning, TEXT("fog: %s"), *fog);
+            //UE_LOG(LogTemp, Warning, TEXT("rain: %s"), *rain);
+            //UE_LOG(LogTemp, Warning, TEXT("snow: %s"), *snow);
+            //UE_LOG(LogTemp, Warning, TEXT("dust: %s"), *dust);
+            //UE_LOG(LogTemp, Warning, TEXT("thunder: %s"), *thunder);
+            //UE_LOG(LogTemp, Warning, TEXT("mainObject: %s"), *mainObject);
+            //UE_LOG(LogTemp, Warning, TEXT("subObject: %s"), *subObject);
+            //UE_LOG(LogTemp, Warning, TEXT("background: %s"), *background);
+
+            //방 요소 정보 초기화
+            /*ACJS_SubObjectActor* flowerObj = Cast<ACJS_SubObjectActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_SubObjectActor::StaticClass()));
+            if (flowerObj)
+            {
+                flowerObj->SetSubObject(subObject);
+                UE_LOG(LogTemp, Warning, TEXT("SubObject has been set successfully."));
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("Failed to find ACJS_SubObjectActor instance."));
+            }*/
         }
         else
         {

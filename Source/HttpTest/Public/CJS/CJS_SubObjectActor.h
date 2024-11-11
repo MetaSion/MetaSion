@@ -23,6 +23,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	FString FlowerObject;
+
+	//UFUNCTION()
+	//void SetSubObject(FString value);
 	UFUNCTION(BlueprintCallable)
-	void InitSubObject(FString objName);
+	void SetSubObject();
+	UFUNCTION(BlueprintCallable)
+	FString GetSubObject();
+	UFUNCTION(BlueprintCallable)
+	FString InitSubObject(FString value);
 };
