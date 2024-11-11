@@ -209,6 +209,26 @@ void UKGW_ChoiceSaveBF::StoreChoice(FString Question, FString SelectedValue)
     SelectedChoices.Add(Question, SelectedValue);
 }
 
+void UKGW_ChoiceSaveBF::ShowJson()
+{
+    TMap<FString, FString> ChoiceMap;
+
+    // ������ TMap<FString, int32> �����͸� FString���� ��ȯ�ؼ� ����
+    for (const TPair<FString, FString>& Pair : SelectedChoices)
+        //for (const TPair<FString, FString>& Pair : SelectedChoices)
+    {
+        ChoiceMap.Add(Pair.Key, FString::FString(Pair.Value));  // int32 ���� FString���� ��ȯ
+        //ChoiceMap.Add(Pair.Key, FString::FString(Pair.Value));  // int32 ���� FString���� ��ȯ
+    }
+
+    // MakeJson�� ȣ���� TMap �����͸� JSON ���ڿ��� ��ȯ
+    FString JsonString = UJsonParseLib::MakeJson(ChoiceMap);
+
+    // JSON ���ڿ� Ȯ�� (������ �α�)
+    UE_LOG(LogTemp, Warning, TEXT("Generated JSON: %s"), *JsonString);
+
+}
+
 // FString UKGW_ChoiceSaveBF::ParseJsonToColorData(const FString& json)
 // {
 //     TSharedRef<TJsonReader<TCHAR>> reader = TJsonReaderFactory<TCHAR>::Create(json);
