@@ -9,6 +9,7 @@
 #include "Components/MultiLineEditableTextBox.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
+#include "CJS/CJS_InnerWorldSettingWidget.h"
 
 void UKGW_RoomList::NativeConstruct()
 {
@@ -74,7 +75,7 @@ void UKGW_RoomList::OnClickInnerWorld()
 		else if (WheatherNum == TEXT("4"))
 		{
 			UGameplayStatics::OpenLevel(this, FName("Main_LV_Winter"));
-
+            InnerWorldWidget ->SetWinterSnowSlider();
 		}
     }
 }

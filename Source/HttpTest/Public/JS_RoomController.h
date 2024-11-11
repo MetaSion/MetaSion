@@ -111,12 +111,42 @@ public:
     class USessionGameInstance* SessionGI;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UCJS_InnerWorldSettingWidget> SettingUIFactory;
-    UPROPERTY()
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
 	class UCJS_InnerWorldSettingWidget* SettingUI;
 
     void ShowSettingUI();
     void HideSettingUI();
 
-    UFUNCTION()
+    UFUNCTION(BlueprintCallable)
     void InitInnerWorldSetting();
+       UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+
+    FString timeOfDay;
+        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+
+    FString cloudCoverage;
+        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+
+    FString fog ;
+        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+
+    FString rain;
+        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+
+    FString snow;
+        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+
+    FString dust ;
+        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+
+    FString thunder ;
+        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+
+    FString mainObject ;
+        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+
+    FString subObject ;
+        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+
+    FString background ;
 };

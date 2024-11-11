@@ -63,5 +63,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class AHttpActor* OpenActor;
 
+		UPROPERTY(VisibleAnywhere)
+	class UCJS_InnerWorldSettingWidget* InnerWorldWidget;
+
+
+	
 
 };

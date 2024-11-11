@@ -13,5 +13,12 @@ UCLASS()
 class HTTPTEST_API UCJS_InnerWorldSettingWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadWrite,meta = (BindWidget))
+	class USlider* UDW_Snow_Slider;
+
+	void SetWinterSnowSlider();
+
 	
 };

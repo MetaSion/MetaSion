@@ -15,6 +15,8 @@
 TArray<FChoiceData> UKGW_ChoiceSaveBF::ChoiceList;
 
 TMap<FString, FString> SelectedChoices;
+TMap<FString, FString> WheaterChoices;
+
 //TMap<FString, FString> SelectedChoices;  <-- 수정 필요
 
 // void UKGW_ChoiceSaveBF::SaveChoicesToJsonFile(UObject* WorldContextObject)
@@ -209,12 +211,20 @@ void UKGW_ChoiceSaveBF::StoreChoice(FString Question, FString SelectedValue)
     SelectedChoices.Add(Question, SelectedValue);
 }
 
+void UKGW_ChoiceSaveBF::StoreSelectedMyRoom(FString Object, FString SelectedValue)
+//void UKGW_ChoiceSaveBF::StoreChoice(FString Question, FString SelectedValue)  <-- 수정 필요
+{
+    UE_LOG(LogTemp, Warning, TEXT("UKGW_ChoiceSaveBF::StoreSelectedMyRoom()"));
+    WheaterChoices.Add(Object, SelectedValue);
+}
+
+
 void UKGW_ChoiceSaveBF::ShowJson()
 {
     TMap<FString, FString> ChoiceMap;
 
     // ������ TMap<FString, int32> �����͸� FString���� ��ȯ�ؼ� ����
-    for (const TPair<FString, FString>& Pair : SelectedChoices)
+    for (const TPair<FString, FString>& Pair : WheaterChoices)
         //for (const TPair<FString, FString>& Pair : SelectedChoices)
     {
         ChoiceMap.Add(Pair.Key, FString::FString(Pair.Value));  // int32 ���� FString���� ��ȯ
