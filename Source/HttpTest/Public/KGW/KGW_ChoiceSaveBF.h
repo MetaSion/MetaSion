@@ -64,6 +64,11 @@ UFUNCTION(BlueprintCallable, Category = "Save")
     
 	static TArray<FChoiceData> ChoiceList;
 
+       UFUNCTION(BlueprintCallable, Category = "Save")
+    static void ShowJson();
+
+
+
 //     UPROPERTY(EditDefaultsOnly)
 //     static class UJS_GameInstance* PostChoice;
     
