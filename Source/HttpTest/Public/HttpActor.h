@@ -89,6 +89,7 @@ public:
 	FString LoginURL = "mirrora.duckdns.org:3326/api/auth/login";
 	FString EnteryLobbyURL = "mirrora.duckdns.org:3326/api/auth/processAndSendData";
 	FString MyRoomURL = "mirrora.duckdns.org:3326/api/auth/userRooms";
+	FString ClickMyRoomURL = "mirrora.duckdns.org:3326/api/auth/getRoomData";  //마이월드 페이지의 방 목록 클릭 시 호출 API
 	FString WallPaperURL = "mirrora.duckdns.org:3326/api/auth/wallpaperupdate";
 	FString HeartURL = "jsonplaceholder.typicode.com/posts";
 	FString EntryMultiWorldURL = "mirrora.duckdns.org:3326/api/auth/";  // <-- BE 작업 완료 후 추가하기
@@ -121,6 +122,11 @@ public:
 	void ApplyMyWorldNiagaraAssets();
 	void SetMyWorldUIOn();
 	void SetMyWorldUIOff();
+
+	//마이월드 페이지의 방목록 클릭 시 통신
+	void CallHttpClickMyRoomList(FString room_num);
+	void ReqPostClickMyRoomList(FString url, FString json);
+	void OnResPostClickMyRoomList(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 	/* Sunny  end------------------------------------------------------------------------------------ */
 
 
