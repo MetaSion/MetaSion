@@ -23,6 +23,22 @@ struct FChoiceData
     FString Weather;
 };
 USTRUCT(BlueprintType)
+struct FSelectedData
+{
+    GENERATED_BODY()
+
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Select")
+    FString Flower;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Select")
+    FString Tree;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Select")
+    FString BackGround;
+};
+
+USTRUCT(BlueprintType)
 struct FColorData
 {
     GENERATED_BODY()
@@ -55,6 +71,10 @@ UFUNCTION(BlueprintCallable, Category = "Save")
 
     UFUNCTION(BlueprintCallable, Category = "Save")
     static void StoreChoice(FString Question, FString SelectedValue);
+        UFUNCTION(BlueprintCallable, Category = "Save")
+
+     static void StoreSelectedMyRoom(FString Object, FString SelectedValue);
+    //void UKGW_ChoiceSaveBF::StoreChoice(FString Question, FString SelectedValue) <-- 수정 필요
     //static void StoreChoice(FString Question, FString SelectedValue);
 
     UPROPERTY()
@@ -63,6 +83,8 @@ UFUNCTION(BlueprintCallable, Category = "Save")
 
     
 	static TArray<FChoiceData> ChoiceList;
+
+
 
        UFUNCTION(BlueprintCallable, Category = "Save")
     static void ShowJson();

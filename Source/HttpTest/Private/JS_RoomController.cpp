@@ -574,16 +574,16 @@ void AJS_RoomController::InitInnerWorldSetting()
 {
     UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::InitInnerWorldSetting()"));
     //1. 템플릿에 따른 Setting UI 값 설정 
-    FString timeOfDay = SessionGI->WorldSetting.TimeOfDay;
-    FString cloudCoverage = SessionGI->WorldSetting.CloudCoverage;
-    FString fog = SessionGI->WorldSetting.Fog;
-    FString rain = SessionGI->WorldSetting.Rain;
-    FString snow = SessionGI->WorldSetting.Snow;
-    FString dust = SessionGI->WorldSetting.Dust;
-    FString thunder = SessionGI->WorldSetting.Thunder;
-    FString mainObject = SessionGI->WorldSetting.MainObject;
-    FString subObject = SessionGI->WorldSetting.SubObject;
-    FString background = SessionGI->WorldSetting.Background;
+     timeOfDay = SessionGI->WorldSetting.TimeOfDay;
+     cloudCoverage = SessionGI->WorldSetting.CloudCoverage;
+     fog = SessionGI->WorldSetting.Fog;
+     rain = SessionGI->WorldSetting.Rain;
+     snow = SessionGI->WorldSetting.Snow;
+     dust = SessionGI->WorldSetting.Dust;
+     thunder = SessionGI->WorldSetting.Thunder;
+     mainObject = SessionGI->WorldSetting.MainObject;
+     subObject = SessionGI->WorldSetting.SubObject;
+     background = SessionGI->WorldSetting.Background;
 
     if (SettingUI)
     {
