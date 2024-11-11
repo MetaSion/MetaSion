@@ -119,34 +119,24 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void InitInnerWorldSetting();
-       UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
-
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     FString timeOfDay;
-        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
-
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     FString cloudCoverage;
-        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
-
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     FString fog ;
-        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
-
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     FString rain;
-        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
-
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     FString snow;
-        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
-
+     UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     FString dust ;
-        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
-
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     FString thunder ;
-        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
-
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     FString mainObject ;
-        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
-
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     FString subObject ;
-        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
-
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     FString background ;
 };

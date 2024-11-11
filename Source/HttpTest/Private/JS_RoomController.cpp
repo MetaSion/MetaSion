@@ -163,6 +163,11 @@ void AJS_RoomController::CheckDate()
         bEnableClickEvents = true;
         bEnableMouseOverEvents = true;
     }
+    else if (LevelName.Contains("Main_LV")) {
+        bShowMouseCursor = true;
+        bEnableClickEvents = true;
+        bEnableMouseOverEvents = true;
+    }
     else {
         bShowMouseCursor = false;
         bEnableClickEvents = false;
@@ -584,6 +589,18 @@ void AJS_RoomController::InitInnerWorldSetting()
      mainObject = SessionGI->WorldSetting.MainObject;
      subObject = SessionGI->WorldSetting.SubObject;
      background = SessionGI->WorldSetting.Background;
+
+     // 각 변수 값에 대한 로그 출력
+     UE_LOG(LogTemp, Warning, TEXT("timeOfDay: %s"), *timeOfDay);
+     UE_LOG(LogTemp, Warning, TEXT("cloudCoverage: %s"), *cloudCoverage);
+     UE_LOG(LogTemp, Warning, TEXT("fog: %s"), *fog);
+     UE_LOG(LogTemp, Warning, TEXT("rain: %s"), *rain);
+     UE_LOG(LogTemp, Warning, TEXT("snow: %s"), *snow);
+     UE_LOG(LogTemp, Warning, TEXT("dust: %s"), *dust);
+     UE_LOG(LogTemp, Warning, TEXT("thunder: %s"), *thunder);
+     UE_LOG(LogTemp, Warning, TEXT("mainObject: %s"), *mainObject);
+     UE_LOG(LogTemp, Warning, TEXT("subObject: %s"), *subObject);
+     UE_LOG(LogTemp, Warning, TEXT("background: %s"), *background);
 
     if (SettingUI)
     {
