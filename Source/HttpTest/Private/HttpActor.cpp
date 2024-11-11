@@ -26,6 +26,7 @@
 #include "JS_SoundActor.h"
 #include "CJS/CJS_InnerWorldParticleActor.h"
 #include "CJS/CJS_SubObjectActor.h"
+#include "KGW/KGW_WBP_Question.h"
 
 
 // Sets default values
@@ -422,6 +423,7 @@ void AHttpActor::RoomDataResPost(FHttpRequestPtr Request, FHttpResponsePtr Respo
 // MyWorld Setting Data Start--------------------------------------------------------------
 void AHttpActor::ReqPostChoice(FString url, FString json)
 {
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ReqPostChoice()"));
     FHttpModule& httpModule = FHttpModule::Get();
     TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
 
@@ -439,11 +441,12 @@ void AHttpActor::ReqPostChoice(FString url, FString json)
 }
 void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice()"));
     if (bConnectedSuccessfully && Response.IsValid())
     {
         // ���������� ������ �޾��� ��
         FString ResponseContent = Response->GetContentAsString();
-        UE_LOG(LogTemp, Log, TEXT("POST Response: %s"), *ResponseContent);
+        UE_LOG(LogTemp, Warning, TEXT("POST Response: %s"), *ResponseContent);
         StoredJsonResponse = ResponseContent;
         UE_LOG(LogTemp, Warning, TEXT("Stored JSON Response: %s"), *StoredJsonResponse);
         //StoredJsonResponse = StoredJsonResponsetest;    // <----- 여기부터 수정  (임의값 넣고 확인해 보기)
@@ -572,10 +575,10 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
             if (SessionGameInstance)
             {
                 SessionGameInstance->InitRoomNameNum(WorldSetting.MyRooms); // 데이터가 제대로 저장되었는지 로그로 확인
-                UE_LOG(LogTemp, Error, TEXT("GameInstance->InitRoomInfoList size: %d"), SessionGameInstance->RoomInfoList.Num());
+                UE_LOG(LogTemp, Warning, TEXT("GameInstance->InitRoomInfoList size: %d"), SessionGameInstance->RoomInfoList.Num());
                 TArray<FMyWorldRoomInfo> Result;
                 Result = SessionGameInstance->GettRoomNameNum(); // 데이터가 제대로 저장되었는지 로그로 확인
-                UE_LOG(LogTemp, Error, TEXT("GameInstance->GEtRoomInfoList size: %d"), Result.Num());
+                UE_LOG(LogTemp, Warning, TEXT("GameInstance->GEtRoomInfoList size: %d"), Result.Num());
                 if (ListActor)
                 {
                     if (WidgetComp)
@@ -611,42 +614,6 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
             {
                 UE_LOG(LogTemp, Error, TEXT("GameInstance is null!"));
             }
-
-            //7. 방 요소 정보 할당
-            //FString timeOfDay = SessionGI->WorldSetting.TimeOfDay;
-            //FString cloudCoverage = SessionGI->WorldSetting.CloudCoverage;
-            //FString fog = SessionGI->WorldSetting.Fog;
-            //FString rain = SessionGI->WorldSetting.Rain;
-            //FString snow = SessionGI->WorldSetting.Snow;
-            //FString dust = SessionGI->WorldSetting.Dust;
-            //FString thunder = SessionGI->WorldSetting.Thunder;
-            //FString mainObject = SessionGI->WorldSetting.MainObject;
-            //FString subObject = SessionGI->WorldSetting.SubObject;
-            //FString background = SessionGI->WorldSetting.Background;
-
-            ////각 변수 값에 대한 로그 출력
-            //UE_LOG(LogTemp, Warning, TEXT("timeOfDay: %s"), *timeOfDay);
-            //UE_LOG(LogTemp, Warning, TEXT("cloudCoverage: %s"), *cloudCoverage);
-            //UE_LOG(LogTemp, Warning, TEXT("fog: %s"), *fog);
-            //UE_LOG(LogTemp, Warning, TEXT("rain: %s"), *rain);
-            //UE_LOG(LogTemp, Warning, TEXT("snow: %s"), *snow);
-            //UE_LOG(LogTemp, Warning, TEXT("dust: %s"), *dust);
-            //UE_LOG(LogTemp, Warning, TEXT("thunder: %s"), *thunder);
-            //UE_LOG(LogTemp, Warning, TEXT("mainObject: %s"), *mainObject);
-            //UE_LOG(LogTemp, Warning, TEXT("subObject: %s"), *subObject);
-            //UE_LOG(LogTemp, Warning, TEXT("background: %s"), *background);
-
-            //방 요소 정보 초기화
-            /*ACJS_SubObjectActor* flowerObj = Cast<ACJS_SubObjectActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_SubObjectActor::StaticClass()));
-            if (flowerObj)
-            {
-                flowerObj->SetSubObject(subObject);
-                UE_LOG(LogTemp, Warning, TEXT("SubObject has been set successfully."));
-            }
-            else
-            {
-                UE_LOG(LogTemp, Error, TEXT("Failed to find ACJS_SubObjectActor instance."));
-            }*/
         }
         else
         {
@@ -663,26 +630,41 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
 
 void AHttpActor::ShowQuestionUI()
 {    
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ShowQuestionUI()"));
     // MyWidgetClass�� ��ȿ���� Ȯ��
     if (QuestionUIFactory && !QuestionUI)
     {
         // UI ���� �ν��Ͻ��� ����
-        QuestionUI = CreateWidget<UUserWidget>(GetWorld(), QuestionUIFactory);
-
+        QuestionUI = CreateWidget<UKGW_WBP_Question>(GetWorld(), QuestionUIFactory);
         if (QuestionUI)
         {
             // ȭ�鿡 �߰�
             QuestionUI->AddToViewport();
+            QuestionUI->PlayLateAppearAnimation();
+            UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ShowQuestionUI() QuestionUI->AddToViewport()"));
         }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("AHttpActor::ShowQuestionUI() NO QuestionUI"));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::ShowQuestionUI() NO QuestionUIFactory && QuestionUI"));
     }
 }
 void AHttpActor::HidQuestionUI()
 {
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::HidQuestionUI()"));
     if (QuestionUIFactory && QuestionUI)
     {
         QuestionUI->RemoveFromParent();
         //SetMyWorldUIOn();
-    }    
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::HidQuestionUI() NO QuestionUIFactory && QuestionUI"));
+    }
 }
 
 FString AHttpActor::StoreJsonResponse()
@@ -1056,7 +1038,7 @@ void AHttpActor::SetMyWorldUIOff()
     }
     else
     {
-        UE_LOG(LogTemp, Error, TEXT("AHttpActor::SetMyWorldUIOn() MyWorldPlayer is not found in the level."));
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::SetMyWorldUIOff() MyWorldPlayer is not found in the level."));
     }
 }
 

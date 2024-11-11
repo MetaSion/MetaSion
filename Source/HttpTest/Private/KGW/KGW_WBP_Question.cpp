@@ -127,3 +127,17 @@ void UKGW_WBP_Question::OnClickSelect()
 
 	
 }
+
+void UKGW_WBP_Question::PlayLateAppearAnimation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("UKGW_WBP_Question::PlayLateAppearAnimation()"));
+	if (LateAppearAnim)
+	{	
+		PlayAnimation(LateAppearAnim);
+		UE_LOG(LogTemp, Warning, TEXT("UKGW_WBP_Question::PlayLateAppearAnimation() PlayAnimation(LateAppearAnim);"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UKGW_WBP_Question::PlayLateAppearAnimation() Cannt Play Anim"));
+	}
+}

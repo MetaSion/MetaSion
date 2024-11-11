@@ -25,7 +25,7 @@ public:
 
     UPROPERTY()
 	class ACJS_InnerWorldParticleActor* EffectActor;
-    
+
     // Function to update material color
     UFUNCTION()
     void SetMaterialColor(FLinearColor newColor);
@@ -40,4 +40,10 @@ public:
     UFUNCTION()
     void HideMyWorldParticle();
 
+
+    //파티클 효과 ----------------------------------------------------------
+    UPROPERTY(EditAnyWhere, Category = "VFX")
+	class UNiagaraComponent* CircleNiagara;
+    UFUNCTION()
+    void DeactivateNiagaraEffect();
 };

@@ -10,10 +10,18 @@
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "CJS/CJS_InnerWorldParticleActor.h"
+#include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraComponent.h"
+#include "Engine/TimerHandle.h"
 
 AKGW_RoomlistActor::AKGW_RoomlistActor()
 {
     PrimaryActorTick.bCanEverTick = true;
+
+    // 나이아가라 컴포넌트 추가
+    CircleNiagara = CreateDefaultSubobject<UNiagaraComponent>(TEXT("CircleNiagara"));
+    CircleNiagara->SetupAttachment(meshComp);
+    CircleNiagara->bAutoActivate = false; // 처음에는 비활성 상태로 설정
+    //CircleNiagara->SetRelativeScale3D(FVector(.5f)); // 필요에 따라 크기 조정
 }
 
 void AKGW_RoomlistActor::BeginPlay()
@@ -32,6 +40,38 @@ void AKGW_RoomlistActor::BeginPlay()
     else
     {
         UE_LOG(LogTemp, Error, TEXT("AKGW_RoomlistActor::BeginPlay() No EffectActor"));
+    }
+
+   
+    // Circle 이펙트 나이아가라 컴포넌트 비활성화 후 활성화
+    if (CircleNiagara && CircleNiagara->IsActive())
+    {
+        DeactivateNiagaraEffect();
+    }
+    FVector Location = meshComp->GetComponentLocation();
+    FRotator Rotation = meshComp->GetComponentRotation();
+    if (CircleNiagara) {
+        // RootComponent의 위치와 회전에 Niagara 이펙트 재생
+        CircleNiagara->SetWorldLocationAndRotation(Location, Rotation);
+        CircleNiagara->Activate(); // Niagara 이펙트 활성화
+        UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::DeactivateNiagaraEffect() CircleNiagara->Activate();"));
+        // 일정 시간 후에 이펙트 비활성화
+        FTimerHandle NiagaraTimerHandle;
+        GetWorldTimerManager().SetTimer(NiagaraTimerHandle, this, &AKGW_RoomlistActor::DeactivateNiagaraEffect, 2.0f, false);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AKGW_RoomlistActor::BeginPlay() No CircleNiagara"));
+    }
+}
+
+void AKGW_RoomlistActor::DeactivateNiagaraEffect()
+{   
+    UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::DeactivateNiagaraEffect()"));
+    if (CircleNiagara && CircleNiagara->IsActive())
+    {
+        CircleNiagara->Deactivate();
+        UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::DeactivateNiagaraEffect() CircleNiagara->Deactivate();"));
     }
 }
 

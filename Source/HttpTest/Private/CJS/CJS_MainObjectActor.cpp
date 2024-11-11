@@ -2,6 +2,7 @@
 
 
 #include "CJS/CJS_MainObjectActor.h"
+#include "CJS/SessionGameInstance.h"
 
 // Sets default values
 ACJS_MainObjectActor::ACJS_MainObjectActor()
@@ -23,5 +24,23 @@ void ACJS_MainObjectActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ACJS_MainObjectActor::SetMainObject()
+{
+	UE_LOG(LogTemp, Warning, TEXT("ACJS_MainObjectActor::SetMainObject()"));
+	USessionGameInstance* SessionGI = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
+	if (SessionGI)
+	{
+		TreeObject = SessionGI->WorldSetting.MainObject;
+		//TreeObject = "Tree_summer";  // <--- 잘 바뀜!!
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_MainObjectActor::SetMainObject() TreeObject : %s"), *TreeObject);
+	}
+}
+
+FString ACJS_MainObjectActor::GetMainObject()
+{
+	UE_LOG(LogTemp, Warning, TEXT("ACJS_MainObjectActor::GetMainObject()"));
+	return TreeObject;
 }
 

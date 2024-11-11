@@ -32,7 +32,7 @@ public:
     UPROPERTY(BlueprintAssignable, Category="Room Data")
     FOnRoomDataInitialized OnRoomDataInitialized;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	class AJS_RoomController* pc;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
@@ -41,8 +41,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UUserWidget> QuestionUIFactory;
 
-	UPROPERTY(EditAnywhere)
-	class UUserWidget* QuestionUI;
+	UPROPERTY()
+	class UKGW_WBP_Question* QuestionUI;
 
 	UPROPERTY(BlueprintReadWrite, Category = "JSON Data")
 	FString StoredJsonResponse;

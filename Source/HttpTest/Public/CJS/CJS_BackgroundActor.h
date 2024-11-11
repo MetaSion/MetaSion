@@ -23,4 +23,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	FString BGObject;
+
+	UFUNCTION(BlueprintCallable)
+	void SetBGObject();
+	UFUNCTION(BlueprintCallable)
+	FString GetBGObject();
+
 };

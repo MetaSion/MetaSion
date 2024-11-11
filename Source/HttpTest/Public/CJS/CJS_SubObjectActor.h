@@ -25,12 +25,9 @@ public:
 
 	FString FlowerObject;
 
-	//UFUNCTION()
-	//void SetSubObject(FString value);
 	UFUNCTION(BlueprintCallable)
 	void SetSubObject();
 	UFUNCTION(BlueprintCallable)
 	FString GetSubObject();
-	UFUNCTION(BlueprintCallable)
-	FString InitSubObject(FString value);
+
 };
