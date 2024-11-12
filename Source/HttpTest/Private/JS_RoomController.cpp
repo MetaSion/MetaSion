@@ -98,6 +98,10 @@ void AJS_RoomController::BeginPlay()
             if (HttpActor) {
                 HttpActor->ShowQuestionUI();
             }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() No HttpActor"));
+            }
             SessionGI->bSuccess = false; // 사용 후 상태 초기화
         }
         else

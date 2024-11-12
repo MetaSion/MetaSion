@@ -27,14 +27,6 @@ void ACJS_SubObjectActor::Tick(float DeltaTime)
 
 }
 
-//void ACJS_SubObjectActor::SetSubObject(FString value)
-//{
-//	UE_LOG(LogTemp, Warning, TEXT("ACJS_SubObjectActor::SetSubObject(FString value)"));
-//	FlowerObject = value;
-//	UE_LOG(LogTemp, Warning, TEXT("ACJS_SubObjectActor::SetSubObject() value : %s -> FlowerObject : %s"), *value, *FlowerObject);
-//	//InitSubObject(FlowerObject);
-//}
-
 void ACJS_SubObjectActor::SetSubObject()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_SubObjectActor::SetSubObject()"));
@@ -42,6 +34,7 @@ void ACJS_SubObjectActor::SetSubObject()
 	if (SessionGI)
 	{
 		FlowerObject = SessionGI->WorldSetting.SubObject;
+		//FlowerObject = "Flower_summer";  // <--- 잘 바뀜!!
 		UE_LOG(LogTemp, Warning, TEXT("ACJS_SubObjectActor::SetSubObject() FlowerObject : %s"), *FlowerObject);
 	}
 }
@@ -52,9 +45,5 @@ FString ACJS_SubObjectActor::GetSubObject()
 	return FlowerObject;
 }
 
-FString ACJS_SubObjectActor::InitSubObject(FString value)
-{
-	UE_LOG(LogTemp, Warning, TEXT("ACJS_SubObjectActor::InitSubObject()"));
-	return value;
-}
+
 
