@@ -41,18 +41,11 @@ void AHttpActor::BeginPlay()
 
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
-	/*  if (LevelName == TEXT("TestLevel")) {
-		  TestWidgetUI = CreateWidget<UJS_TestWidget>(GetWorld()->GetFirstPlayerController(), Test_Factory);
-		  if (TestWidgetUI) {
-			  TestWidgetUI->AddToViewport();
-		  }
-	  }*/
-
-
     // SessionGameInstance 할당
     SessionGI = Cast<USessionGameInstance>(GetGameInstance());
     if (SessionGI)
     {
+        
         UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance is set"));
     }
     else
@@ -103,7 +96,6 @@ void AHttpActor::LoginResPost(FHttpRequestPtr Request, FHttpResponsePtr Response
     UE_LOG(LogTemp, Warning, TEXT("Response code : %d"), Response->GetResponseCode());
     if (bConnectedSuccessfully && EHttpResponseCodes::IsOk(Response->GetResponseCode()))
     {
-        // ������ ���ڿ��� ��������
         FString result = Response->GetContentAsString();
         //FString result = "{\"userId\": \"testuser\", \"userpass\": \"testpassword\"}";  <--- 올바른 JSON 형식
         UE_LOG(LogTemp, Warning, TEXT("Login Post Request Success: %s"), *result);
@@ -123,9 +115,10 @@ void AHttpActor::LoginResPost(FHttpRequestPtr Request, FHttpResponsePtr Response
         }
         UE_LOG(LogTemp, Warning, TEXT("Login Post Request Success: %s"), *result);
         if (pc) {
-            pc->HideLoginUI();
-            //���ʿ� ���� UI�� �Ѿ�� �� ����
-            ShowQuestionUI();
+            if (SessionGI) {
+                SessionGI->bSuccess = true; // GameInstance에 상태 저장
+            }
+            UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
         }
     }
     else
@@ -377,6 +370,49 @@ void AHttpActor::MyCreateRoomInfoResPost(FHttpRequestPtr Request, FHttpResponseP
         UE_LOG(LogTemp, Warning, TEXT("OnResPostTest Failed..."));
     }
 }
+
+// RoomData ------------------------------------------------------------
+void AHttpActor::RoomDataReqPost(FString url, FString json)
+{
+    FHttpModule& httpModule = FHttpModule::Get();
+    TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
+
+    // ��û�� ������ ����
+    req->SetURL(url);
+    req->SetVerb(TEXT("POST"));
+    req->SetHeader(TEXT("content-type"), TEXT("application/json"));
+    req->SetContentAsString(json);
+
+    req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::RoomDataResPost);
+
+    // ������ ��û
+    req->ProcessRequest();
+}
+void AHttpActor::RoomDataResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
+{
+    if (!Response.IsValid())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Invalid Response"));
+        return;
+    }
+    // ��û�� ���������� �Ϸ�Ǿ����� Ȯ��
+    if (bConnectedSuccessfully && EHttpResponseCodes::IsOk(Response->GetResponseCode()))
+    {
+        // ������ ���ڿ��� ��������
+        FString result = Response->GetContentAsString();
+        FRoomData LocalRoomData = UJsonParseLib::RoomData_Convert_JsonToStruct(result);
+
+        // �������� ��ȯ�� �����͸� �α׷� ���
+        UE_LOG(LogTemp, Log, TEXT("Response RoomName = %s"), *LocalRoomData.LikeNum);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("OnResPostTest Failed..."));
+    }
+}
+// RoomData ------------------------------------------------------------
+
+
 void AHttpActor::ReqPostChoice(FString url, FString json)
 {
     FHttpModule& httpModule = FHttpModule::Get();

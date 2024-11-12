@@ -106,7 +106,7 @@ struct FUser // 유저 테이블
 		  SecondaryAsset(TEXT("")), 
 		  BackgroundColor(TEXT("")), 
 		  FloorMaterial(TEXT("")), 
-		  ClusterId(0), 
+		  ClusterId(0),
 		  RecommendedRoomId(TEXT("")), 
 		  Feedback(TEXT("")), 
 		  FeedbackTime(FDateTime::Now()), 
@@ -116,7 +116,7 @@ struct FUser // 유저 테이블
 };
 
 USTRUCT(BlueprintType) 
-struct FChangeIndex //ChangeIndex
+struct FChangeIndex //Index
 {
 	GENERATED_BODY()
 
@@ -133,52 +133,64 @@ struct FMyRoomInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyRoom/Struct")
-    FString UltraSky_TimeOfDay;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyRoom/Struct")
-    FString UltraWeather_CloudCoverage;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyRoom/Struct")
-    FString UltraWeather_Fog;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyRoom/Struct")
-    FString UltraWeather_Rain;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyRoom/Struct")
-    FString UltraWeather_Snow;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyRoom/Struct")
-    FString UltraWeather_Dust;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyRoom/Struct")
-    FString UltraWeather_WindIntensity;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyRoom/Struct")
-    FString UltraWeather_Thunder;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyRoom/Struct")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
     FString RoomName;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyRoom/Struct")
-    FString userDescription;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
+    FString RoomDescription;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyRoom/Struct")
-    FString room_pp;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
+    FString RoomPP;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UltraSky")
+    FString UltraSky_TimeOfDay;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
+    FString UltraWeather_CloudCoverage;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
+    FString UltraWeather_Fog;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
+    FString UltraWeather_Rain;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
+    FString UltraWeather_Snow;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
+    FString UltraWeather_Dust;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
+    FString UltraWeather_Thunder;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
+    FString Particle_num1;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
+    FString Particle_num2;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
+    FString Particle_num3;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
+    FString Particle_num4;
 
     // 기본 생성자
 	FMyRoomInfo()
-        : UltraSky_TimeOfDay(TEXT(""))
-        , UltraWeather_CloudCoverage(TEXT(""))
-        , UltraWeather_Fog(TEXT(""))
-        , UltraWeather_Rain(TEXT(""))
-        , UltraWeather_Snow(TEXT(""))
-        , UltraWeather_Dust(TEXT(""))
-        , UltraWeather_WindIntensity(TEXT(""))
-        , UltraWeather_Thunder(TEXT(""))
-        , RoomName(TEXT(""))
-        , userDescription(TEXT(""))
-        , room_pp(TEXT(""))
+		: RoomName(TEXT("")),
+		RoomDescription(TEXT("")),
+		RoomPP(TEXT("")),
+		UltraSky_TimeOfDay(TEXT("")),
+		UltraWeather_CloudCoverage(TEXT("")),
+		UltraWeather_Fog(TEXT("")),
+		UltraWeather_Rain(TEXT("")),
+		UltraWeather_Snow(TEXT("")),
+		UltraWeather_Dust(TEXT("")),
+		UltraWeather_Thunder(TEXT("")),
+		Particle_num1(TEXT("")),
+		Particle_num2(TEXT("")),
+		Particle_num3(TEXT("")),
+		Particle_num4(TEXT(""))
     {}
 };
 
@@ -207,12 +219,12 @@ struct FMyCreateRoomInfo
 
 	// 기본 생성자
 	FMyCreateRoomInfo()
-		: UserId(TEXT("DefaultUser"))        
+		: UserId(TEXT(""))        
 		, RoomNum(0)                          
-		, RoomName(TEXT("Default Room"))       
-		, RecommendedMusic(TEXT("None"))       
-		, EmotionImage(TEXT("DefaultImage"))   
-		, Analysiscontent(TEXT("No Analysis"))
+		, RoomName(TEXT(""))       
+		, RecommendedMusic(TEXT(""))       
+		, EmotionImage(TEXT(""))   
+		, Analysiscontent(TEXT(""))
 	{}
 };
 
@@ -222,14 +234,23 @@ struct FRoomData
     GENERATED_BODY()
 
 public:
-    // 방 번호
-    UPROPERTY(BlueprintReadWrite, Category="Room Data")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomData")
+    FString UserId;
+	// 방 번호
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomData")
+    FString RoomNum;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomData")
     FString userMusic;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomData")
+    FString LikeNum;
 
 
     // 기본 생성자
     FRoomData()
-        : userMusic(TEXT(""))
+        : UserId(TEXT("")),
+		RoomNum(TEXT("")),
+		userMusic(TEXT("")),
+		LikeNum(TEXT(""))
     {}
 };
 
@@ -277,6 +298,8 @@ public:
 	//Json To Struct : Response
 	static FMyCreateRoomInfo FMyCreateRoomInfo_Convert_JsonToStruct(const FString& JsonString);
 
+	//Struct To Json : Req
+	static FString RoomData_Convert_StructToJson(const FRoomData& RoomData);
 	//Json To Struct : Response
 	static FRoomData RoomData_Convert_JsonToStruct(const FString& JsonString);
 };

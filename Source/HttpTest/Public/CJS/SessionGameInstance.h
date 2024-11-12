@@ -111,6 +111,7 @@ public:
 	void AssignSessionNameFromPlayerState();
 	bool ValidateSessionInterfaceAndSearch() const;
 	void InitSessionName(FString name);
+	UFUNCTION(BlueprintCallable)
 	FString GetMySessionName();
 
 	void InitRoomNameNum(TArray<FMyCreatedRoom> list);
@@ -146,5 +147,7 @@ public:
     TArray<FMyCreatedRoom> RoomInfoList; 
 
 
+	//JS
+	bool bSuccess = false; // 상태 유지 변수
 };
 

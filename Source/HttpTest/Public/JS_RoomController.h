@@ -23,6 +23,8 @@ public:
 
     virtual void SetupInputComponent() override;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+    class AHttpActor* HttpActor;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputMappingContext* IMC_Controller;
@@ -44,7 +46,7 @@ public:
 	class UHttpWidget* LoginUI;
 
 	UPROPERTY(EditAnywhere)
-	class UJS_CreateRoomWidget* CR_WidgetUI;
+	class UJS_CreateRoomWidget* CR_UI;
 
 	UPROPERTY(EditAnywhere)
 	class UJS_RoomWidget* R_UI;
@@ -56,7 +58,7 @@ public:
     bool bShowLoginScreen = false; // 초기 값 설정
     bool bOnlyIndexSend = false;
     bool bShowUI = false;
-
+    bool bSuccess = false;
     void CheckDate();
     // UI
     void InitializeUIWidgets();
@@ -73,7 +75,8 @@ public:
     void ShowRoomUI();
     void HideRoomUI();
     void PlayUIAnimation();
-
+    FTimerHandle HeartUITimer;
+    void ShowHeartUITimer();
     void SpawnAndSwitchToCamera();
 
     //Mouse Interaction
@@ -85,8 +88,8 @@ public:
     void OnMouseHoverEnd(AActor* HoveredActor);
 
     //myWorld -> MultiWorld:: Make Session
-    UPROPERTY()
-	class AHttpActor* HttpActor;
+ /*   UPROPERTY()
+	class AHttpActor* HttpActor;*/
 
     void OpenMultiWorld();
 

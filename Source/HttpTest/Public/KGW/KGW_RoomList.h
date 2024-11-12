@@ -23,10 +23,15 @@ public:
 		UPROPERTY(meta=(BindWidget))
 	class UScrollBox* ScrollBox;
 
+	 		UPROPERTY(meta=(BindWidget))
+	class UTextBlock* Text_RecomendRoom;
+
+
 
 
 	void AddSessionSlotWidget(const TArray<FMyCreatedRoom>& RoomInfos);
 
+// 	void SetRecomendRoomName(const )
 
 // 	void SetFindActive(bool value);
 

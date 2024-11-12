@@ -27,11 +27,21 @@ public:
     UPROPERTY(Transient, meta = (BindWidgetAnim))
     UWidgetAnimation* CameraSutterEffect;
 
+	UPROPERTY(Meta=(BindWidget))
+    class UVerticalBox* VTB_Heart;
+
+	UPROPERTY(Meta=(BindWidget))
+    class UTextBlock* txt_HeartNum;
+
 	UPROPERTY(EditAnywhere)
 	class AHttpActor* httpActor;
 
 	UFUNCTION()
 	void SendChangeIndexData();
 
+	UFUNCTION()
+	void SendHeartCount();
+
 	void SetIndex(FString roomNumber, int absWallPaperIndex);
+	void SetHeartCount(FString HeartCount);
 };

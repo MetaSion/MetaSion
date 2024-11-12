@@ -148,6 +148,17 @@ FMyCreateRoomInfo UJsonParseLib::FMyCreateRoomInfo_Convert_JsonToStruct(const FS
 	//ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½È¯
 	return MyCreateRoomInfo;
 }
+FString UJsonParseLib::RoomData_Convert_StructToJson(const FRoomData& RoomData)
+{
+	//Json ¹®ÀÚ¿­À» ÀúÀåÇÒ º¯¼ö
+	FString JsonString;
+
+	//±¸Á¶Ã¼¸¦ JSON ¹®ÀÚ¿­·Î º¯È¯
+	FJsonObjectConverter::UStructToJsonObjectString(RoomData, JsonString, 0, 0);
+
+	//¿Ï¼ºµÈ Json ¹ÝÈ¯
+	return JsonString;
+}
 FRoomData UJsonParseLib::RoomData_Convert_JsonToStruct(const FString& JsonString)
 {
 	FRoomData RoomData;

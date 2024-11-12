@@ -73,6 +73,10 @@ public:
 	void MyCreateRoomInfoReqPost(FString url, FString json);
 	void MyCreateRoomInfoResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
+	//RoomData
+	void RoomDataReqPost(FString url, FString json);
+	void RoomDataResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+
 	void ReqPostChoice(FString url, FString json);
 	void OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
@@ -86,6 +90,7 @@ public:
 	FString EnteryLobbyURL = "mirrora.duckdns.org:3326/api/auth/processAndSendData";
 	FString MyRoomURL = "mirrora.duckdns.org:3326/api/auth/userRooms";
 	FString WallPaperURL = "mirrora.duckdns.org:3326/api/auth/wallpaperupdate";
+	FString HeartURL = "jsonplaceholder.typicode.com/posts";
 	FString EntryMultiWorldURL = "mirrora.duckdns.org:3326/api/auth/";  // <-- BE 작업 완료 후 추가하기
 	
 
@@ -117,7 +122,7 @@ public:
 	FTimerHandle RoomUIWaitTimerHandle;
 
 	//image
-		UPROPERTY()
+	UPROPERTY()
 	class UWBP_Image* ImageUI;
 	void ReqGetWebImage(FString url);
 

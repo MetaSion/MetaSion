@@ -20,6 +20,9 @@
 #include "Engine/Engine.h"
 #include "Camera/CameraComponent.h"
 #include "CJS/SessionGameInstance.h"
+#include "Components/VerticalBox.h"
+#include "CJS/CJS_BallPlayer.h"
+#include "HttpActor.h"
 #include "HttpActor.h"
 #include "CJS/CJS_JS_WidgetFunction.h"
 
@@ -31,6 +34,7 @@ AJS_RoomController::AJS_RoomController()
 void AJS_RoomController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+
     FHitResult HitResult;
     bool bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, HitResult);
 
@@ -50,7 +54,6 @@ void AJS_RoomController::Tick(float DeltaTime)
 
         CurrentHoveredActor = HoveredActor;
     }
-
 }
 
 void AJS_RoomController::BeginPlay()
@@ -67,14 +70,21 @@ void AJS_RoomController::BeginPlay()
     {
         UE_LOG(LogTemp, Error, TEXT("USessionGameInstance is not set"));
     }*/
-
-    // UI�ʱ�ȭ
+    HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
     InitializeUIWidgets();
 
     CheckDate();
     SetInputMode(FInputModeGameOnly());
 
     GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, true);
+
+    USessionGameInstance* SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+    if (SessionGI && SessionGI->bSuccess) {
+        if (HttpActor) {
+            HttpActor->ShowQuestionUI();
+        }
+        SessionGI->bSuccess = false; // 사용 후 상태 초기화
+    }
 }
 
 void AJS_RoomController::SetupInputComponent()
@@ -110,7 +120,7 @@ void AJS_RoomController::CheckDate()
 
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
-    if (LevelName != "Main_Lobby" && LevelName != "Main_Room" && LastCheckDate < MidnightToday) {
+    if (LevelName == "Main_Login" && LevelName != "Main_Lobby" && LevelName != "Main_Room" && LastCheckDate < MidnightToday) {
 		bShowMouseCursor = true;
 		bEnableClickEvents = true;
 		bEnableMouseOverEvents = true;
@@ -122,10 +132,15 @@ void AJS_RoomController::CheckDate()
         bEnableClickEvents = true;
         bEnableMouseOverEvents = true;
     }
-    else{
-		bShowMouseCursor = false;
-		bEnableClickEvents = false;
-		bEnableMouseOverEvents = false;
+    else if(LevelName == "Main_Sky" && LastCheckDate < MidnightToday) {
+        bShowMouseCursor = true;
+        bEnableClickEvents = true;
+        bEnableMouseOverEvents = true;
+    }
+    else {
+        bShowMouseCursor = false;
+        bEnableClickEvents = false;
+        bEnableMouseOverEvents = false;
     }
 }
 
@@ -140,10 +155,10 @@ void AJS_RoomController::InitializeUIWidgets()
         }
     }
     if (CR_UIFactory) {
-        CR_WidgetUI = CreateWidget<UJS_CreateRoomWidget>(this, CR_UIFactory);
-        if (CR_WidgetUI) {
-            CR_WidgetUI->AddToViewport();
-            CR_WidgetUI->SetVisibility(ESlateVisibility::Hidden);
+        CR_UI = CreateWidget<UJS_CreateRoomWidget>(this, CR_UIFactory);
+        if (CR_UI) {
+            CR_UI->AddToViewport();
+            CR_UI->SetVisibility(ESlateVisibility::Hidden);
         }
     }
     if (R_UIFactory)
@@ -174,9 +189,9 @@ void AJS_RoomController::HideLoginUI()
 //��
 void AJS_RoomController::ShowCreateRoomUI()
 {
-    if (CR_WidgetUI)
+    if (CR_UI)
     {
-        CR_WidgetUI->SetVisibility(ESlateVisibility::Visible);
+        CR_UI->SetVisibility(ESlateVisibility::Visible);
     }
 }
 //��
@@ -184,9 +199,9 @@ void AJS_RoomController::HideCreateRoomUI()
 {
     UE_LOG(LogTemp, Log, TEXT(" AJS_RoomController::HideCreateRoomUI()"));
 
-    if (CR_WidgetUI)
+    if (CR_UI)
     {
-        CR_WidgetUI->SetVisibility(ESlateVisibility::Hidden);
+        CR_UI->SetVisibility(ESlateVisibility::Hidden);
     }
 }
 //CreateRoom --------------------------------------------------------------------------
@@ -217,6 +232,13 @@ void AJS_RoomController::PlayUIAnimation()
     if (R_UI) {
         R_UI->PlayAnimation(R_UI->CameraSutterEffect);
     }
+}
+void AJS_RoomController::ShowHeartUITimer()
+{
+    if (R_UI) {
+        R_UI->VTB_Heart->SetVisibility(ESlateVisibility::Visible);
+    }
+    
 }
 //Room --------------------------------------------------------------------------
 
@@ -250,14 +272,40 @@ void AJS_RoomController::OnMouseClick()
                     UE_LOG(LogTemp, Log, TEXT("bShowUI true"));
                     HideCreateRoomUI();
                     ShowRoomUI();
+                    //hide until end anim
+                    R_UI->VTB_Heart->SetVisibility(ESlateVisibility::Hidden);
                     PlayUIAnimation();
                     ScreenCapture();
                     R_UI->SendChangeIndexData();
+                    GetWorld()->GetTimerManager().SetTimer(HeartUITimer, this, &AJS_RoomController::ShowHeartUITimer, 1.0f, false);
                // }
             }
-            else if (HitActor->ActorHasTag(TEXT("Lobby")))
+            else if (HitActor->ActorHasTag(TEXT("Sky")))
             {
 				UE_LOG(LogTemp, Warning, TEXT("Lobby Hit - Loading lobby level"));
+                UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+
+                 // 서버가 있는 로비로 돌아가기 위한 ClientTravel 사용
+			   /* APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+				if (PlayerController)
+				{
+					PlayerController->ClientTravel("/Game/Main/Maps/Main_Lobby", ETravelType::TRAVEL_Relative);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::OnMouseClick():: No PlayerController"));
+				}*/
+
+                // GameInstance를 가져와서 JoinSession() 호출
+                //USessionGameInstance* GameInstance = Cast<USessionGameInstance>(GetGameInstance());
+                //if (GameInstance)
+                //{
+                //    GameInstance->FindSessions();  // 세션을 찾고, 성공 시 JoinSession을 호출
+                //}
+                //else
+                //{
+                //    UE_LOG(LogTemp, Error, TEXT("Failed to get SessionGameInstance"));
+                //}
                 UGameplayStatics::OpenLevel(this, FName("Main_Lobby"));
             }
             else if (HitActor->ActorHasTag(TEXT("EnterCreateRoom")))

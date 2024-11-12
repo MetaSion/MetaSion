@@ -13,7 +13,11 @@ UCLASS(BlueprintType, Blueprintable)
 class HTTPTEST_API UJS_CreateRoomWidget : public UUserWidget
 {
     GENERATED_BODY()
-    
+   
+private:
+    static const int32 MAX_CHARACTER_COUNT = 51; // 한글 기준 17글자
+    FString LastValidText;
+
 public:
     virtual void NativeConstruct() override;
 
@@ -32,9 +36,12 @@ public:
     UPROPERTY(meta=(BindWidget))
     class UButton* btn_CompleteCreateRoom;
     
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+    UPROPERTY(meta = (BindWidget))
     class UEditableText* ED_RoomName;
     
+    UPROPERTY(meta = (BindWidget))
+    class UMultiLineEditableText* ED_MultiText;
+
     UPROPERTY(meta=(BindWidget))
     class UButton* btn_CreateRoom_Private;
 
@@ -90,5 +97,17 @@ public:
     UFUNCTION()
 	void SendSetPrivateRoom(int32 Room_pp);
 
-    //void ChangeNewline(const FText& NewText);
+    UFUNCTION()
+    void OnTextChanged_SingleLine(const FText& Text);
+
+   UFUNCTION()
+    void OnTextChanged_MultiLine(const FText& Text);
+
+    UFUNCTION()
+    void OnTextCommitted_MultiLine(const FText& Text, ETextCommit::Type CommitMethod);
+
+    //void ApplyTextLimit(const FText& Text);
+
+    UPROPERTY(EditAnywhere)
+    int32 textSize = 10000;
 };

@@ -86,12 +86,12 @@ void UKGW_ChoiceSaveBF::SaveChoicesToJsonFile(UObject* WorldContextObject)
     if (!SessionGI)
     {
         UE_LOG(LogTemp, Error, TEXT("SessionGI is nullptr. Make sure USessionGameInstance is set as the GameInstance in Project Settings."));
-        return; // 함수 종료
+        return; 
     }
 
     // MySessionName(userID)을 가져옵니다.
     FString userID = SessionGI->GetMySessionName();
-    FString ServerURL = FString::Printf(TEXT("mirrora.duckdns.org:3326/api/auth/update/testuser"), *userID);
+    FString ServerURL = FString::Printf(TEXT("mirrora.duckdns.org:3326/api/auth/processAndSendData"));
 
     UE_LOG(LogTemp, Warning, TEXT("Generated Server URL: %s"), *ServerURL);
 
