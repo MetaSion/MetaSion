@@ -8,39 +8,65 @@
 #include "KGW_RoomList.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class HTTPTEST_API UKGW_RoomList : public UUserWidget
 {
 	GENERATED_BODY()
 
-public: 
+public:
 
-//  		UPROPERTY(meta=(BindWidget))
-// 	class UTextBlock* Text_Finding;
+	//  		UPROPERTY(meta=(BindWidget))
+	// 	class UTextBlock* Text_Finding;
+	virtual void  NativeConstruct() override;
 
-		UPROPERTY(meta=(BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	class UScrollBox* ScrollBox;
 
-	 		UPROPERTY(meta=(BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* Text_RecomendRoom;
 
+	UPROPERTY(meta = (BindWidget))
+	class UMultiLineEditableTextBox* TxtBox_Report;
 
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_InnerWorld;
 
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_MultiWorld;
 
-	void AddSessionSlotWidget(const TArray<FMyCreatedRoom>& RoomInfos);
+	
 
-// 	void SetRecomendRoomName(const )
+	void AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos);
 
-// 	void SetFindActive(bool value);
+	// 	void SetRecomendRoomName(const )
 
-		UPROPERTY(EditDefaultsOnly)
+	// 	void SetFindActive(bool value);
+
+	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UKGW_UserRoomName> UserRoomNameFactory;
 
 
+	void SetTextLog(FString explain);
+
+	UFUNCTION()
+	void OnClickInnerWorld();
+
+	UFUNCTION()
+	void OnClickMultiWorld();
+
+	FString WheatherNum;
+
+	void SetWheaterNumb(FString TempNUmb);
+
+	UPROPERTY(VisibleAnywhere)
+	class AHttpActor* OpenActor;
+
+		UPROPERTY(VisibleAnywhere)
+	class UCJS_InnerWorldSettingWidget* InnerWorldWidget;
 
 
-
+	
 
 };

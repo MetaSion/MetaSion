@@ -8,7 +8,7 @@
 #include "JsonParseLib.generated.h"
 
 USTRUCT(BlueprintType) 
-struct FLogin //·Î±×ÀÎ
+struct FLogin //ï¿½Î±ï¿½ï¿½ï¿½
 {
 	GENERATED_BODY()
 
@@ -17,7 +17,7 @@ struct FLogin //·Î±×ÀÎ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Login/Struct")
 	FString userpass;
 
-	//±âº» »ý¼ºÀÚ
+	//ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	FLogin() : 
 			  userId(TEXT("")), 
 			  userpass(TEXT(""))
@@ -25,7 +25,7 @@ struct FLogin //·Î±×ÀÎ
 };
 
 USTRUCT(BlueprintType) 
-struct FSign_up // È¸¿ø°¡ÀÔ
+struct FSign_up // È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	GENERATED_BODY()
 
@@ -34,7 +34,7 @@ struct FSign_up // È¸¿ø°¡ÀÔ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sign_up/Struct")
 	FString userpass;
 
-	//±âº» »ý¼ºÀÚ
+	//ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	FSign_up() : 
 				userId(TEXT("")), 
 				userpass(TEXT("")) 
@@ -42,7 +42,7 @@ struct FSign_up // È¸¿ø°¡ÀÔ
 };
 
 USTRUCT(BlueprintType)
-struct FUser // À¯Àú Å×ÀÌºí
+struct FUser // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½
 {
 	GENERATED_BODY()
 
@@ -94,7 +94,7 @@ struct FUser // À¯Àú Å×ÀÌºí
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "User/Struct")
 	bool IsRecommended;
 
-	// ±âº» »ý¼ºÀÚ
+	// ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	FUser() 
 		: userId(TEXT("")), 
 		  LoginTime(FDateTime::Now()), 
@@ -124,7 +124,7 @@ struct FChangeIndex //Index
 	FString room_num;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WallPaper/Struct")
     FString updatedWallpaperNum;
-	//±âº» »ý¼ºÀÚ
+	//ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	FChangeIndex() : room_num(TEXT("")), updatedWallpaperNum(TEXT("")) {}
 };
 
@@ -133,64 +133,68 @@ struct FMyRoomInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
-    FString RoomName;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
+    FString UserId;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
-    FString RoomDescription;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
-    FString RoomPP;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UltraSky")
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
     FString UltraSky_TimeOfDay;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
-    FString UltraWeather_CloudCoverage;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
+    FString UltraWheather_CloudCoverage;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
-    FString UltraWeather_Fog;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
+    FString UltraWheather_Fog;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
-    FString UltraWeather_Rain;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
+    FString UltraWheather_Rain;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
-    FString UltraWeather_Snow;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
+    FString UltraWheather_Snow;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
-    FString UltraWeather_Dust;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
+    FString UltraWheather_Dust;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather")
-    FString UltraWeather_Thunder;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ultra Data")
+    FString UltraWheather_Thunder;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
-    FString Particle_num1;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Environment")
+    FString MainObject;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
-    FString Particle_num2;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Environment")
+    FString SubObject;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
-    FString Particle_num3;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Environment")
+    FString Background;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
-    FString Particle_num4;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Particles")
+    FString Particle_num;
 
-    // ±âº» »ý¼ºÀÚ
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Room Info")
+    FString RoomName;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Room Info")
+    FString RoomDescription;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Room Info")
+    FString RoomPP;
+
+    // ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	FMyRoomInfo()
-		: RoomName(TEXT("")),
-		RoomDescription(TEXT("")),
-		RoomPP(TEXT("")),
-		UltraSky_TimeOfDay(TEXT("")),
-		UltraWeather_CloudCoverage(TEXT("")),
-		UltraWeather_Fog(TEXT("")),
-		UltraWeather_Rain(TEXT("")),
-		UltraWeather_Snow(TEXT("")),
-		UltraWeather_Dust(TEXT("")),
-		UltraWeather_Thunder(TEXT("")),
-		Particle_num1(TEXT("")),
-		Particle_num2(TEXT("")),
-		Particle_num3(TEXT("")),
-		Particle_num4(TEXT(""))
+		: UserId(TEXT(""))
+		, UltraSky_TimeOfDay(TEXT(""))
+		, UltraWheather_CloudCoverage(TEXT(""))
+		, UltraWheather_Fog(TEXT(""))
+		, UltraWheather_Rain(TEXT(""))
+		, UltraWheather_Snow(TEXT(""))
+		, UltraWheather_Dust(TEXT(""))
+		, UltraWheather_Thunder(TEXT(""))
+		, MainObject(TEXT(""))
+		, SubObject(TEXT(""))
+		, Background(TEXT(""))
+		, Particle_num(TEXT(""))
+		, RoomName(TEXT(""))
+		, RoomDescription(TEXT(""))
+		, RoomPP(TEXT(""))
     {}
 };
 
@@ -217,7 +221,7 @@ struct FMyCreateRoomInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyCreateRoomInfo/Struct")
 	FString Analysiscontent;
 
-	// ±âº» »ý¼ºÀÚ
+	// ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	FMyCreateRoomInfo()
 		: UserId(TEXT(""))        
 		, RoomNum(0)                          
@@ -236,7 +240,7 @@ struct FRoomData
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomData")
     FString UserId;
-	// ¹æ ¹øÈ£
+	// ï¿½ï¿½ ï¿½ï¿½È£
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomData")
     FString RoomNum;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomData")
@@ -245,7 +249,7 @@ public:
     FString LikeNum;
 
 
-    // ±âº» »ý¼ºÀÚ
+    // ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     FRoomData()
         : UserId(TEXT("")),
 		RoomNum(TEXT("")),

@@ -29,12 +29,12 @@ public:
 	class AHttpActor* HttpActor;
 
 	UPROPERTY()
-	UAudioComponent* AudioComponent;  // »ç¿îµå¸¦ Àç»ýÇÏ´Â ¿Àµð¿À ÄÄÆ÷³ÍÆ®
+	UAudioComponent* AudioComponent;  // ï¿½ï¿½ï¿½å¸¦ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 
-	// ¼­¹ö¿¡¼­ ¹ÞÀº ÆÄÀÏ ÀÌ¸§À» ÅëÇØ ¹è°æÀ½À» º¯°æÇÏ´Â ÇÔ¼ö
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
 	void SetBackgroundSoundByFileName(const FString& FileName);
 
 	UFUNCTION()
-    void OnRoomDataInitialized(); // RoomData ÃÊ±âÈ­ ½Ã È£ÃâµÇ´Â ÇÔ¼ö
+    void OnRoomDataInitialized(); // RoomData ï¿½Ê±ï¿½È­ ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
 
 };

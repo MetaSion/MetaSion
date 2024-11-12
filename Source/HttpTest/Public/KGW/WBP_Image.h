@@ -38,7 +38,7 @@ public:
 
 	void GetImage();
 
-	void SetTextLog(FString explain);
+// 	void SetTextLog(FString explain);
 
 	void SendTextPost();
 

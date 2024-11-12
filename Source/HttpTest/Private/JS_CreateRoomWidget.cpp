@@ -68,9 +68,13 @@ void UJS_CreateRoomWidget::CreateRoomChooseNo()
 void UJS_CreateRoomWidget::CompleteCreateRoom()
 {
 	if (ED_RoomName && !ED_RoomName->GetText().IsEmpty()) {
+		//이쪽에 보내는 로직 추가
 		SwitchToWidget(2);
 		ShowUIForLimitedTime(3);
-		widgetActor->SetActorVisibilityVisible();
+		if (widgetActor) {
+			widgetActor->SetActorVisibilityVisible();
+		}
+		SendCompleteRoomData();
 	}
 }
 
@@ -78,7 +82,7 @@ void UJS_CreateRoomWidget::SetPrivate()
 {
 	bPrivate = 1 - bPrivate; // 0 -> 1 -> 0 
 	SwitchToWidget_PP(bPrivate);
-	SendSetPrivateRoom(bPrivate);
+	/*SendSetPrivateRoom(bPrivate);*/
 }
 
 void UJS_CreateRoomWidget::ShowUIForLimitedTime(float DurationInSeconds)
@@ -102,20 +106,37 @@ void UJS_CreateRoomWidget::HideUI()
 	}
 }
 
-void UJS_CreateRoomWidget::SendSetPrivateRoom(int32 Room_pp)
+void UJS_CreateRoomWidget::SendCompleteRoomData()
 {
 	if (!httpActor)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("httpActor is null in SendSetPrivateRoom"));
 		return;
 	}
+
 	FMyRoomInfo MyRoomInfo;
+
+	MyRoomInfo.UserId = "testuser";
+	MyRoomInfo.UltraSky_TimeOfDay = "1200";
+	MyRoomInfo.UltraWheather_CloudCoverage = "true";
+	MyRoomInfo.UltraWheather_Fog = "true";
+	MyRoomInfo.UltraWheather_Rain = "true";
+	MyRoomInfo.UltraWheather_Snow = "true";
+	MyRoomInfo.UltraWheather_Dust = "true";
+	MyRoomInfo.UltraWheather_Thunder = "true";
+	MyRoomInfo.MainObject = "true";
+	MyRoomInfo.SubObject = "true";
+	MyRoomInfo.Background = "true";
+	MyRoomInfo.Particle_num = "true";
 	MyRoomInfo.RoomName = ED_RoomName->GetText().ToString();
-	MyRoomInfo.RoomPP = FString::FromInt(Room_pp);
+	MyRoomInfo.RoomDescription = "this is hello worlds";
+	MyRoomInfo.RoomPP = FString::FromInt(bPrivate);
 
 	FString json = UJsonParseLib::MyRoomInfo_Convert_StructToJson(MyRoomInfo);
 
-	httpActor->MyRoomInfoReqPost(httpActor->MyRoomURL, json);
+	if (httpActor) {
+		httpActor->MyRoomInfoReqPost(httpActor->MyRoomURL, json);
+	}
 }
 
 void UJS_CreateRoomWidget::OnTextChanged_SingleLine(const FText& Text)

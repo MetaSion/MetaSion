@@ -25,6 +25,8 @@
 #include "HttpActor.h"
 #include "HttpActor.h"
 #include "CJS/CJS_JS_WidgetFunction.h"
+#include "KGW/KGW_RoomlistActor.h"
+#include "CJS/CJS_InnerWorldSettingWidget.h"
 
 AJS_RoomController::AJS_RoomController()
 {
@@ -60,31 +62,58 @@ void AJS_RoomController::BeginPlay()
 {
     Super::BeginPlay();
 
-    /*USessionGameInstance* SessionGI = Cast<USessionGameInstance>(GetGameInstance());
-    if (SessionGI)
+    HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
+    if (HttpActor)
     {
-        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay()::USessionGameInstance is set"));
-        SessionGI->HandleMapChange(GetWorld());
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() Set HttpActor"));
     }
     else
     {
-        UE_LOG(LogTemp, Error, TEXT("USessionGameInstance is not set"));
-    }*/
-    HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
+        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() No HttpActor"));
+    }
     InitializeUIWidgets();
-
     CheckDate();
     SetInputMode(FInputModeGameOnly());
-
     GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, true);
 
-    USessionGameInstance* SessionGI = Cast<USessionGameInstance>(GetGameInstance());
-    if (SessionGI && SessionGI->bSuccess) {
-        if (HttpActor) {
-            HttpActor->ShowQuestionUI();
+    SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+    FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+    if (LevelName.Contains("Main_LV"))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_LV"));
+        if (SessionGI) {
+            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_LV-> SessionGI exsited"));
+            InitInnerWorldSetting();
         }
-        SessionGI->bSuccess = false; // 사용 후 상태 초기화
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
+        }
     }
+    else if (LevelName.Contains("Sky"))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky"));
+        if (SessionGI && SessionGI->bSuccess) {
+            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky-> SessionGI exsited"));
+            if (HttpActor) {
+                HttpActor->ShowQuestionUI();
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() No HttpActor"));
+            }
+            SessionGI->bSuccess = false; // 사용 후 상태 초기화
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
+        }
+    }
+    // ------------------------------------------------------------------------------------------------
+
+    //FTimerHandle TimerHandle;
+    //GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AJS_RoomController::SetActorLocationAfterLevelLoad, 1.0f, false);
+
 }
 
 void AJS_RoomController::SetupInputComponent()
@@ -109,6 +138,7 @@ void AJS_RoomController::SetupInputComponent()
     if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
     {
          EnhancedInputComponent->BindAction(IA_LeftMouse, ETriggerEvent::Triggered, this, &AJS_RoomController::OnMouseClick);
+         EnhancedInputComponent->BindAction(IA_SettingUI, ETriggerEvent::Started, this, &AJS_RoomController::ShowSettingUI);
     }
 }
 
@@ -133,6 +163,11 @@ void AJS_RoomController::CheckDate()
         bEnableMouseOverEvents = true;
     }
     else if(LevelName == "Main_Sky" && LastCheckDate < MidnightToday) {
+        bShowMouseCursor = true;
+        bEnableClickEvents = true;
+        bEnableMouseOverEvents = true;
+    }
+    else if (LevelName.Contains("Main_LV")) {
         bShowMouseCursor = true;
         bEnableClickEvents = true;
         bEnableMouseOverEvents = true;
@@ -236,17 +271,31 @@ void AJS_RoomController::PlayUIAnimation()
 void AJS_RoomController::ShowHeartUITimer()
 {
     if (R_UI) {
-        R_UI->VTB_Heart->SetVisibility(ESlateVisibility::Visible);
+        //R_UI->VTB_Heart->SetVisibility(ESlateVisibility::Visible);
     }
     
 }
 //Room --------------------------------------------------------------------------
 
 //myWorld -> MultiWorld:: Make Session
-void AJS_RoomController::OpenMultiWorld()
+//void AJS_RoomController::OpenMultiWorld()
+//{
+//    HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
+//    HttpActor->StartHttpMultyWorld();
+//}
+void AJS_RoomController::SetActorLocationAfterLevelLoad()
 {
-    HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
-    HttpActor->StartHttpMultyWorld();
+    AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+    if (ListActor)
+    {
+        FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
+        ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
+        UE_LOG(LogTemp, Log, TEXT("ListActor location set successfully."));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("ListActor not found in the new level."));
+    }
 }
 
 
@@ -273,7 +322,7 @@ void AJS_RoomController::OnMouseClick()
                     HideCreateRoomUI();
                     ShowRoomUI();
                     //hide until end anim
-                    R_UI->VTB_Heart->SetVisibility(ESlateVisibility::Hidden);
+                    //R_UI->VTB_Heart->SetVisibility(ESlateVisibility::Hidden);
                     PlayUIAnimation();
                     ScreenCapture();
                     R_UI->SendChangeIndexData();
@@ -284,6 +333,7 @@ void AJS_RoomController::OnMouseClick()
             {
 				UE_LOG(LogTemp, Warning, TEXT("Lobby Hit - Loading lobby level"));
                 UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+                SetActorLocationAfterLevelLoad();
 
                  // 서버가 있는 로비로 돌아가기 위한 ClientTravel 사용
 			   /* APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
@@ -306,14 +356,14 @@ void AJS_RoomController::OnMouseClick()
                 //{
                 //    UE_LOG(LogTemp, Error, TEXT("Failed to get SessionGameInstance"));
                 //}
-                UGameplayStatics::OpenLevel(this, FName("Main_Lobby"));
+                //UGameplayStatics::OpenLevel(this, FName("Main_Lobby"));
             }
             else if (HitActor->ActorHasTag(TEXT("EnterCreateRoom")))
             {
 
                 UE_LOG(LogTemp, Warning, TEXT("Lobby Hit - Loading lobby level"));
 //              UGameplayStatics::OpenLevel(this, FName("Main_Lobby"));
-                OpenMultiWorld();
+                //OpenMultiWorld();
 
             }
             else if (HitActor->ActorHasTag(TEXT("ChatWidget")))  //  <-- 채팅 위젯 추가
@@ -438,6 +488,7 @@ void AJS_RoomController::OnMouseHoverEnd(AActor* HoveredActor)
 
 void AJS_RoomController::SpawnAndSwitchToCamera()
 {
+    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SpawnAndSwitchToCamera()"));
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
     FVector CameraLocation;
@@ -446,14 +497,20 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
     if (LevelName == "Main_Sky")
     {
         // �ϴ� ���� ��ġ�� ȸ�� ����
-        CameraLocation = FVector(-470047.589317, 643880.898148, 648118.610643);
-        CameraRotation = FRotator(9.157953, 200.435537, 0.000001);
+        CameraLocation = FVector(-470047.589317, 643880.89814, 648118.610643);
+        CameraRotation = FRotator(9.157953, 200.435537, 0.000001); 
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SpawnAndSwitchToCamera() Set Main_Sky Camera Transform"));
+        //CameraRotation = FRotator(0, 0, 0);
     }
-    else if (LevelName == "Main_Room")
+    //else if (LevelName == "Main_Room")
+    else if (LevelName.Contains("Main_LV"))
     {
         // �� ���� ��ġ�� ȸ�� ����
-        CameraLocation = FVector(3004.710844, -40.193309, 83.381573);
-        CameraRotation = FRotator(4.510870, 1980.785016, 0);
+        //CameraLocation = FVector(3004.710844, -40.193309, 83.381573);
+        //CameraRotation = FRotator(4.510870, 1980.785016, 0);
+        CameraLocation = FVector(-100.266574, 3428.386539, -455.570113);
+        CameraRotation = FRotator(2.600000, -90.800001, 0.0);
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SpawnAndSwitchToCamera() Set Main_LV Camera Transform"));
     }
     else
     {
@@ -465,13 +522,15 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     ACameraActor* TargetCamera = GetWorld()->SpawnActor<ACameraActor>(ACameraActor::StaticClass(), CameraLocation, CameraRotation, SpawnParams);
 
-    if (LevelName == "Main_Room") {
-        TargetCamera->GetCameraComponent()->SetFieldOfView(43);
+    //if (LevelName == "Main_Room") {
+    if (LevelName.Contains("Main_LV"))
+    {
+        TargetCamera->GetCameraComponent()->SetFieldOfView(50);
     }
     if (TargetCamera)
     {
         SetViewTarget(TargetCamera);
-        UE_LOG(LogTemp, Log, TEXT("Camera view switched to target camera successfully."));
+        UE_LOG(LogTemp, Warning, TEXT("Camera view switched to target camera successfully."));
 
         // ī�޶� ��ȯ�� �Ϸ�Ǹ� Ÿ�̸� ����
         GetWorldTimerManager().ClearTimer(LevelCheckTimerHandle);
@@ -518,4 +577,93 @@ void AJS_RoomController::ExecuteWallPaperPython()
     }
 }
 //Wallpaper Python Auto Execute End ------------------------------------------------------------------------
+
+//Initial Inner World Setting Start ------------------------------------------------------------------------
+void AJS_RoomController::InitInnerWorldSetting()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::InitInnerWorldSetting()"));
+    //1. 템플릿에 따른 Setting UI 값 설정 
+     timeOfDay = SessionGI->WorldSetting.TimeOfDay;
+     cloudCoverage = SessionGI->WorldSetting.CloudCoverage;
+     fog = SessionGI->WorldSetting.Fog;
+     rain = SessionGI->WorldSetting.Rain;
+     snow = SessionGI->WorldSetting.Snow;
+     dust = SessionGI->WorldSetting.Dust;
+     thunder = SessionGI->WorldSetting.Thunder;
+     mainObject = SessionGI->WorldSetting.MainObject;
+     subObject = SessionGI->WorldSetting.SubObject;
+     background = SessionGI->WorldSetting.Background;
+
+     // 각 변수 값에 대한 로그 출력
+     UE_LOG(LogTemp, Warning, TEXT("timeOfDay: %s"), *timeOfDay);
+     UE_LOG(LogTemp, Warning, TEXT("cloudCoverage: %s"), *cloudCoverage);
+     UE_LOG(LogTemp, Warning, TEXT("fog: %s"), *fog);
+     UE_LOG(LogTemp, Warning, TEXT("rain: %s"), *rain);
+     UE_LOG(LogTemp, Warning, TEXT("snow: %s"), *snow);
+     UE_LOG(LogTemp, Warning, TEXT("dust: %s"), *dust);
+     UE_LOG(LogTemp, Warning, TEXT("thunder: %s"), *thunder);
+     UE_LOG(LogTemp, Warning, TEXT("mainObject: %s"), *mainObject);
+     UE_LOG(LogTemp, Warning, TEXT("subObject: %s"), *subObject);
+     UE_LOG(LogTemp, Warning, TEXT("background: %s"), *background);
+
+    if (SettingUI)
+    {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitInnerWorldSetting() SettingUI is existed"));
+        // 블루프린트 이벤트 호출
+        //SettingUI->OnValueSet.Broadcast(timeOfDay, cloudCoverage, fog, rain, snow, dust, thunder, mainObject, subObject, background);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::InitInnerWorldSetting() No SettingUI"));
+    }
+    //2. 파티클 색 + 감정 파티클 적용
+    HttpActor->ApplyMyWorldPointLightColors();
+    HttpActor->ApplyMyWorldNiagaraAssets();
+}
+//Initial Inner World Setting End --------------------------------------------------------------------------
+
+//Inner World Setting UI Start -----------------------------------------------------------------------------
+void AJS_RoomController::ShowSettingUI()
+{
+    // SettingUIFactory가 유효하고 SettingUI가 생성되지 않은 경우에만 생성
+    if (SettingUIFactory && !SettingUI)
+    {
+        SettingUI = CreateWidget<UCJS_InnerWorldSettingWidget>(GetWorld(), SettingUIFactory);
+
+        if (SettingUI)
+        {
+            // 화면에 추가
+            SettingUI->AddToViewport();
+            UE_LOG(LogTemp, Warning, TEXT("Setting UI shown"));
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("Failed to create Setting UI"));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to create SettingUIFactory"));
+    }
+}
+void AJS_RoomController::HideSettingUI()
+{
+    if (SettingUI)
+    {
+        // SettingUI를 화면에서 제거
+        SettingUI->RemoveFromParent();
+
+        // SettingUI 포인터를 nullptr로 설정하여 다시 ShowSettingUI에서 새로 생성할 수 있도록 함
+        SettingUI = nullptr;
+
+        UE_LOG(LogTemp, Warning, TEXT("Setting UI hidden"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to create Setting UI"));
+    }
+}
+// Inner World Setting UI End ------------------------------------------------------------------------------
+
+
 

@@ -362,7 +362,7 @@ FString USessionGameInstance::GetMySessionName()
 	return MySessionName;
 }
 
-void USessionGameInstance::InitRoomNameNum(TArray<FMyCreatedRoom> list)
+void USessionGameInstance::InitRoomNameNum(TArray<FMyWorldRoomInfo> list)
 {
 	UE_LOG(LogTemp, Warning, TEXT(" USessionGameInstance::InitRoomNameNum()"));
 
@@ -370,7 +370,7 @@ void USessionGameInstance::InitRoomNameNum(TArray<FMyCreatedRoom> list)
 	UE_LOG(LogTemp, Error, TEXT("GameInstance->StoredRoomInfos size: %d"), RoomInfoList.Num());
 
 }
-TArray<FMyCreatedRoom> USessionGameInstance::GettRoomNameNum()
+TArray<FMyWorldRoomInfo> USessionGameInstance::GettRoomNameNum()
 {
 	UE_LOG(LogTemp, Error, TEXT("USessionGameInstance::GetMySessionName() MySessionName : %d"), RoomInfoList.Num());
 
