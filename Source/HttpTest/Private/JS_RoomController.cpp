@@ -75,7 +75,7 @@ void AJS_RoomController::BeginPlay()
         UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() No HttpActor"));
     }
 
-	/*LoginActor = Cast<ACJS_LoginActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_LoginActor::StaticClass()));
+	LoginActor = Cast<ACJS_LoginActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_LoginActor::StaticClass()));
 	if (!LoginActor)
 	{
 		UE_LOG(LogTemp, Error, TEXT("LoginActor not found in the level."));
@@ -83,12 +83,14 @@ void AJS_RoomController::BeginPlay()
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() Set LoginActor"));
-	}*/
-
+	}
+    
     InitializeUIWidgets();
     CheckDate();
     SetInputMode(FInputModeGameOnly());
     GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, false);
+
+    
 
     SessionGI = Cast<USessionGameInstance>(GetGameInstance());
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
@@ -123,19 +125,19 @@ void AJS_RoomController::BeginPlay()
             UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
         }
     }
-    else if (LevelName.Contains("Login"))
+    else if (LevelName.Contains("Main_Login"))
     {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Login"));
-        //ShowLoginUI();
-		/* if (LoginActor)
-		 {
-			 UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() Set LoginActor"));
-			 LoginActor->ShowLoginUI();
-		 }
-		 else
-		 {
-			 UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO LoginActor"));
-		 }*/
+        ShowLoginUI();
+		if (LoginActor)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() Set LoginActor"));
+			LoginActor->ShowLoginUI();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO LoginActor"));
+		}
 
 
     }
@@ -143,7 +145,10 @@ void AJS_RoomController::BeginPlay()
 
     //FTimerHandle TimerHandle;
     //GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AJS_RoomController::SetActorLocationAfterLevelLoad, 1.0f, false);
-
+    if (LevelName == "Main_Sky") {
+        //다음 틱에 액터 위치 변경 실행
+        GetWorldTimerManager().SetTimerForNextTick(this, &AJS_RoomController::SetActorLocationAfterLevelLoad);
+    }
 }
 
 void AJS_RoomController::SetupInputComponent()

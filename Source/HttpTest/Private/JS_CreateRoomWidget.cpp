@@ -55,6 +55,7 @@ void UJS_CreateRoomWidget::OnClickCaptureImage()
 void UJS_CreateRoomWidget::OnClikMypage()
 {
 	SendCompleteRoomData();
+	UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
 }
 //widget Switch
 void UJS_CreateRoomWidget::SwitchToWidget(int32 index)
@@ -212,6 +213,7 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 
 	if (httpActor) {
 		httpActor->RoomSendDataReqPost(httpActor->SaveRoomData, json);
+
 	}
 }
 

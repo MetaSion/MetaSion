@@ -338,8 +338,6 @@ void AHttpActor::RoomSendDataResPost(FHttpRequestPtr Request, FHttpResponsePtr R
     {
         UE_LOG(LogTemp, Warning, TEXT("Request Failed: %d"), Response->GetResponseCode());
     }
-    UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
-    pc->SetActorLocationAfterLevelLoad();
 }
 //CompleteRoomSend and Reception -------------------------------------------------------------
 
@@ -598,7 +596,7 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
 }
 void AHttpActor::OnResPostBackRoom(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
-    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice()"));
+     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice()"));
     if (bConnectedSuccessfully && Response.IsValid())
     {
         // ���������� ������ �޾��� ��
@@ -679,7 +677,7 @@ void AHttpActor::OnResPostBackRoom(FHttpRequestPtr Request, FHttpResponsePtr Res
             // Store the parsed data in GameInstance or other persistent storage
             if (UGameInstance* GameInstance = GetGameInstance())
             {
-                //                 USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GameInstance);
+//                 USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GameInstance);
                 if (SessionGameInstance)
                 {
                     SessionGameInstance->WorldSetting = WorldSetting;
@@ -714,7 +712,7 @@ void AHttpActor::OnResPostBackRoom(FHttpRequestPtr Request, FHttpResponsePtr Res
                 }
             }
             UE_LOG(LogTemp, Warning, TEXT("Successfully parsed and stored WorldSetting"));
-
+        
             // 2.추천 음악을 튼다
             SetBackgroundSound();
             // 3.캐릭터 색상을 변경한다.
