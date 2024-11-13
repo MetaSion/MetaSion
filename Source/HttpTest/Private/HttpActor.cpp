@@ -165,6 +165,7 @@ void AHttpActor::LoginResPost(FHttpRequestPtr Request, FHttpResponsePtr Response
             UE_LOG(LogTemp, Warning, TEXT("AHttpActor::LoginResPost():: SessionGI exsited"));
             SessionGI->bSuccess = true; // GameInstance에 상태 저장
             //UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+
             UGameplayStatics::OpenLevel(this, FName("Main_Question"));
         }
         else

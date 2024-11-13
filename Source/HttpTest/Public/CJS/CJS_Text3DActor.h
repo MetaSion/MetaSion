@@ -16,6 +16,9 @@ class HTTPTEST_API ACJS_Text3DActor : public AText3DActor
 
 public:
 	UFUNCTION(BlueprintCallable, Category="Text")
-	void EndTextShowing();
+	void StartText3DShowing();
+
+	UFUNCTION(BlueprintCallable, Category="Text")
+	void EndText3DShowing();
 	
 };
