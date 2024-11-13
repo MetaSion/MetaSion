@@ -304,7 +304,7 @@ void AJS_RoomController::OnClickButtonImage()
     ShowRoomUI();
     PlayUIAnimation();
     ScreenCapture();
-    R_UI->SendChangeIndexData();
+    R_UI->SendWallPaperData();
     GetWorld()->GetTimerManager().SetTimer(HeartUITimer, this, &AJS_RoomController::ShowHeartUITimer, 1.0f, false);
 
 
