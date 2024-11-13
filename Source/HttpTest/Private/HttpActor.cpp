@@ -42,8 +42,14 @@ void AHttpActor::BeginPlay()
 	Super::BeginPlay();
 
     pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-   
-    FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+    if (pc) 
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::BeginPlay():: PC exsited"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::BeginPlay():: No PC"));
+    }
 
     // SessionGameInstance 할당
     SessionGI = Cast<USessionGameInstance>(GetGameInstance());
@@ -65,10 +71,23 @@ void AHttpActor::BeginPlay()
     }
 
     // Find and reference the Roomlist Actor in the level
-    MyWorldPlayer = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
-    if (!MyWorldPlayer)
+    FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+    if (LevelName.Contains("Main_Sky"))
     {
-        UE_LOG(LogTemp, Warning, TEXT("MyWorldPlayer not found in the level."));
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_LV"));
+        MyWorldPlayer = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+        if (!MyWorldPlayer)
+        {
+            UE_LOG(LogTemp, Error, TEXT("AHttpActor::BeginPlay() MyWorldPlayer not found in the level."));
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("AHttpActor::BeginPlay() MyWorldPlayer in the level."));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("AHttpActor::BeginPlay() LevelName : %s"), *LevelName);
     }
 }
 
@@ -78,15 +97,15 @@ void AHttpActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
     // Tick 함수에서 MyWorldPlayer를 다시 찾기 시도
-    if (!MyWorldPlayer)
-    {
-        MyWorldPlayer = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+	/*if (!MyWorldPlayer)
+	{
+		MyWorldPlayer = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
 
-        if (MyWorldPlayer)
-        {
-            UE_LOG(LogTemp, Warning, TEXT("MyWorldPlayer successfully found in Tick."));
-        }
-    }
+		if (MyWorldPlayer)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("MyWorldPlayer successfully found in Tick."));
+		}
+	}*/
 }
 
 //Login -------------------------------------------------------------
@@ -141,14 +160,18 @@ void AHttpActor::LoginResPost(FHttpRequestPtr Request, FHttpResponsePtr Response
         {
             UE_LOG(LogTemp, Error, TEXT("AHttpActor::LoginResPost():: No SessionGM"));
         }
-
-        if (pc) {
-            if (SessionGI) {
-                SessionGI->bSuccess = true; // GameInstance에 상태 저장
-            }
-            UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
-            //SetMyWorldUIOff();
+      
+        if (SessionGI) {
+            UE_LOG(LogTemp, Warning, TEXT("AHttpActor::LoginResPost():: SessionGI exsited"));
+            SessionGI->bSuccess = true; // GameInstance에 상태 저장
+            //UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+            UGameplayStatics::OpenLevel(this, FName("Main_Question"));
         }
+        else
+        {
+			UE_LOG(LogTemp, Error, TEXT("AHttpActor::LoginResPost():: No SessionGI"));
+        }
+       
     }
     else
     {
