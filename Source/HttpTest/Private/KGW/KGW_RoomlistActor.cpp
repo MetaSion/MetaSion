@@ -57,7 +57,7 @@ void AKGW_RoomlistActor::BeginPlay()
         UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::DeactivateNiagaraEffect() CircleNiagara->Activate();"));
         // 일정 시간 후에 이펙트 비활성화
         FTimerHandle NiagaraTimerHandle;
-        GetWorldTimerManager().SetTimer(NiagaraTimerHandle, this, &AKGW_RoomlistActor::DeactivateNiagaraEffect, 2.0f, false);
+        GetWorldTimerManager().SetTimer(NiagaraTimerHandle, this, &AKGW_RoomlistActor::DeactivateNiagaraEffect, 1.0f, false);
     }
     else
     {
