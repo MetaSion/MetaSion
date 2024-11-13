@@ -181,14 +181,14 @@ void AJS_RoomController::CheckDate()
 
 void AJS_RoomController::InitializeUIWidgets()
 {
-    //FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
-    /*if (LoginUIFactory) {
-        LoginUI = CreateWidget<UHttpWidget>(this, LoginUIFactory);
-        if (LoginUI) {
-            LoginUI->AddToViewport();
-            LoginUI->SetVisibility(ESlateVisibility::Hidden);
-        }
-    }*/
+    FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+	if (LoginUIFactory) {
+		LoginUI = CreateWidget<UHttpWidget>(this, LoginUIFactory);
+		if (LoginUI) {
+			LoginUI->AddToViewport();
+			LoginUI->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
     if (CR_UIFactory) {
         CR_UI = CreateWidget<UJS_CreateRoomWidget>(this, CR_UIFactory);
         if (CR_UI) {

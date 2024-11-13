@@ -315,6 +315,8 @@ void AHttpActor::RoomSendDataResPost(FHttpRequestPtr Request, FHttpResponsePtr R
     {
         UE_LOG(LogTemp, Warning, TEXT("Request Failed: %d"), Response->GetResponseCode());
     }
+    UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+    pc->SetActorLocationAfterLevelLoad();
 }
 //CompleteRoomSend and Reception -------------------------------------------------------------
 
