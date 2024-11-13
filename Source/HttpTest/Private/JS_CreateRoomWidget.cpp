@@ -12,6 +12,7 @@
 #include "JsonParseLib.h"
 #include "JS_WidgetFunction.h"
 #include "Components/MultiLineEditableText.h"
+#include "Components/MultiLineEditableTextBox.h"
 
 void UJS_CreateRoomWidget::NativeConstruct()
 {
@@ -32,7 +33,7 @@ void UJS_CreateRoomWidget::NativeConstruct()
 
 	Btn_CaptureImage->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClickCaptureImage);
 	Btn_MyPage->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClikMypage);
-
+	Btn_Explanation->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClikExplanation);
 
 
 	pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
@@ -60,6 +61,17 @@ void UJS_CreateRoomWidget::OnClikMypage()
 	pc->SetActorLocationAfterLevelLoad();
 
 
+}
+void UJS_CreateRoomWidget::OnClikExplanation()
+{
+	SetExplanation(CurrentText);
+}
+void UJS_CreateRoomWidget::SetExplanation(const FString& Text)
+{ 
+	
+	Txt_Explane->SetText(FText::FromString(Text));
+		
+	
 }
 //widget Switch
 void UJS_CreateRoomWidget::SwitchToWidget(int32 index)
@@ -96,13 +108,15 @@ void UJS_CreateRoomWidget::CompleteCreateRoom()
 // 		}
 		
 		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UJS_CreateRoomWidget::DelayedSwitchToWidget, 1.5f, false);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UJS_CreateRoomWidget::DelayedSwitchToWidget, 0.7f, false);
 // 		SwitchToWidget(3);
 	}
 }
 void UJS_CreateRoomWidget::DelayedSwitchToWidget()
 {
 	SwitchToWidget(3);
+	PlayAnimation(appear);
+
 }
 void UJS_CreateRoomWidget::SetPrivate()
 {
@@ -170,7 +184,7 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 	FString Background = "1";
 	FString WeatherParticle = "particle_maple";
 	FString RoomName = ED_RoomName->GetText().ToString();
-	FString RoomDescription = ED_MultiText->GetText().ToString();
+	RoomDescription = ED_MultiText->GetText().ToString();
 
 	// Ãß°¡µÈ °ª: bPrivate -> RoomPP º¯È¯
 	FString RoomPP = FString::FromInt(bPrivate);
@@ -225,7 +239,7 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 
 void UJS_CreateRoomWidget::OnTextChanged_SingleLine(const FText& Text)
 {
-	FString CurrentText = Text.ToString();
+	 CurrentText = Text.ToString();
 	if (CurrentText.Len() > textSize)
 	{
 		// 30ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ ï¿½ß¶ó³»±ï¿½
@@ -238,7 +252,7 @@ void UJS_CreateRoomWidget::OnTextChanged_SingleLine(const FText& Text)
 
 void UJS_CreateRoomWidget::OnTextChanged_MultiLine(const FText& Text)
 {
-	FString CurrentText = Text.ToString();
+	CurrentText = Text.ToString();
 	int32 CharacterCount = 0;
 
 	// ï¿½Ø½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿?
@@ -266,7 +280,7 @@ void UJS_CreateRoomWidget::OnTextChanged_MultiLine(const FText& Text)
 
 void UJS_CreateRoomWidget::OnTextCommitted_MultiLine(const FText& Text, ETextCommit::Type CommitMethod)
 {
-	FString CurrentText = Text.ToString();
+	 CurrentText = Text.ToString();
 	int32 CharacterCount = 0;
 
 	for (const TCHAR& Char : CurrentText)
