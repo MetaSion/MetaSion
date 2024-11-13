@@ -35,7 +35,7 @@ public:
 
 	// 충돌 시 효과
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
-	class UParticleSystem* ImpactParticle;
+	class UNiagaraSystem* ImpactParticle;
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 	class USoundBase* ImpactSound;
 	void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
