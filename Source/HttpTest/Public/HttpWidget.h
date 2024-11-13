@@ -41,6 +41,9 @@ public:
 	UFUNCTION()
 	void SendSignUpData();
 
+	UFUNCTION(BlueprintCallable)
+	void StartLoginText3D();
+
 	/*FString ServerURL = "https://jsonplaceholder.typicode.com/posts";*/
 	//FString ServerURL = "https://webhook.site/a0cbc113-e54b-4c1b-a92a-acb925a13d24";
 
