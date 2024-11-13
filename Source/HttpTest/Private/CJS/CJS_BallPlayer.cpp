@@ -46,18 +46,18 @@ ACJS_BallPlayer::ACJS_BallPlayer() : Super()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-//  	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
-//  	//SpringArmComp->SetupAttachment(RootComponent);
-//  	//SpringArmComp->SetupAttachment(GetCapsuleComponent());
-//  	SpringArmComp->SetupAttachment(GetMesh());
-//  	//SpringArmComp->SetRelativeLocation(FVector(0, 0, 0));
+ 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
+ 	//SpringArmComp->SetupAttachment(RootComponent);
+ 	//SpringArmComp->SetupAttachment(GetCapsuleComponent());
+ 	SpringArmComp->SetupAttachment(RootComponent);
+ 	//SpringArmComp->SetRelativeLocation(FVector(0, 0, 0));
 //  	SpringArmComp->TargetArmLength = 3000.f;
 //  	SpringArmComp->SocketOffset = FVector(0.f, 0.f, 100.0f);
 //  	SpringArmComp->bUsePawnControlRotation = true;
-//  
-//  	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
-//  	CameraComp->SetupAttachment(SpringArmComp);
-//  	//CameraComp->bUsePawnControlRotation = true;
+ 
+ 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+ 	CameraComp->SetupAttachment(SpringArmComp);
+ 	//CameraComp->bUsePawnControlRotation = true;
 //  	CameraComp->bUsePawnControlRotation = false;
 		
 		NiagraComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComp"));

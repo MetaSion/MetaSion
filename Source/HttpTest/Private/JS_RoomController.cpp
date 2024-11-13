@@ -300,6 +300,18 @@ void AJS_RoomController::SetActorLocationAfterLevelLoad()
 
 
 
+void AJS_RoomController::OnClickButtonImage()
+{
+    HideCreateRoomUI();
+    ShowRoomUI();
+    PlayUIAnimation();
+    ScreenCapture();
+    R_UI->SendChangeIndexData();
+    GetWorld()->GetTimerManager().SetTimer(HeartUITimer, this, &AJS_RoomController::ShowHeartUITimer, 1.0f, false);
+
+
+}
+
 //Mouse Interaction --------------------------------------------------------------------------
 void AJS_RoomController::OnMouseClick()
 {
