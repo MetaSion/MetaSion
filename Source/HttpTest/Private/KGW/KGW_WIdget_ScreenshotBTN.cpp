@@ -19,8 +19,6 @@ void UKGW_WIdget_ScreenshotBTN::NativeConstruct()
 void UKGW_WIdget_ScreenshotBTN::OnClickCaptureImage()
 {  
   Controller->OnClickButtonImage();
-
-    
 }
 
 void UKGW_WIdget_ScreenshotBTN::OnClikMypage()

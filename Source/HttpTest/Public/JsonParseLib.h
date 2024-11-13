@@ -79,9 +79,6 @@ struct FRoomData
     FString RoomDescription;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
     FString RoomPP;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
-    
-
 };
 
 USTRUCT(BlueprintType)
