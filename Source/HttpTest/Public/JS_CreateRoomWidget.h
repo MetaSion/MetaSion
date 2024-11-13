@@ -62,9 +62,58 @@ public:
     
     UPROPERTY(meta=(BindWidget))
     class UBorder* CreateRoomCompelete;
+
+    UPROPERTY(meta=(BindWidget))
+    class UMultiLineEditableText* Txt_Explane;
+
     
     UPROPERTY(EditAnywhere)
 	class AHttpActor* httpActor;
+
+    UPROPERTY(EditAnywhere)
+    FString RoomDescription;
+
+        UPROPERTY(EditAnywhere)
+    FString CurrentText;
+
+
+
+
+    //KGW==================================
+
+    	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_CaptureImage;
+
+;
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_MyPage;
+    	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_Explanation;
+
+    UPROPERTY(meta = (BindWidgetAnim),BlueprintReadWrite, Transient)
+    class UWidgetAnimation* appear;
+
+
+    
+        UFUNCTION(BlueprintCallable)
+
+    void OnClickCaptureImage();
+            UFUNCTION(BlueprintCallable)
+
+    void OnClikMypage();
+
+                UFUNCTION(BlueprintCallable)
+
+    void OnClikExplanation();
+
+    UFUNCTION(BlueprintCallable)
+
+    void SetExplanation(const FString& Text);
+
+
+
+
+
 
     UPROPERTY(BlueprintReadWrite)
     int32 bPrivate = 0;
@@ -85,6 +134,8 @@ public:
     UFUNCTION()
     void CompleteCreateRoom();
 
+    void DelayedSwitchToWidget();
+
     UFUNCTION()
     void SetPrivate();
     
@@ -94,6 +145,7 @@ public:
     UFUNCTION()
     void HideUI();
 
+    //Send CompleteRoom
     UFUNCTION()
 	void SendCompleteRoomData();
 
@@ -105,8 +157,6 @@ public:
 
     UFUNCTION()
     void OnTextCommitted_MultiLine(const FText& Text, ETextCommit::Type CommitMethod);
-
-    //void ApplyTextLimit(const FText& Text);
 
     UPROPERTY(EditAnywhere)
     int32 textSize = 10000;

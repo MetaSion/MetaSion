@@ -35,6 +35,6 @@ public:
 	void SetBackgroundSoundByFileName(const FString& FileName);
 
 	UFUNCTION()
-    void OnRoomDataInitialized(); // RoomData �ʱ�ȭ �� ȣ��Ǵ� �Լ�
+    void OnAIRecommendationInitialized(); // RoomData �ʱ�ȭ �� ȣ��Ǵ� �Լ�
 
 };

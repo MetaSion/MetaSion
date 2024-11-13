@@ -8,8 +8,9 @@
 #include "JsonParseLib.h"
 #include "HttpActor.generated.h"
 
-// RoomData가 초기화되었을 때 호출되는 델리게이트
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoomDataInitialized, const FRoomData&, RoomData);
+// AIRecommendation가 초기화되었을 때 호출되는 델리게이트
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAIRecommendationInitialized, const AIRecommendation&, RecommendationData);
+
 
 UCLASS()
 class HTTPTEST_API AHttpActor : public AActor
@@ -28,15 +29,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// RoomData 초기화 시 호출되는 델리게이트
-    UPROPERTY(BlueprintAssignable, Category="Room Data")
-    FOnRoomDataInitialized OnRoomDataInitialized;
+	/*UPROPERTY(BlueprintAssignable, Category="AIData")
+	FOnAIRecommendationInitialized OnAIRecommendationInitialized;*/
 
 	UPROPERTY()
 	class AJS_RoomController* pc;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<class UHttpWidget> Sign_Factory;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UUserWidget> QuestionUIFactory;
@@ -56,22 +53,14 @@ public:
 	// Sign_Up
 	void SignUpReqPost(FString url, FString json);
 	void SignUpResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
-
-	// User
-	void UserReqPost(FString url, FString json);
-	void UserResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 	
-	//ChangeIndex
-	void ChangeIndexReqPost(FString url, FString json);
-	void ChangeIndexResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+	//WallPaper
+	void WallPaperReqPost(FString url, FString json);
+	void WallPaperResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
-	//MyRoomInfo
-	void MyRoomInfoReqPost(FString url, FString json);
-	void MyRoomInfoResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
-
-	//MyCreateRoomInfo
-	void MyCreateRoomInfoReqPost(FString url, FString json);
-	void MyCreateRoomInfoResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+	//CompleteRoom
+	void RoomSendDataReqPost(FString url, FString json);
+	void RoomSendDataResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
 	//RoomData
 	void RoomDataReqPost(FString url, FString json);
@@ -79,6 +68,9 @@ public:
 
 	void ReqPostChoice(FString url, FString json);
 	void OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+	void OnResPostBackRoom(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+
+	bool bNotFirst = false;
 
 	void ShowQuestionUI();
 	void HidQuestionUI();
@@ -93,6 +85,7 @@ public:
 	FString WallPaperURL = "mirrora.duckdns.org:3326/api/auth/wallpaperupdate";
 	FString HeartURL = "jsonplaceholder.typicode.com/posts";
 	FString EntryMultiWorldURL = "mirrora.duckdns.org:3326/api/auth/";  // <-- BE 작업 완료 후 추가하기
+	FString SaveRoomData = "mirrora.duckdns.org:3326/api/auth/saveRoomData";
 	
 
 	/* Sunny start ------------------------------------------------------------------------------------- */ 
@@ -132,8 +125,8 @@ public:
 
 
 	//다른 클래스에서 파싱된 RoomData를 사용하기 위한 Getter함수
-	FRoomData GetRoomData() const;
-	FRoomData RoomData;
+	//FAIRecommendation  GetAIRecommendation() const;
+	//FAIRecommendation RecommendationData;
 
 	//RoomUI Timer
 	FTimerHandle RoomUIWaitTimerHandle;
@@ -152,6 +145,4 @@ public:
 	void ReqPostRoomList(FString url, FString json);
 
 	void OnResPostRoomList(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
-
-
 };

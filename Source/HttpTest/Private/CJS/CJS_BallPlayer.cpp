@@ -33,6 +33,10 @@
 #include "../../../../Plugins/Experimental/PythonScriptPlugin/Source/PythonScriptPlugin/Public/IPythonScriptPlugin.h"  // 파이썬 자동 실행
 
 #include "Math/Color.h"
+#include "../../../../Plugins/FX/Niagara/Source/Niagara/Classes/NiagaraSystem.h"
+#include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraFunctionLibrary.h"
+#include "GameFramework/Actor.h"
+#include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraComponent.h"
 
 
 
@@ -42,24 +46,26 @@ ACJS_BallPlayer::ACJS_BallPlayer() : Super()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
-	//SpringArmComp->SetupAttachment(RootComponent);
-	//SpringArmComp->SetupAttachment(GetCapsuleComponent());
-	SpringArmComp->SetupAttachment(GetMesh());
-	//SpringArmComp->SetRelativeLocation(FVector(0, 0, 0));
-	SpringArmComp->TargetArmLength = 3000.f;
-	SpringArmComp->SocketOffset = FVector(0.f, 0.f, 100.0f);
-	SpringArmComp->bUsePawnControlRotation = true;
-
-	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
-	CameraComp->SetupAttachment(SpringArmComp);
-	//CameraComp->bUsePawnControlRotation = true;
-	CameraComp->bUsePawnControlRotation = false;
-
-	// 컨트롤러 회전 사용 설정
-	bUseControllerRotationYaw = true;
-	// 캐릭터가 이동 방향을 따르지 않도록 설정
-	GetCharacterMovement()->bOrientRotationToMovement = false;
+ 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
+ 	//SpringArmComp->SetupAttachment(RootComponent);
+ 	//SpringArmComp->SetupAttachment(GetCapsuleComponent());
+ 	SpringArmComp->SetupAttachment(RootComponent);
+ 	//SpringArmComp->SetRelativeLocation(FVector(0, 0, 0));
+//  	SpringArmComp->TargetArmLength = 3000.f;
+//  	SpringArmComp->SocketOffset = FVector(0.f, 0.f, 100.0f);
+//  	SpringArmComp->bUsePawnControlRotation = true;
+ 
+ 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+ 	CameraComp->SetupAttachment(SpringArmComp);
+ 	//CameraComp->bUsePawnControlRotation = true;
+//  	CameraComp->bUsePawnControlRotation = false;
+		
+		NiagraComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComp"));
+		NiagraComp-> SetupAttachment(RootComponent);
+ 	// 컨트롤러 회전 사용 설정
+//  	bUseControllerRotationYaw = true;
+//  	// 캐릭터가 이동 방향을 따르지 않도록 설정
+//  	GetCharacterMovement()->bOrientRotationToMovement = false;
 
 	// 설정할 하트의 초기 위치를 위한 위치 값 (직접 값을 조정 가능)
 	HeartSpawnPosition = FVector(300.f, 0.f, 50.f); // 적당히 초기 위치 오프셋 지정 
@@ -252,28 +258,28 @@ void ACJS_BallPlayer::BeginPlay()
 
 
 	// 물리 시뮬레이션 활성화
-	if (GetMesh())
-	{
-		// 물리 시뮬레이션 및 중력 활성화
-		GetMesh()->SetSimulatePhysics(true);
-		GetMesh()->SetEnableGravity(true);
-		
-		// 축 고정 해제
-		/*GetMesh()->BodyInstance.bLockXRotation = false;
-		GetMesh()->BodyInstance.bLockYRotation = false;
-		GetMesh()->BodyInstance.bLockZRotation = false;
-		GetMesh()->BodyInstance.bLockXTranslation = false;
-		GetMesh()->BodyInstance.bLockYTranslation = false;
-		GetMesh()->BodyInstance.bLockZTranslation = false;*/
-
-		// 움직임 멈춤을 위해 물리 속도 감쇠 적용
-		GetMesh()->SetLinearDamping(3.0f); // 값이 높을수록 빠르게 감속
-		GetMesh()->SetAngularDamping(3.0f); // 값이 높을수록 회전 감속이 빠름
-	
-	}
-
-	// 기본 이동 힘 설정
-	MoveForce = 150.0f;
+// 	if (GetMesh())
+// 	{
+// 		// 물리 시뮬레이션 및 중력 활성화
+// 		GetMesh()->SetSimulatePhysics(true);
+// 		GetMesh()->SetEnableGravity(true);
+// 		
+// 		// 축 고정 해제
+// 		/*GetMesh()->BodyInstance.bLockXRotation = false;
+// 		GetMesh()->BodyInstance.bLockYRotation = false;
+// 		GetMesh()->BodyInstance.bLockZRotation = false;
+// 		GetMesh()->BodyInstance.bLockXTranslation = false;
+// 		GetMesh()->BodyInstance.bLockYTranslation = false;
+// 		GetMesh()->BodyInstance.bLockZTranslation = false;*/
+// 
+// 		// 움직임 멈춤을 위해 물리 속도 감쇠 적용
+// 		GetMesh()->SetLinearDamping(3.0f); // 값이 높을수록 빠르게 감속
+// 		GetMesh()->SetAngularDamping(3.0f); // 값이 높을수록 회전 감속이 빠름
+// 	
+// 	}
+// 
+// 	// 기본 이동 힘 설정
+// 	MoveForce = 150.0f;
 	
 }
 
@@ -283,28 +289,28 @@ void ACJS_BallPlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-	// 카메라 Yaw를 따라 캐릭터 Yaw 회전을 업데이트
-	if (Controller)
-	{
-		FRotator NewRotation = GetActorRotation();
-		NewRotation.Yaw = Controller->GetControlRotation().Yaw;
-		SetActorRotation(NewRotation);
-	}
+// 	// 카메라 Yaw를 따라 캐릭터 Yaw 회전을 업데이트
+// 	if (Controller)
+// 	{
+// 		FRotator NewRotation = GetActorRotation();
+// 		NewRotation.Yaw = Controller->GetControlRotation().Yaw;
+// 		SetActorRotation(NewRotation);
+// 	}
 
 	// 디버그 로그로 Direction 확인
 	//UE_LOG(LogTemp, Warning, TEXT("Direction: X=%f, Y=%f, Z=%f"), Direction.X, Direction.Y, Direction.Z);
 
-	// 방향에 힘을 적용하여 이동
-	if (!Direction.IsNearlyZero())
-	{
-		FVector Force = Direction * MoveForce;
-		//GetMesh()->AddForce(Force, NAME_None, true);
-		GetMesh()->AddImpulse(Force, NAME_None, true);
-
-		// 방향을 리셋
-		Direction = FVector::ZeroVector;
+// 	// 방향에 힘을 적용하여 이동
+// 	if (!Direction.IsNearlyZero())
+// 	{
+// 		FVector Force = Direction * MoveForce;
+// 		//GetMesh()->AddForce(Force, NAME_None, true);
+// 		GetMesh()->AddImpulse(Force, NAME_None, true);
+// 
+// 		// 방향을 리셋
+// 		Direction = FVector::ZeroVector;
 	}
-}
+// }
 
 
 // Called to bind functionality to input  =========================================================================================================================================
@@ -325,12 +331,12 @@ void ACJS_BallPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	UEnhancedInputComponent* input = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	if (input)
 	{
-		// 이동
-		input->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ACJS_BallPlayer::OnMyActionMove);
-		// 방향
-		input->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ACJS_BallPlayer::OnMyActionLook);
-		// 점프
-		input->BindAction(IA_Jump, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionJump);
+// 		// 이동
+// 		input->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ACJS_BallPlayer::OnMyActionMove);
+// 		// 방향
+// 		input->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ACJS_BallPlayer::OnMyActionLook);
+// 		// 점프
+// 		input->BindAction(IA_Jump, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionJump);
 		// 던지기
 		input->BindAction(IA_Throw, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionThrow);
 		// 클릭
@@ -363,39 +369,39 @@ void ACJS_BallPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	}
 }
 
-void ACJS_BallPlayer::OnMyActionMove(const FInputActionValue& Value)
-{
-	//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionMove()"));
-
-	FVector2D v = Value.Get<FVector2D>();
-
-	// 카메라의 Yaw를 기준으로 방향을 변환
-	FRotator CameraYawRotation = FRotator(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
-	FVector ForwardDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::X) * v.X;
-	FVector RightDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::Y) * v.Y;
-
-	// 이동 방향을 카메라 기준으로 설정
-	Direction = (ForwardDirection + RightDirection).GetSafeNormal();
-
-	//UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionMove():: Move Direction: X=%f, Y=%f"), Direction.X, Direction.Y);
-}
-void ACJS_BallPlayer::OnMyActionLook(const FInputActionValue& Value)
-{
-	//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionLook()"));
-
-	FVector2D v = Value.Get<FVector2D>();
-
-	// Log to check if the look input is being received
-	//UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionLook():: Look Direction: X=%f, Y=%f"), v.X, v.Y);
-
-	AddControllerPitchInput(-v.Y);
-	AddControllerYawInput(v.X);
-}
-void ACJS_BallPlayer::OnMyActionJump(const FInputActionValue& Value)
-{
-	Jump();
-	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionJump() - Jump Triggered"));
-}
+// void ACJS_BallPlayer::OnMyActionMove(const FInputActionValue& Value)
+// {
+// 	//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionMove()"));
+// 
+// 	FVector2D v = Value.Get<FVector2D>();
+// 
+// 	// 카메라의 Yaw를 기준으로 방향을 변환
+// 	FRotator CameraYawRotation = FRotator(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+// 	FVector ForwardDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::X) * v.X;
+// 	FVector RightDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::Y) * v.Y;
+// 
+// 	// 이동 방향을 카메라 기준으로 설정
+// 	Direction = (ForwardDirection + RightDirection).GetSafeNormal();
+// 
+// 	//UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionMove():: Move Direction: X=%f, Y=%f"), Direction.X, Direction.Y);
+// }
+// void ACJS_BallPlayer::OnMyActionLook(const FInputActionValue& Value)
+// {
+// 	//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionLook()"));
+// 
+// 	FVector2D v = Value.Get<FVector2D>();
+// 
+// 	// Log to check if the look input is being received
+// 	//UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionLook():: Look Direction: X=%f, Y=%f"), v.X, v.Y);
+// 
+// 	AddControllerPitchInput(-v.Y);
+// 	AddControllerYawInput(v.X);
+// }
+// void ACJS_BallPlayer::OnMyActionJump(const FInputActionValue& Value)
+// {
+// 	Jump();
+// 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionJump() - Jump Triggered"));
+// }
 void ACJS_BallPlayer::OnMyActionThrow(const FInputActionValue& Value)
 {
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionThrow()"));
@@ -421,18 +427,17 @@ void ACJS_BallPlayer::OnMyActionThrow(const FInputActionValue& Value)
 	//{
 	//	UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionThrow() - HeartItemFactory is null"));
 	//}
-
-	if (HasAuthority())
+// 
+// 	if (HasAuthority() && IsLocallyControlled())
+// 	{
+// 		// 서버에서 직접 멀티캐스트 호출
+// 		MulticastRPC_ThrowHeart();
+// 	}
+	 if (!HasAuthority())
 	{
-		// 서버인 경우 바로 멀티캐스트 실행
-		MulticastRPC_ThrowHeart();
-	}
-	else
-	{
-		// 클라이언트인 경우 서버에 요청
+		// 클라이언트에서 서버로 RPC 호출 요청
 		ServerRPC_ThrowHeart();
 	}
-
 }
 
 void ACJS_BallPlayer::OnMyActionClick(const FInputActionValue& Value)
@@ -642,8 +647,8 @@ void ACJS_BallPlayer::PlayAnimationByIndex(int32 Index)
 	if (AnimSequences.IsValidIndex(Index) && AnimSequences[Index] && GetMesh())
 	{
 		// 물리적 속도 및 회전 초기화 (움직임을 멈추기 위함)
-		GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);   // 선형 속도 초기화
-		GetMesh()->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector); // 각속도 초기화
+// 		GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);   // 선형 속도 초기화
+// 		GetMesh()->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector); // 각속도 초기화
 
 		// Actor와 메시의 전체 회전을 (0, 0, 0)으로 초기화
 		SetActorRotation(FRotator::ZeroRotator);
@@ -691,7 +696,7 @@ void ACJS_BallPlayer::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPri
 		// Activate particle effect at the hit location
 		if (HitVFXFactory)
 		{
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitVFXFactory, HitLocation);
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitVFXFactory, HitLocation);
 		}
 		if (HitSFX)
 		{
@@ -708,7 +713,7 @@ void ACJS_BallPlayer::TriggerSelfHitEffects(FVector HitLocation)
 	// Activate particle effect at the hit location
 	if (SelfHitVFXFactory)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelfHitVFXFactory, HitLocation);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), SelfHitVFXFactory, HitLocation);
 	}
 	//// Play sound effect
 	//if (HitSFX)
@@ -740,10 +745,9 @@ void ACJS_BallPlayer::ServerRPC_ThrowHeart_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::ServerRPC_ThrowHeart()"));
 	// 서버에서만 하트 생성
-	if (HasAuthority())
-	{
+
 		MulticastRPC_ThrowHeart(); // 모든 클라이언트에게 하트를 던지라고 브로드캐스트
-	}
+	
 }
 
 bool ACJS_BallPlayer::ServerRPC_ThrowHeart_Validate()
@@ -755,6 +759,8 @@ void ACJS_BallPlayer::MulticastRPC_ThrowHeart_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_ThrowHeart()"));
 	// 실제 하트를 던지는 로직 (기존의 OnMyActionThrow 로직을 여기로 옮기기)
+	if (HasAuthority())
+	{
 	if (HeartItemFactory)
 	{
 		// 일정한 방향으로 던지기
@@ -774,6 +780,7 @@ void ACJS_BallPlayer::MulticastRPC_ThrowHeart_Implementation()
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::Multicast_ThrowHeart() - HeartItemFactory is null"));
+	}
 	}
 }
 

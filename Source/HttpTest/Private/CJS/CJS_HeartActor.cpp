@@ -5,6 +5,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraFunctionLibrary.h"
 
 
 // Sets default values
@@ -60,6 +61,8 @@ void ACJS_HeartActor::BeginPlay()
         {
             FLinearColor RandomColor = FLinearColor::MakeRandomColor();
             MatInstance->SetVectorParameterValue(FName("Color"), RandomColor);
+            UE_LOG(LogTemp, Warning, TEXT("color changed"));
+
         }
     }
 }
@@ -79,7 +82,7 @@ void ACJS_HeartActor::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPri
         // 예: 충돌 시 파티클 이펙트 생성
         if (ImpactParticle)
         {
-            UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticle, HitLocation);
+            UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactParticle, HitLocation);
         }
 
         // 예: 충돌 시 사운드 재생
