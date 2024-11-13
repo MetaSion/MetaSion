@@ -276,9 +276,6 @@ void AJS_RoomController::SetActorLocationAfterLevelLoad()
         UE_LOG(LogTemp, Error, TEXT("ListActor not found in the new level."));
     }
 }
-
-
-
 //Mouse Interaction --------------------------------------------------------------------------
 void AJS_RoomController::OnMouseClick()
 {
@@ -304,16 +301,21 @@ void AJS_RoomController::OnMouseClick()
                     //R_UI->VTB_Heart->SetVisibility(ESlateVisibility::Hidden);
                     PlayUIAnimation();
                     ScreenCapture();
-                    R_UI->SendChangeIndexData();
+                    R_UI->SendWallPaperData();
                     GetWorld()->GetTimerManager().SetTimer(HeartUITimer, this, &AJS_RoomController::ShowHeartUITimer, 1.0f, false);
                // }
             }
             else if (HitActor->ActorHasTag(TEXT("Sky")))
             {
-				UE_LOG(LogTemp, Warning, TEXT("Lobby Hit - Loading lobby level"));
+				UE_LOG(LogTemp, Warning, TEXT("Sky Hit - Loading sky level"));
+                // AI쪽에서 다시 추천 받은 R, G, B값
+                // 파티클 종류
+                // AI설명
+                // 방목록
+                // 
                 UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
                 SetActorLocationAfterLevelLoad();
-
+                
                  // 서버가 있는 로비로 돌아가기 위한 ClientTravel 사용
 			   /* APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 				if (PlayerController)

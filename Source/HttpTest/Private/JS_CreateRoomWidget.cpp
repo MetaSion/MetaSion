@@ -16,17 +16,17 @@
 void UJS_CreateRoomWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
+	//Choose Yes or No
 	btn_CreateRoom_Yes->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::CreateRoomChooseYes);
 	btn_CreateRoom_No->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::CreateRoomChooseNo);
-
+	//Toggle Private
 	btn_CreateRoom_Private->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::SetPrivate);
 	btn_CreateRoom_Public->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::SetPrivate);
-
+	//Complete CR
 	btn_CompleteCreateRoom->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::CompleteCreateRoom);
-
+	// RoomName
 	ED_RoomName->OnTextChanged.AddDynamic(this, &UJS_CreateRoomWidget::OnTextChanged_SingleLine);
-
+	// Description
 	ED_MultiText->OnTextChanged.AddDynamic(this, &UJS_CreateRoomWidget::OnTextChanged_MultiLine);
 	ED_MultiText->OnTextCommitted.AddDynamic(this, &UJS_CreateRoomWidget::OnTextCommitted_MultiLine);
 
@@ -113,29 +113,87 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 		UE_LOG(LogTemp, Warning, TEXT("httpActor is null in SendSetPrivateRoom"));
 		return;
 	}
+	/*FRoomSendData RoomSendData;
 
-	FMyRoomInfo MyRoomInfo;
+	RoomSendData.UserData.UserId = "testuser";
+	RoomSendData.EnvironmentData.UltraSky_TimeOfDay = "1200";
+	RoomSendData.EnvironmentData.UltraWeather_CloudCoverage = "1";
+	RoomSendData.EnvironmentData.UltraWeather_Fog = "1";
+	RoomSendData.EnvironmentData.UltraWeather_Rain = "1";
+	RoomSendData.EnvironmentData.UltraWeather_Snow = "1";
+	RoomSendData.EnvironmentData.UltraWeather_Dust = "1";
+	RoomSendData.EnvironmentData.UltraWeather_Thunder = "1";
+	RoomSendData.EnvironmentData.MainObject = "1";
+	RoomSendData.EnvironmentData.SubObject = "1";
+	RoomSendData.EnvironmentData.Background = "1";
+	RoomSendData.EnvironmentData.WeatherParticle = "particle_maple";
+	RoomSendData.RoomInfoData.RoomName = ED_RoomName->GetText().ToString();
+	RoomSendData.RoomInfoData.RoomDescription = ED_MultiText->GetText().ToString();*/
 
-	MyRoomInfo.UserId = "testuser";
-	MyRoomInfo.UltraSky_TimeOfDay = "1200";
-	MyRoomInfo.UltraWheather_CloudCoverage = "true";
-	MyRoomInfo.UltraWheather_Fog = "true";
-	MyRoomInfo.UltraWheather_Rain = "true";
-	MyRoomInfo.UltraWheather_Snow = "true";
-	MyRoomInfo.UltraWheather_Dust = "true";
-	MyRoomInfo.UltraWheather_Thunder = "true";
-	MyRoomInfo.MainObject = "true";
-	MyRoomInfo.SubObject = "true";
-	MyRoomInfo.Background = "true";
-	MyRoomInfo.Particle_num = "true";
-	MyRoomInfo.RoomName = ED_RoomName->GetText().ToString();
-	MyRoomInfo.RoomDescription = "this is hello worlds";
-	MyRoomInfo.RoomPP = FString::FromInt(bPrivate);
+	// 입력된 값들을 수집
+	FString UserId = "testuser";
+	FString UltraSky_TimeOfDay = "1200";
+	FString UltraWeather_CloudCoverage = "1";
+	FString UltraWeather_Fog = "1";
+	FString UltraWeather_Rain = "1";
+	FString UltraWeather_Snow = "1";
+	FString UltraWeather_Dust = "1";
+	FString UltraWeather_Thunder = "1";
+	FString MainObject = "1";
+	FString SubObject = "1";
+	FString Background = "1";
+	FString WeatherParticle = "particle_maple";
+	FString RoomName = ED_RoomName->GetText().ToString();
+	FString RoomDescription = ED_MultiText->GetText().ToString();
 
-	FString json = UJsonParseLib::MyRoomInfo_Convert_StructToJson(MyRoomInfo);
+	// 추가된 값: bPrivate -> RoomPP 변환
+	FString RoomPP = FString::FromInt(bPrivate);
+
+	// 추가된 값: Quadrant (추정된 값, 직접 설정해 주세요)
+	FString Quadrant = "1";  // 예시 값, 실제 값을 넣어주세요.
+
+	// 수동으로 JSON 문자열을 생성
+	FString json = FString::Printf(TEXT(
+		"{"
+		"\"UserId\": \"%s\","
+		"\"RoomName\": \"%s\","
+		"\"UltraSky_TimeOfDay\": \"%s\","
+		"\"UltraWheather_CloudCoverage\": \"%s\","
+		"\"UltraWheather_Fog\": \"%s\","
+		"\"UltraWheather_Rain\": \"%s\","
+		"\"UltraWheather_Snow\": \"%s\","
+		"\"UltraWheather_Dust\": \"%s\","
+		"\"UltraWheather_Thunder\": \"%s\","
+		"\"MainObject\": \"%s\","
+		"\"SubObject\": \"%s\","
+		"\"Background\": \"%s\","
+		"\"Particle_num\": \"%s\","
+		"\"RoomDescription\": \"%s\","
+		"\"RoomPP\": \"%s\","
+		"\"Quadrant\": \"%s\""
+		"}"),
+		*UserId,
+		*RoomName,
+		*UltraSky_TimeOfDay,
+		*UltraWeather_CloudCoverage,
+		*UltraWeather_Fog,
+		*UltraWeather_Rain,
+		*UltraWeather_Snow,
+		*UltraWeather_Dust,
+		*UltraWeather_Thunder,
+		*MainObject,
+		*SubObject,
+		*Background,
+		*WeatherParticle,
+		*RoomDescription,
+		*RoomPP,      // RoomPP 값 추가
+		*Quadrant     // Quadrant 값 추가
+	);
+
+	//FString json = UJsonParseLib::RoomSendData_Convert_StructToJson(RoomSendData);
 
 	if (httpActor) {
-		httpActor->MyRoomInfoReqPost(httpActor->MyRoomURL, json);
+		httpActor->RoomSendDataReqPost(httpActor->SaveRoomData, json);
 	}
 }
 
@@ -161,7 +219,7 @@ void UJS_CreateRoomWidget::OnTextChanged_MultiLine(const FText& Text)
 	for (const TCHAR& Char : CurrentText)
 	{
 		CharacterCount += (Char <= 0x007F) ? 1 : 3; // 한글은 3로 계산
-		UE_LOG(LogTemp, Warning, TEXT("%c"), Char);
+		//UE_LOG(LogTemp, Warning, TEXT("%c"), Char);
 	}
 
 	// 글자 수 제한을 넘었을 때 경고 메시지 표시
@@ -185,7 +243,7 @@ void UJS_CreateRoomWidget::OnTextCommitted_MultiLine(const FText& Text, ETextCom
 	for (const TCHAR& Char : CurrentText)
 	{
 		CharacterCount += (Char <= 0x007F) ? 1 : 3;
-		UE_LOG(LogTemp, Warning, TEXT("%c"), Char);
+	/*	UE_LOG(LogTemp, Warning, TEXT("%c"), Char);*/
 	}
 
 	if (CharacterCount > MAX_CHARACTER_COUNT)

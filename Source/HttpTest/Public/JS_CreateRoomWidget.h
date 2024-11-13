@@ -94,6 +94,7 @@ public:
     UFUNCTION()
     void HideUI();
 
+    //Send CompleteRoom
     UFUNCTION()
 	void SendCompleteRoomData();
 
@@ -105,8 +106,6 @@ public:
 
     UFUNCTION()
     void OnTextCommitted_MultiLine(const FText& Text, ETextCommit::Type CommitMethod);
-
-    //void ApplyTextLimit(const FText& Text);
 
     UPROPERTY(EditAnywhere)
     int32 textSize = 10000;

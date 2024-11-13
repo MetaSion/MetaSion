@@ -16,40 +16,55 @@ void UJS_RoomWidget::NativeConstruct()
    
    httpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
 }
-//index 요청
-void UJS_RoomWidget::SendChangeIndexData()
+//WallPaper -> RoomData -> RoomNum 요청
+void UJS_RoomWidget::SendWallPaperData()
 {
     if (!httpActor)
     {
-        UE_LOG(LogTemp, Warning, TEXT("httpActor is null in SendChangeIndexData"));
+        UE_LOG(LogTemp, Warning, TEXT("httpActor is null in SendWallPaperData"));
         return;
     }
 
-    FChangeIndex ChangeIndexData;
-    //지금은 서버가 없어서 임시로 임의의 값을 넣음.
-    ChangeIndexData.room_num = "3";
+    FWallPaperData WallPaperData;
+    WallPaperData.RoomData.RoomNum = "3";
+   /* FString json = UJsonParseLib::WallPaperData_Convert_StructToJson(WallPaperData);*/
+    // JSON 문자열을 수동으로 생성
+	FString json = FString::Printf(TEXT(
+		"{"
+		"\"RoomNum\": \"%s\""
+		"}"),
+		*WallPaperData.RoomData.RoomNum
+	);
 
-    FString json = UJsonParseLib::ChangeIndex_Convert_StructToJson(ChangeIndexData);
-    UE_LOG(LogTemp, Warning, TEXT("JSON Request Sent: %s"), *json);
+    // 생성된 JSON을 로그로 출력
+    UE_LOG(LogTemp, Warning, TEXT("Generated JSON: %s"), *json);
 
-    httpActor->ChangeIndexReqPost(httpActor->WallPaperURL, json);
-}
-
-void UJS_RoomWidget::SendHeartCount()
-{
-    if (!httpActor)
+    // 이후 HTTP 요청 등에서 json 사용 가능
+    if (httpActor)
     {
-        UE_LOG(LogTemp, Warning, TEXT("httpActor is null in SendChangeIndexData"));
-        return;
+        httpActor->WallPaperReqPost(httpActor->WallPaperURL, json);
     }
-
-    FRoomData RoomData;
-    RoomData.LikeNum += FString::FromInt(1);
-    FString json = UJsonParseLib::RoomData_Convert_StructToJson(RoomData);
+    /*FString json = UJsonParseLib::WallPaperData_Convert_StructToJson(WallPaperData);
     UE_LOG(LogTemp, Warning, TEXT("JSON Request Sent: %s"), *json);
 
-    httpActor->ChangeIndexReqPost(httpActor->HeartURL, json);
+    httpActor->WallPaperReqPost(httpActor->WallPaperURL, json);*/
 }
+
+//void UJS_RoomWidget::SendHeartCount()
+//{
+//    if (!httpActor)
+//    {
+//        UE_LOG(LogTemp, Warning, TEXT("httpActor is null in SendWallPaperData"));
+//        return;
+//    }
+//
+//    FRoomData RoomData;
+//    RoomData.LikeNum += FString::FromInt(1);
+//    FString json = UJsonParseLib::RoomData_Convert_StructToJson(RoomData);
+//    UE_LOG(LogTemp, Warning, TEXT("JSON Request Sent: %s"), *json);
+//
+//    httpActor->WallPaperReqPost(httpActor->HeartURL, json);
+//}
 
 void UJS_RoomWidget::SetIndex(FString roomNumber, int absWallPaperIndex)
 {
@@ -59,7 +74,7 @@ void UJS_RoomWidget::SetIndex(FString roomNumber, int absWallPaperIndex)
     txt_absindex->SetText(FText::FromString(FString::FromInt(absWallPaperIndex)));
 }
 
-void UJS_RoomWidget::SetHeartCount(FString HeartCount)
-{
-    txt_HeartNum->SetText(FText::FromString(HeartCount));
-}
+//void UJS_RoomWidget::SetHeartCount(FString HeartCount)
+//{
+//    txt_HeartNum->SetText(FText::FromString(HeartCount));
+//}

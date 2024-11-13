@@ -9,25 +9,15 @@
 // Login ----------------------------------------------------------------------------
 FString UJsonParseLib::Login_Convert_StructToJson(const FLogin& LoginStrcut)
 {
-	//Json ���ڿ��� ������ ����
 	FString JsonString;
-
-	//����ü�� JSON ���ڿ��� ��ȯ
 	FJsonObjectConverter::UStructToJsonObjectString(LoginStrcut, JsonString, 0, 0);
-
-	//�ϼ��� Json ��ȯ
 	return JsonString;
 }
-
 
 FLogin UJsonParseLib::Login_Convert_JsonToStruct(const FString& JsonString)
 {
 	FLogin loginJson;
-
-	//Json�� ����ü�� ��ȯ
 	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &loginJson, 0, 0);
-
-	//��ȯ�� ����ü�� ��ȯ
 	return loginJson;
 }
 
@@ -37,139 +27,141 @@ FLogin UJsonParseLib::Login_Convert_JsonToStruct(const FString& JsonString)
 FString UJsonParseLib::SignUp_Convert_StructToJson(const FSign_up& SignUpStruct)
 {
 	FString JsonString;
-	//Json�� ����ü�� ��ȯ
 	FJsonObjectConverter::UStructToJsonObjectString(SignUpStruct, JsonString, 0, 0);
-	//��ȯ�� ����ü�� ��ȯ
 	return JsonString;
 }
 
 FSign_up UJsonParseLib::SignUp_Convert_JsonToStruct(const FString& JsonString)
 {
 	FSign_up SingupStruct;
-	//Json�� ����ü�� ��ȯ
 	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &SingupStruct, 0, 0);
-	//��ȯ�� ����ü�� ��ȯ
 	return SingupStruct;
 }
 // Sign up End----------------------------------------------------------------------------
 
-// User ----------------------------------------------------------------------------
-FString UJsonParseLib::User_Convert_StructToJson(const FUser& UserStrcut)
+//FullRoomData ////////////////////////////////////////////////////////////////////////////
+FString UJsonParseLib::FullRoomData_Convert_StructToJson(const FFullRoomData& FullRoomDataStruct)
 {
-	//Json ���ڿ��� ������ ����
 	FString JsonString;
-
-	//����ü�� JSON ���ڿ��� ��ȯ
-	FJsonObjectConverter::UStructToJsonObjectString(UserStrcut, JsonString, 0, 0);
-
-	//�ϼ��� Json ��ȯ
+	FJsonObjectConverter::UStructToJsonObjectString(FullRoomDataStruct, JsonString, 0, 0);
 	return JsonString;
 }
 
-FUser UJsonParseLib::User_Convert_JsonToStruct(const FString& JsonString)
+FFullRoomData UJsonParseLib::FullRoomData_Convert_JsonToStruct(const FString& JsonString)
 {
-	FUser UserJson;
-
-	//Json�� ����ü�� ��ȯ
-	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &UserJson, 0, 0);
-
-	//��ȯ�� ����ü�� ��ȯ
-	return UserJson;
-
+	FFullRoomData FullRoomDataStruct;
+	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &FullRoomDataStruct, 0, 0);
+	return FullRoomDataStruct;
 }
-// User End----------------------------------------------------------------------------
+//FullRoomData End////////////////////////////////////////////////////////////////////////////
 
-// ChangeIndex ----------------------------------------------------------------------------
-FString UJsonParseLib::ChangeIndex_Convert_StructToJson(const FChangeIndex& FWallPaperIndexStruct)
+//FUserInfoData ////////////////////////////////////////////////////////////////////////////
+FString UJsonParseLib::UserInfoData_Convert_StructToJson(const FUserInfoData& UserDataStruct)
 {
-	//Json ���ڿ��� ������ ����
 	FString JsonString;
-
-	//����ü�� JSON ���ڿ��� ��ȯ
-	FJsonObjectConverter::UStructToJsonObjectString(FWallPaperIndexStruct, JsonString, 0, 0);
-
-	//�ϼ��� Json ��ȯ
+	FJsonObjectConverter::UStructToJsonObjectString(UserDataStruct, JsonString, 0, 0);
 	return JsonString;
 }
-
-FChangeIndex UJsonParseLib::ChangeIndex_Convert_JsonToStruct(const FString& JsonString)
+FUserInfoData UJsonParseLib::UserInfoData_Convert_JsonToStruct(const FString& JsonString)
 {
-	FChangeIndex WallPaperJson;
-	//Json�� ����ü�� ��ȯ
-	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &WallPaperJson, 0, 0);
-	//��ȯ�� ����ü�� ��ȯ
-	return WallPaperJson;
+	FUserInfoData UserDataStruct;
+	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &UserDataStruct, 0, 0);
+	return UserDataStruct;
 }
-// ChangeIndex End ----------------------------------------------------------------------------
+//FUserInfoData End////////////////////////////////////////////////////////////////////////////
 
-// MyRoomInfo ----------------------------------------------------------------------------
-FString UJsonParseLib::MyRoomInfo_Convert_StructToJson(const FMyRoomInfo& MyRoomInfo)
+//FRoomData ////////////////////////////////////////////////////////////////////////////
+FString UJsonParseLib::RoomData_Convert_StructToJson(const FRoomData& RoomInfoStruct)
 {
-	//Json ���ڿ��� ������ ����
 	FString JsonString;
-
-	//����ü�� JSON ���ڿ��� ��ȯ
-	FJsonObjectConverter::UStructToJsonObjectString(MyRoomInfo, JsonString, 0, 0);
-
-	//�ϼ��� Json ��ȯ
-	return JsonString;
-}
-FMyRoomInfo UJsonParseLib::MyRoomInfo_Convert_JsonToStruct(const FString& JsonString)
-{
-	FMyRoomInfo MyRoomInfo;
-
-	//Json�� ����ü�� ��ȯ
-	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &MyRoomInfo, 0, 0);
-
-	//��ȯ�� ����ü�� ��ȯ
-	return MyRoomInfo;
-}
-// MyRoomInfo End----------------------------------------------------------------------------
-
-// MyCreateRoomInfo ----------------------------------------------------------------------------
-FString UJsonParseLib::FMyCreateRoomInfo_Convert_StructToJson(const FMyCreateRoomInfo& MyCreateRoomInfo)
-{
-	//Json ���ڿ��� ������ ����
-	FString JsonString;
-
-	//����ü�� JSON ���ڿ��� ��ȯ
-	FJsonObjectConverter::UStructToJsonObjectString(MyCreateRoomInfo, JsonString, 0, 0);
-
-	//�ϼ��� Json ��ȯ
-	return JsonString;
-}
-FMyCreateRoomInfo UJsonParseLib::FMyCreateRoomInfo_Convert_JsonToStruct(const FString& JsonString)
-{
-	FMyCreateRoomInfo MyCreateRoomInfo;
-
-	//Json�� ����ü�� ��ȯ
-	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &MyCreateRoomInfo, 0, 0);
-
-	//��ȯ�� ����ü�� ��ȯ
-	return MyCreateRoomInfo;
-}
-FString UJsonParseLib::RoomData_Convert_StructToJson(const FRoomData& RoomData)
-{
-	//Json ���ڿ��� ������ ����
-	FString JsonString;
-
-	//����ü�� JSON ���ڿ��� ��ȯ
-	FJsonObjectConverter::UStructToJsonObjectString(RoomData, JsonString, 0, 0);
-
-	//�ϼ��� Json ��ȯ
+	FJsonObjectConverter::UStructToJsonObjectString(RoomInfoStruct, JsonString, 0, 0);
 	return JsonString;
 }
 FRoomData UJsonParseLib::RoomData_Convert_JsonToStruct(const FString& JsonString)
 {
-	FRoomData RoomData;
-
-	//Json�� ����ü�� ��ȯ
-	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &RoomData, 0, 0);
-
-	//��ȯ�� ����ü�� ��ȯ
-	return RoomData;
+	FRoomData RoomInfoStruct;
+	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &RoomInfoStruct, 0, 0);
+	return RoomInfoStruct;
 }
-// MyCreateRoomInfo End ----------------------------------------------------------------------------
+
+//FRoomData End////////////////////////////////////////////////////////////////////////////
+
+//FEnvironmentData ////////////////////////////////////////////////////////////////////////////
+FString UJsonParseLib::EnvironmentData_Convert_StructToJson(const FEnvironmentData& EnvironmentDataStruct)
+{
+	FString JsonString;
+	FJsonObjectConverter::UStructToJsonObjectString(EnvironmentDataStruct, JsonString, 0, 0);
+	return JsonString;
+}
+FEnvironmentData UJsonParseLib::EnvironmentData_Convert_JsonToStruct(const FString& JsonString)
+{
+	FEnvironmentData EnvironmentDataStruct;
+	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &EnvironmentDataStruct, 0, 0);
+	return EnvironmentDataStruct;
+}
+//FEnvironmentData End ////////////////////////////////////////////////////////////////////////////
+
+//FAIRecommendation ////////////////////////////////////////////////////////////////////////////
+FString UJsonParseLib::AIRecommendation_Convert_StructToJson(const FAIRecommendation& AIRecommendationStruct)
+{
+	FString JsonString;
+	FJsonObjectConverter::UStructToJsonObjectString(AIRecommendationStruct, JsonString, 0, 0);
+	return JsonString;
+}
+FAIRecommendation UJsonParseLib::AIRecommendation_Convert_JsonToStruct(const FString& JsonString)
+{
+	FAIRecommendation AIRecommendation;
+	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &AIRecommendation, 0, 0);
+	return AIRecommendation;
+}
+//FAIRecommendation End////////////////////////////////////////////////////////////////////////////
+
+//FAIAnalysisData ////////////////////////////////////////////////////////////////////////////
+FString UJsonParseLib::AIAnalysisData_Convert_StructToJson(const FAIAnalysisData& AIAnalysisDataStruct)
+{
+	FString JsonString;
+	FJsonObjectConverter::UStructToJsonObjectString(AIAnalysisDataStruct, JsonString, 0, 0);
+	return JsonString;
+}
+FAIAnalysisData UJsonParseLib::AIAnalysisData_Convert_JsonToStruct(const FString& JsonString)
+{
+	FAIAnalysisData AIAnalysisData;
+	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &AIAnalysisData, 0, 0);
+	return AIAnalysisData;
+}
+//FAIAnalysisData End////////////////////////////////////////////////////////////////////////////
+
+//RoomSendData, RoomReceptionData////////////////////////////////////////////////////////////////////////////
+FString UJsonParseLib::RoomSendData_Convert_StructToJson(const FRoomSendData& RoomSendDataStruct)
+{
+	FString JsonString;
+	FJsonObjectConverter::UStructToJsonObjectString(RoomSendDataStruct, JsonString, 0, 0);
+	return JsonString;
+}
+
+FRoomReceptionData UJsonParseLib::RoomReceptionData_Convert_JsonToStruct(const FString& JsonString)
+{
+	FRoomReceptionData RoomReceptionData;
+	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &RoomReceptionData, 0, 0);
+	return RoomReceptionData;
+}
+
+//RoomReceptionData End ////////////////////////////////////////////////////////////////////////////
+
+//FWallPaperData ////////////////////////////////////////////////////////////////////////////
+FString UJsonParseLib::WallPaperData_Convert_StructToJson(const FWallPaperData& WallPaperDataStruct)
+{
+	FString JsonString;
+	FJsonObjectConverter::UStructToJsonObjectString(WallPaperDataStruct, JsonString, 0, 0);
+	return JsonString;
+}
+FWallPaperData UJsonParseLib::WallPaperData_Convert_JsonToStruct(const FString& JsonString)
+{
+	FWallPaperData WallPaperDataStruct;
+	FJsonObjectConverter::JsonObjectStringToUStruct(JsonString, &WallPaperDataStruct, 0, 0);
+	return WallPaperDataStruct;
+}
+//FWallPaperData ////////////////////////////////////////////////////////////////////////////
 
 FString UJsonParseLib::MakeJson(const TMap<FString, FString>& source)
 {
