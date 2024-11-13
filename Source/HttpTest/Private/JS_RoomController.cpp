@@ -23,10 +23,10 @@
 #include "Components/VerticalBox.h"
 #include "CJS/CJS_BallPlayer.h"
 #include "HttpActor.h"
-#include "HttpActor.h"
 #include "CJS/CJS_JS_WidgetFunction.h"
 #include "KGW/KGW_RoomlistActor.h"
 #include "CJS/CJS_InnerWorldSettingWidget.h"
+#include "CJS/CJS_LoginActor.h"
 
 AJS_RoomController::AJS_RoomController()
 {
@@ -62,6 +62,7 @@ void AJS_RoomController::BeginPlay()
 {
     Super::BeginPlay();
 
+    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay()"));
     HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
     if (HttpActor)
     {
@@ -71,6 +72,17 @@ void AJS_RoomController::BeginPlay()
     {
         UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() No HttpActor"));
     }
+
+    LoginActor = Cast<ACJS_LoginActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_LoginActor::StaticClass()));
+    if (!LoginActor)
+    {
+        UE_LOG(LogTemp, Error, TEXT("LoginActor not found in the level."));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() Set LoginActor"));
+    }
+
     InitializeUIWidgets();
     CheckDate();
     SetInputMode(FInputModeGameOnly());
@@ -108,6 +120,20 @@ void AJS_RoomController::BeginPlay()
         {
             UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
         }
+    }
+    else if (LevelName.Contains("Login"))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Login"));
+        if (LoginActor)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() Set LoginActor"));
+            LoginActor->ShowLoginUI();
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO LoginActor"));
+        }
+
     }
     // ------------------------------------------------------------------------------------------------
 
@@ -147,14 +173,14 @@ void AJS_RoomController::CheckDate()
     FDateTime CurrentTime = FDateTime::Now();
     FDateTime MidnightToday = FDateTime(CurrentTime.GetYear(), CurrentTime.GetMonth(), CurrentTime.GetDay());
 
-
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::CheckDate() LevelName : %s"), *LevelName);
 
     if (LevelName == "Main_Login" && LevelName != "Main_Lobby" && LevelName != "Main_Room" && LastCheckDate < MidnightToday) {
 		bShowMouseCursor = true;
 		bEnableClickEvents = true;
 		bEnableMouseOverEvents = true;
-        ShowLoginUI();
+        //ShowLoginUI();
         LastCheckDate = MidnightToday; 
     }
     else if(LevelName == "Main_Room" && LastCheckDate < MidnightToday) { // 방 이름이 메인 룸이고 처음 접속 했거나 00시가 지났을 경우
@@ -182,13 +208,13 @@ void AJS_RoomController::CheckDate()
 void AJS_RoomController::InitializeUIWidgets()
 {
     //FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
-    /*if (LoginUIFactory) {
-        LoginUI = CreateWidget<UHttpWidget>(this, LoginUIFactory);
-        if (LoginUI) {
-            LoginUI->AddToViewport();
-            LoginUI->SetVisibility(ESlateVisibility::Hidden);
-        }
-    }*/
+	/*if (LoginUIFactory) {
+		LoginUI = CreateWidget<UHttpWidget>(this, LoginUIFactory);
+		if (LoginUI) {
+			LoginUI->AddToViewport();
+			LoginUI->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}*/
     if (CR_UIFactory) {
         CR_UI = CreateWidget<UJS_CreateRoomWidget>(this, CR_UIFactory);
         if (CR_UI) {
@@ -210,6 +236,7 @@ void AJS_RoomController::ShowLoginUI()
 {
     if (LoginUI)
     {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowLoginUI()"));
         LoginUI->SetVisibility(ESlateVisibility::Visible);
     }
 }
@@ -217,6 +244,7 @@ void AJS_RoomController::HideLoginUI()
 {
     if (LoginUI)
     {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowLoginUI()"));
         LoginUI->SetVisibility(ESlateVisibility::Hidden);
     }
 }
@@ -298,15 +326,13 @@ void AJS_RoomController::SetActorLocationAfterLevelLoad()
     }
 }
 
-
-
 void AJS_RoomController::OnClickButtonImage()
 {
     HideCreateRoomUI();
     ShowRoomUI();
     PlayUIAnimation();
     ScreenCapture();
-    R_UI->SendChangeIndexData();
+    R_UI->SendWallPaperData();
     GetWorld()->GetTimerManager().SetTimer(HeartUITimer, this, &AJS_RoomController::ShowHeartUITimer, 1.0f, false);
 
 
@@ -337,16 +363,21 @@ void AJS_RoomController::OnMouseClick()
                     //R_UI->VTB_Heart->SetVisibility(ESlateVisibility::Hidden);
                     PlayUIAnimation();
                     ScreenCapture();
-                    R_UI->SendChangeIndexData();
+                    R_UI->SendWallPaperData();
                     GetWorld()->GetTimerManager().SetTimer(HeartUITimer, this, &AJS_RoomController::ShowHeartUITimer, 1.0f, false);
                // }
             }
             else if (HitActor->ActorHasTag(TEXT("Sky")))
             {
-				UE_LOG(LogTemp, Warning, TEXT("Lobby Hit - Loading lobby level"));
+				UE_LOG(LogTemp, Warning, TEXT("Sky Hit - Loading sky level"));
+                // AI쪽에서 다시 추천 받은 R, G, B값
+                // 파티클 종류
+                // AI설명
+                // 방목록
+                // 
                 UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
                 SetActorLocationAfterLevelLoad();
-
+                
                  // 서버가 있는 로비로 돌아가기 위한 ClientTravel 사용
 			   /* APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 				if (PlayerController)
@@ -368,6 +399,10 @@ void AJS_RoomController::OnMouseClick()
                 //{
                 //    UE_LOG(LogTemp, Error, TEXT("Failed to get SessionGameInstance"));
                 //}
+                
+            }
+            else if (HitActor->ActorHasTag(TEXT("Lobby"))) {
+                UGameplayStatics::OpenLevel(this, FName("Main_Lobby"));
                 //UGameplayStatics::OpenLevel(this, FName("Main_Lobby"));
             }
             else if (HitActor->ActorHasTag(TEXT("EnterCreateRoom")))

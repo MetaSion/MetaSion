@@ -37,11 +37,11 @@ public:
 	class AHttpActor* httpActor;
 
 	UFUNCTION()
-	void SendChangeIndexData();
+	void SendWallPaperData();
 
-	UFUNCTION()
-	void SendHeartCount();
+	/*UFUNCTION()
+	void SendHeartCount();*/
 
 	void SetIndex(FString roomNumber, int absWallPaperIndex);
-	void SetHeartCount(FString HeartCount);
+	//void SetHeartCount(FString HeartCount);
 };

@@ -16,17 +16,17 @@
 void UJS_CreateRoomWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
+	//Choose Yes or No
 	btn_CreateRoom_Yes->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::CreateRoomChooseYes);
 	btn_CreateRoom_No->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::CreateRoomChooseNo);
-
+	//Toggle Private
 	btn_CreateRoom_Private->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::SetPrivate);
 	btn_CreateRoom_Public->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::SetPrivate);
-
+	//Complete CR
 	btn_CompleteCreateRoom->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::CompleteCreateRoom);
-
+	// RoomName
 	ED_RoomName->OnTextChanged.AddDynamic(this, &UJS_CreateRoomWidget::OnTextChanged_SingleLine);
-
+	// Description
 	ED_MultiText->OnTextChanged.AddDynamic(this, &UJS_CreateRoomWidget::OnTextChanged_MultiLine);
 	ED_MultiText->OnTextCommitted.AddDynamic(this, &UJS_CreateRoomWidget::OnTextCommitted_MultiLine);
 
@@ -139,29 +139,87 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 		UE_LOG(LogTemp, Warning, TEXT("httpActor is null in SendSetPrivateRoom"));
 		return;
 	}
+	/*FRoomSendData RoomSendData;
 
-	FMyRoomInfo MyRoomInfo;
+	RoomSendData.UserData.UserId = "testuser";
+	RoomSendData.EnvironmentData.UltraSky_TimeOfDay = "1200";
+	RoomSendData.EnvironmentData.UltraWeather_CloudCoverage = "1";
+	RoomSendData.EnvironmentData.UltraWeather_Fog = "1";
+	RoomSendData.EnvironmentData.UltraWeather_Rain = "1";
+	RoomSendData.EnvironmentData.UltraWeather_Snow = "1";
+	RoomSendData.EnvironmentData.UltraWeather_Dust = "1";
+	RoomSendData.EnvironmentData.UltraWeather_Thunder = "1";
+	RoomSendData.EnvironmentData.MainObject = "1";
+	RoomSendData.EnvironmentData.SubObject = "1";
+	RoomSendData.EnvironmentData.Background = "1";
+	RoomSendData.EnvironmentData.WeatherParticle = "particle_maple";
+	RoomSendData.RoomInfoData.RoomName = ED_RoomName->GetText().ToString();
+	RoomSendData.RoomInfoData.RoomDescription = ED_MultiText->GetText().ToString();*/
 
-	MyRoomInfo.UserId = "testuser";
-	MyRoomInfo.UltraSky_TimeOfDay = "1200";
-	MyRoomInfo.UltraWheather_CloudCoverage = "true";
-	MyRoomInfo.UltraWheather_Fog = "true";
-	MyRoomInfo.UltraWheather_Rain = "true";
-	MyRoomInfo.UltraWheather_Snow = "true";
-	MyRoomInfo.UltraWheather_Dust = "true";
-	MyRoomInfo.UltraWheather_Thunder = "true";
-	MyRoomInfo.MainObject = "true";
-	MyRoomInfo.SubObject = "true";
-	MyRoomInfo.Background = "true";
-	MyRoomInfo.Particle_num = "true";
-	MyRoomInfo.RoomName = ED_RoomName->GetText().ToString();
-	MyRoomInfo.RoomDescription = "this is hello worlds";
-	MyRoomInfo.RoomPP = FString::FromInt(bPrivate);
+	// ÀÔ·ÂµÈ °ªµéÀ» ¼öÁý
+	FString UserId = "testuser";
+	FString UltraSky_TimeOfDay = "1200";
+	FString UltraWeather_CloudCoverage = "1";
+	FString UltraWeather_Fog = "1";
+	FString UltraWeather_Rain = "1";
+	FString UltraWeather_Snow = "1";
+	FString UltraWeather_Dust = "1";
+	FString UltraWeather_Thunder = "1";
+	FString MainObject = "1";
+	FString SubObject = "1";
+	FString Background = "1";
+	FString WeatherParticle = "particle_maple";
+	FString RoomName = ED_RoomName->GetText().ToString();
+	FString RoomDescription = ED_MultiText->GetText().ToString();
 
-	FString json = UJsonParseLib::MyRoomInfo_Convert_StructToJson(MyRoomInfo);
+	// Ãß°¡µÈ °ª: bPrivate -> RoomPP º¯È¯
+	FString RoomPP = FString::FromInt(bPrivate);
+
+	// Ãß°¡µÈ °ª: Quadrant (ÃßÁ¤µÈ °ª, Á÷Á¢ ¼³Á¤ÇØ ÁÖ¼¼¿ä)
+	FString Quadrant = "1";  // ¿¹½Ã °ª, ½ÇÁ¦ °ªÀ» ³Ö¾îÁÖ¼¼¿ä.
+
+	// ¼öµ¿À¸·Î JSON ¹®ÀÚ¿­À» »ý¼º
+	FString json = FString::Printf(TEXT(
+		"{"
+		"\"UserId\": \"%s\","
+		"\"RoomName\": \"%s\","
+		"\"UltraSky_TimeOfDay\": \"%s\","
+		"\"UltraWheather_CloudCoverage\": \"%s\","
+		"\"UltraWheather_Fog\": \"%s\","
+		"\"UltraWheather_Rain\": \"%s\","
+		"\"UltraWheather_Snow\": \"%s\","
+		"\"UltraWheather_Dust\": \"%s\","
+		"\"UltraWheather_Thunder\": \"%s\","
+		"\"MainObject\": \"%s\","
+		"\"SubObject\": \"%s\","
+		"\"Background\": \"%s\","
+		"\"Particle_num\": \"%s\","
+		"\"RoomDescription\": \"%s\","
+		"\"RoomPP\": \"%s\","
+		"\"Quadrant\": \"%s\""
+		"}"),
+		*UserId,
+		*RoomName,
+		*UltraSky_TimeOfDay,
+		*UltraWeather_CloudCoverage,
+		*UltraWeather_Fog,
+		*UltraWeather_Rain,
+		*UltraWeather_Snow,
+		*UltraWeather_Dust,
+		*UltraWeather_Thunder,
+		*MainObject,
+		*SubObject,
+		*Background,
+		*WeatherParticle,
+		*RoomDescription,
+		*RoomPP,      // RoomPP °ª Ãß°¡
+		*Quadrant     // Quadrant °ª Ãß°¡
+	);
+
+	//FString json = UJsonParseLib::RoomSendData_Convert_StructToJson(RoomSendData);
 
 	if (httpActor) {
-		httpActor->MyRoomInfoReqPost(httpActor->MyRoomURL, json);
+		httpActor->RoomSendDataReqPost(httpActor->SaveRoomData, json);
 	}
 }
 
@@ -183,22 +241,25 @@ void UJS_CreateRoomWidget::OnTextChanged_MultiLine(const FText& Text)
 	FString CurrentText = Text.ToString();
 	int32 CharacterCount = 0;
 
-	// ï¿½Ø½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½
+	// ï¿½Ø½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿?
 	for (const TCHAR& Char : CurrentText)
 	{
-		CharacterCount += (Char <= 0x007F) ? 1 : 3; // ï¿½Ñ±ï¿½ï¿½ï¿½ 3ï¿½ï¿½ ï¿½ï¿½ï¿½
+		CharacterCount += (Char <= 0x007F) ? 1 : 3; // ÇÑ±ÛÀº 3·Î °è»ê
+		//UE_LOG(LogTemp, Warning, TEXT("%c"), Char);
+
+		CharacterCount += (Char <= 0x007F) ? 1 : 3; // ï¿½Ñ±ï¿½ï¿½ï¿½ 3ï¿½ï¿½ ï¿½ï¿½ï¿?
 		UE_LOG(LogTemp, Warning, TEXT("%c"), Char);
 	}
 
-	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿?ï¿½Þ½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
 	if (CharacterCount > MAX_CHARACTER_COUNT)
 	{
-		// ï¿½Î±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+		// ï¿½Î±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿?ï¿½ï¿½ï¿?
 		UE_LOG(LogTemp, Warning, TEXT("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½!"));
 	}
 	else
 	{
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ ï¿½Ø½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿?ï¿½ï¿½È¿ï¿½ï¿½ ï¿½Ø½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		LastValidText = CurrentText;
 	}
 }
@@ -211,7 +272,7 @@ void UJS_CreateRoomWidget::OnTextCommitted_MultiLine(const FText& Text, ETextCom
 	for (const TCHAR& Char : CurrentText)
 	{
 		CharacterCount += (Char <= 0x007F) ? 1 : 3;
-		UE_LOG(LogTemp, Warning, TEXT("%c"), Char);
+	/*	UE_LOG(LogTemp, Warning, TEXT("%c"), Char);*/
 	}
 
 	if (CharacterCount > MAX_CHARACTER_COUNT)
@@ -228,7 +289,7 @@ void UJS_CreateRoomWidget::OnTextCommitted_MultiLine(const FText& Text, ETextCom
 //{
 //	FString CurrentText = Text.ToString();
 //
-//	// ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ (UTF-16 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+//	// ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿?(UTF-16 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 //	int32 CharacterCount = 0;
 //	for (const TCHAR& Char : CurrentText)
 //	{
