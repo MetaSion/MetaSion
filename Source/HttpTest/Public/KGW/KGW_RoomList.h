@@ -31,14 +31,14 @@ public:
 	class UMultiLineEditableTextBox* TxtBox_Report;
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* btn_InnerWorld;
+	class UButton* Btn_InnerWorld;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_MultiWorld;
 
 	
 
-		void AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos);
+	void AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos);
 
 	// 	void SetRecomendRoomName(const )
 
@@ -50,10 +50,10 @@ public:
 
 	void SetTextLog(FString explain);
 
-			UFUNCTION()
+	UFUNCTION()
 	void OnClickInnerWorld();
 
-			UFUNCTION()
+	UFUNCTION()
 	void OnClickMultiWorld();
 
 	FString WheatherNum;
@@ -63,5 +63,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class AHttpActor* OpenActor;
 
+		UPROPERTY(VisibleAnywhere)
+	class UCJS_InnerWorldSettingWidget* InnerWorldWidget;
+
+
+	
 
 };

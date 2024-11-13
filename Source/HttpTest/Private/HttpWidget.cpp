@@ -12,6 +12,7 @@
 #include "JsonObjectConverter.h"
 #include "Kismet/GameplayStatics.h"
 #include "JS_RoomController.h"
+#include "CJS/SessionGameInstance.h"
 
 void UHttpWidget::NativeConstruct()
 {
@@ -29,6 +30,7 @@ void UHttpWidget::NativeConstruct()
 //Login
 void UHttpWidget::SendLoginData()
 {
+	UE_LOG(LogTemp, Warning, TEXT("UHttpWidget::SendLoginData()"));
 	// ����ü�� �ִ� ������ UI �ؽ�Ʈ ���� �־���� ��.
 	FLogin loginData;
 	loginData.userId = userId->GetText().ToString();
@@ -37,9 +39,14 @@ void UHttpWidget::SendLoginData()
 	FString json = UJsonParseLib::Login_Convert_StructToJson(loginData);
 	//Login��û
 	if (HttpActor) {
-		HttpActor->LoginReqPost(HttpActor->LoginURL, json);
+		HttpActor->LoginReqPost(HttpActor->LoginURL, json); // <--- 테스트 중에 주석처리
 	}
-	
+
+	//USessionGameInstance* SessionGI = Cast<USessionGameInstance>(GetGameInstance());  // <-- 테스트 용
+	//if (SessionGI) {
+	//	SessionGI->bSuccess = true; // GameInstance에 상태 저장
+	//}
+	//UGameplayStatics::OpenLevel(this, FName("Main_Sky")); 
 }
 
 void UHttpWidget::SendSignUpData()

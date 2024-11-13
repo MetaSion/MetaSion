@@ -15,7 +15,7 @@ class HTTPTEST_API UJS_CreateRoomWidget : public UUserWidget
     GENERATED_BODY()
    
 private:
-    static const int32 MAX_CHARACTER_COUNT = 51; // ÇÑ±Û ±âÁØ 17±ÛÀÚ
+    static const int32 MAX_CHARACTER_COUNT = 51; // ï¿½Ñ±ï¿½ ï¿½ï¿½ï¿½ï¿½ 17ï¿½ï¿½ï¿½ï¿½
     FString LastValidText;
 
 public:
@@ -66,6 +66,21 @@ public:
     UPROPERTY(EditAnywhere)
 	class AHttpActor* httpActor;
 
+    //KGW==================================
+
+    	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_CaptureImage;
+
+;
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_MyPage;
+
+    void OnClickCaptureImage();
+
+    void OnClikMypage();
+
+
+
     UPROPERTY(BlueprintReadWrite)
     int32 bPrivate = 0;
 
@@ -84,6 +99,8 @@ public:
 
     UFUNCTION()
     void CompleteCreateRoom();
+
+    void DelayedSwitchToWidget();
 
     UFUNCTION()
     void SetPrivate();

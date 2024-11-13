@@ -31,6 +31,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* IA_LeftMouse;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UInputAction* IA_SettingUI;
+
 
     // �������̽��� ���� UI
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
@@ -84,26 +87,56 @@ public:
 
     //Mouse Hover
     void OnMouseHover(AActor* HoveredActor);
-
     void OnMouseHoverEnd(AActor* HoveredActor);
 
     //myWorld -> MultiWorld:: Make Session
  /*   UPROPERTY()
 	class AHttpActor* HttpActor;*/
 
-    void OpenMultiWorld();
-
+    //void OpenMultiWorld();
     void SetActorLocationAfterLevelLoad();
-
-
     AActor* CurrentHoveredActor = nullptr;
 
-    //Screen Capture + Wallpaper Python Auto Execute
+
+    /* Screen Capture + Wallpaper Python Auto Execute */
     void ScreenCapture();
     void ExecuteWallPaperPython();
-
 
     /* Chat Widget */
     UPROPERTY(EditDefaultsOnly, Category = "Heart")
 	class ACJS_JS_WidgetFunction* ChatActorFactory;
+
+    /* Inner World Setting UI */
+    UPROPERTY()
+    class USessionGameInstance* SessionGI;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UCJS_InnerWorldSettingWidget> SettingUIFactory;
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+	class UCJS_InnerWorldSettingWidget* SettingUI;
+
+    void ShowSettingUI();
+    void HideSettingUI();
+
+    UFUNCTION(BlueprintCallable)
+    void InitInnerWorldSetting();
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    FString timeOfDay;
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    FString cloudCoverage;
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    FString fog ;
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    FString rain;
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    FString snow;
+     UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    FString dust ;
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    FString thunder ;
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    FString mainObject ;
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    FString subObject ;
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    FString background ;
 };

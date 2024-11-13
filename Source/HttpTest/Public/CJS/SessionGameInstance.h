@@ -82,22 +82,36 @@ struct FMyWorldSetting
 
     UPROPERTY(BlueprintReadWrite)
     FMyRGBColor RGB;
-
     UPROPERTY(BlueprintReadWrite)
     TArray<FMyRGBColor> RGB18;
-
     UPROPERTY(BlueprintReadWrite)
     FString UserMusic;
-
     UPROPERTY(BlueprintReadWrite)
-    FString Weather;
-
+    FString Quadrant;
+	UPROPERTY(BlueprintReadWrite)
+    FString TimeOfDay;
+	UPROPERTY(BlueprintReadWrite)
+    FString CloudCoverage;
+	UPROPERTY(BlueprintReadWrite)
+    FString Fog;
+	UPROPERTY(BlueprintReadWrite)
+    FString Rain;
+	UPROPERTY(BlueprintReadWrite)
+    FString Snow;
+	UPROPERTY(BlueprintReadWrite)
+    FString Dust;
+	UPROPERTY(BlueprintReadWrite)
+    FString Thunder;
+	UPROPERTY(BlueprintReadWrite)
+    FString MainObject;
+	UPROPERTY(BlueprintReadWrite)
+    FString SubObject;
+	UPROPERTY(BlueprintReadWrite)
+    FString Background;
     UPROPERTY(BlueprintReadWrite)
     FString ParticleNum;
-
     UPROPERTY(BlueprintReadWrite)
     FString Result;
-
     UPROPERTY(BlueprintReadWrite)
     TArray<FMyWorldRoomInfo> MyRooms;
 };
@@ -185,6 +199,8 @@ public:
     UPROPERTY(BlueprintReadWrite)
     FMyWorldSetting WorldSetting;
 
+	bool bmyWorldPageOn = false;
+
 	/* --------------------------------------------------------------------------------------------------------------------------- */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="PlayerController")
 	TSubclassOf<APlayerController> LobbyControllerClass;
@@ -206,5 +222,6 @@ public:
 
 	//JS
 	bool bSuccess = false; // 상태 유지 변수
+
 };
 
