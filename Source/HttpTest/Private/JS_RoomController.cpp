@@ -207,6 +207,11 @@ void AJS_RoomController::CheckDate()
         bEnableClickEvents = true;
         bEnableMouseOverEvents = true;
     }
+    else if (LevelName.Contains("Question")) {
+        bShowMouseCursor = true;
+        bEnableClickEvents = true;
+        bEnableMouseOverEvents = true;
+    }
     else {
         bShowMouseCursor = false;
         bEnableClickEvents = false;
