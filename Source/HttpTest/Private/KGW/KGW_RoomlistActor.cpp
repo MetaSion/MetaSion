@@ -44,25 +44,25 @@ void AKGW_RoomlistActor::BeginPlay()
 
    
     // Circle 이펙트 나이아가라 컴포넌트 비활성화 후 활성화
-    if (CircleNiagara && CircleNiagara->IsActive())
-    {
-        DeactivateNiagaraEffect();
-    }
-    FVector Location = meshComp->GetComponentLocation();
-    FRotator Rotation = meshComp->GetComponentRotation();
-    if (CircleNiagara) {
-        // RootComponent의 위치와 회전에 Niagara 이펙트 재생
-        CircleNiagara->SetWorldLocationAndRotation(Location, Rotation);
-        CircleNiagara->Activate(); // Niagara 이펙트 활성화
-        UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::DeactivateNiagaraEffect() CircleNiagara->Activate();"));
-        // 일정 시간 후에 이펙트 비활성화
-        FTimerHandle NiagaraTimerHandle;
-        GetWorldTimerManager().SetTimer(NiagaraTimerHandle, this, &AKGW_RoomlistActor::DeactivateNiagaraEffect, 1.0f, false);
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("AKGW_RoomlistActor::BeginPlay() No CircleNiagara"));
-    }
+    //if (CircleNiagara && CircleNiagara->IsActive())
+    //{
+    //    DeactivateNiagaraEffect();
+    //}
+    //FVector Location = meshComp->GetComponentLocation();
+    //FRotator Rotation = meshComp->GetComponentRotation();
+    //if (CircleNiagara) {
+    //    // RootComponent의 위치와 회전에 Niagara 이펙트 재생
+    //    CircleNiagara->SetWorldLocationAndRotation(Location, Rotation);
+    //    CircleNiagara->Activate(); // Niagara 이펙트 활성화
+    //    UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::DeactivateNiagaraEffect() CircleNiagara->Activate();"));
+    //    // 일정 시간 후에 이펙트 비활성화
+    //    FTimerHandle NiagaraTimerHandle;
+    //    GetWorldTimerManager().SetTimer(NiagaraTimerHandle, this, &AKGW_RoomlistActor::DeactivateNiagaraEffect, 1.0f, false);
+    //}
+    //else
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("AKGW_RoomlistActor::BeginPlay() No CircleNiagara"));
+    //}
 }
 
 void AKGW_RoomlistActor::DeactivateNiagaraEffect()
