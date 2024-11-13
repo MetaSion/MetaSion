@@ -61,6 +61,8 @@ void ACJS_HeartActor::BeginPlay()
         {
             FLinearColor RandomColor = FLinearColor::MakeRandomColor();
             MatInstance->SetVectorParameterValue(FName("Color"), RandomColor);
+            UE_LOG(LogTemp, Warning, TEXT("color changed"));
+
         }
     }
 }
