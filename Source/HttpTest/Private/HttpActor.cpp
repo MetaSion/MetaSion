@@ -260,7 +260,8 @@ void AHttpActor::RoomSendDataReqPost(FString url, FString json)
     // ��û�� ������ ����
     req->SetURL(url);
     req->SetVerb(TEXT("POST"));
-    req->SetHeader(TEXT("content-type"), TEXT("application/json"));
+    req->SetHeader(TEXT("content-
+    "), TEXT("application/json"));
     req->SetContentAsString(json);
 
     req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::RoomSendDataResPost);
@@ -1289,7 +1290,7 @@ void AHttpActor::ReqGetWebImage(FString url)
 
     // 요청 설정
     req->SetURL(url);
-    req->SetVerb(TEXT("Post"));
+    req->SetVerb(TEXT("POST"));
     req->SetHeader(TEXT("Content-Type"), TEXT("image/jpeg"));
 
     // 응답 처리 함수 바인딩
