@@ -66,6 +66,21 @@ public:
     UPROPERTY(EditAnywhere)
 	class AHttpActor* httpActor;
 
+    //KGW==================================
+
+    	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_CaptureImage;
+
+;
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_MyPage;
+
+    void OnClickCaptureImage();
+
+    void OnClikMypage();
+
+
+
     UPROPERTY(BlueprintReadWrite)
     int32 bPrivate = 0;
 
@@ -84,6 +99,8 @@ public:
 
     UFUNCTION()
     void CompleteCreateRoom();
+
+    void DelayedSwitchToWidget();
 
     UFUNCTION()
     void SetPrivate();
