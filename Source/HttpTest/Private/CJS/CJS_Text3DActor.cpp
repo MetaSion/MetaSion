@@ -3,3 +3,7 @@
 
 #include "CJS/CJS_Text3DActor.h"
 
+void ACJS_Text3DActor::EndTextShowing()
+{
+
+}
