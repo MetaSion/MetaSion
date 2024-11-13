@@ -6,33 +6,90 @@
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include "HttpActor.h"
+#include "Components/MultiLineEditableTextBox.h"
+#include "Components/Button.h"
+#include "Kismet/GameplayStatics.h"
+#include "CJS/CJS_InnerWorldSettingWidget.h"
 
-void UKGW_RoomList::AddSessionSlotWidget(const TArray<FMyCreatedRoom>& RoomInfos)
+void UKGW_RoomList::NativeConstruct()
 {
+    Super::NativeConstruct();
+       
+    Btn_InnerWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickInnerWorld);
+    Btn_MultiWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickMultiWorld);      
+}
 
+void UKGW_RoomList::AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos)
+{
+    UE_LOG(LogTemp, Warning, TEXT("UKGW_RoomList::AddSessionSlotWidget()"));
     if (!ScrollBox)
     {
         UE_LOG(LogTemp, Error, TEXT("ScrollBox is null! Make sure it is set correctly in the widget."));
         return;
     }
 //     ScrollBox->ClearChildren();
-    for (const FMyCreatedRoom& Room : RoomInfos)
+    for (const FMyWorldRoomInfo& Room : RoomInfos)
     {
         auto* RoomSlot = CreateWidget<UKGW_UserRoomName>(this, UserRoomNameFactory);
         if (RoomSlot)
         {
-            // RoomWidgetÀÇ Á¤º¸¸¦ ¾÷µ¥ÀÌÆ® (¿¹: ¹æ ÀÌ¸§ ¼³Á¤)
+            // RoomWidgetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® (ï¿½ï¿½: ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½)
             RoomSlot->UpdateInfo(Room);
             ScrollBox->AddChild(RoomSlot);
         }
     }  
     UE_LOG(LogTemp, Log, TEXT("Room list updated with %d rooms."), RoomInfos.Num());
-
 }
+
+void UKGW_RoomList::SetTextLog(FString explain)
+{
+    TxtBox_Report->SetText(FText::FromString(explain));
+    
+}
+void UKGW_RoomList::SetWheaterNumb(FString TempNUmb)
+{
+    WheatherNum = TempNUmb;
+}
+
+
+void UKGW_RoomList::OnClickInnerWorld()
+{   
+    UE_LOG(LogTemp, Warning, TEXT("UKGW_RoomList::OnClickInnerWorld()"));
+    if (!WheatherNum.IsEmpty())
+    { 
+    
+		if (WheatherNum == TEXT("1"))
+		{
+			UGameplayStatics::OpenLevel(this, FName("Main_LV_Spring"));
+		}
+		else if (WheatherNum == TEXT("2"))
+		{
+			UGameplayStatics::OpenLevel(this, FName("Main_LV_Summer"));
+
+		}
+		else if (WheatherNum == TEXT("3"))
+		{
+			UGameplayStatics::OpenLevel(this, FName("Main_LV_Fall"));
+
+		}
+		else if (WheatherNum == TEXT("4"))
+		{
+			UGameplayStatics::OpenLevel(this, FName("Main_LV_Winter"));
+            InnerWorldWidget ->SetWinterSnowSlider();
+		}
+    }
+}
+
+void UKGW_RoomList::OnClickMultiWorld()
+{
+    UE_LOG(LogTemp, Warning, TEXT("UKGW_RoomList::OnClickMultiWorld()"));
+    OpenActor->StartHttpMultyWorld();
+}
+
 
 // void UKGW_RoomList::SetFindActive(bool value)
 // {
-// 	//Ã£±â°¡ ³¡³ª¸é Empty ÅØ½ºÆ® ¾Èº¸ÀÌ°Ô ÇÏ°í½Í´Ù.
+// 	//Ã£ï¿½â°¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Empty ï¿½Ø½ï¿½Æ® ï¿½Èºï¿½ï¿½Ì°ï¿½ ï¿½Ï°ï¿½Í´ï¿½.
 // 	if (value) {
 // 		Text_Finding->SetVisibility(ESlateVisibility::Visible);
 // 

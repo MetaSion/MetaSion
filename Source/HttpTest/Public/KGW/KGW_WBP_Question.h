@@ -21,7 +21,7 @@ public:
 	
 	virtual void NativeConstruct() override;
 
-		UFUNCTION()
+	UFUNCTION()
 	void OnClickSelect();
 
 
@@ -37,8 +37,16 @@ public:
 
 					UPROPERTY()
 	class AKGW_EnterRoomActor* EnterRoomActor;
+						UPROPERTY()
+	class ACJS_InnerWorldParticleActor* EffectActor;
 
 
+	
+	//늦게 나타나는 애니메이션 ------------------------------------------------------------
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	class UWidgetAnimation* LateAppearAnim;
+	UFUNCTION()
+	void PlayLateAppearAnimation();
 
 
 };

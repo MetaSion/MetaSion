@@ -10,8 +10,11 @@
 #include "Kismet/GameplayStatics.h"
 
 void UJS_RoomWidget::NativeConstruct()
+
 {
-    httpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
+    Super::NativeConstruct();
+   
+   httpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
 }
 //index ฟไรป
 void UJS_RoomWidget::SendChangeIndexData()

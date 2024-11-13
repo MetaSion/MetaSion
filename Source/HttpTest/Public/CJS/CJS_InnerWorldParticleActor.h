@@ -28,18 +28,19 @@ public:
 	class USceneComponent* DefaultSceneRoot;
 
     // Array to hold the Point Light components
-    UPROPERTY(VisibleAnywhere, Category = "Particle")
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Particle")
     TArray<class UPointLightComponent*> PointLights;
 
     // Niagara System Component
-    UPROPERTY(VisibleAnywhere, Category = "Particle")
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Particle")
     class UNiagaraComponent* InnerWorldParticle;
 	 // Array to hold multiple Niagara System assets
-    UPROPERTY(EditAnywhere, Category = "Particle")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particle")
     TArray<class UNiagaraSystem*> NiagaraSystemAssets;
 
 
 	// Function to update Point Light colors and Niagara System
+	UFUNCTION(BlueprintCallable)
 	void UpdateInnerWorldPointLights(FLinearColor lightColor, int32 lightIndex);
 	void UpdateInnerWorldNiagaraAsset(int32 NiagaraAssetIndex);
 

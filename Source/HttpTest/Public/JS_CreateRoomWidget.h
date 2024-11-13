@@ -15,7 +15,7 @@ class HTTPTEST_API UJS_CreateRoomWidget : public UUserWidget
     GENERATED_BODY()
    
 private:
-    static const int32 MAX_CHARACTER_COUNT = 51; // ÇÑ±Û ±âÁØ 17±ÛÀÚ
+    static const int32 MAX_CHARACTER_COUNT = 51; // ï¿½Ñ±ï¿½ ï¿½ï¿½ï¿½ï¿½ 17ï¿½ï¿½ï¿½ï¿½
     FString LastValidText;
 
 public:
@@ -95,7 +95,7 @@ public:
     void HideUI();
 
     UFUNCTION()
-	void SendSetPrivateRoom(int32 Room_pp);
+	void SendCompleteRoomData();
 
     UFUNCTION()
     void OnTextChanged_SingleLine(const FText& Text);

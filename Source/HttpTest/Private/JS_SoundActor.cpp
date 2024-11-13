@@ -16,10 +16,10 @@ AJS_SoundActor::AJS_SoundActor()
 	PrimaryActorTick.bCanEverTick = true;
 
 
-	// Audio Component »ý¼º ¹× ¼³Á¤
+	// Audio Component ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 	AudioComponent->SetupAttachment(RootComponent);
-	AudioComponent->bAutoActivate = false;  // ÀÚµ¿ Àç»ý ÇØÁ¦
+	AudioComponent->bAutoActivate = false;  // ï¿½Úµï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 }
 
 // Called when the game starts or when spawned
@@ -37,7 +37,7 @@ void AJS_SoundActor::BeginPlay()
 	HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
 	if (HttpActor)
 	{
-		OnRoomDataInitialized();
+		//OnRoomDataInitialized();
 	}
 }
 
@@ -50,16 +50,16 @@ void AJS_SoundActor::Tick(float DeltaTime)
 
 void AJS_SoundActor::SetBackgroundSoundByFileName(const FString& FileName)
 {
-	// »ç¿îµå ÆÄÀÏÀÌ ÄÜÅÙÃ÷ Æú´õÀÇ Æ¯Á¤ °æ·Î¿¡ ÀÖ´Â °æ¿ì
-	// ¿¹¸¦ µé¾î, "/Game/Audio/" µð·ºÅä¸®¿¡ »ç¿îµå ÆÄÀÏÀÌ ÀÖ´Ù°í °¡Á¤ÇÕ´Ï´Ù.
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ ï¿½ï¿½Î¿ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½, "/Game/Audio/" ï¿½ï¿½ï¿½ä¸®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 	FString AssetPath = FString::Printf(TEXT("/Game/Main/Sound/%s.%s"), *FileName, *FileName);
 
-	// »ç¿îµå ÆÄÀÏÀ» µ¿ÀûÀ¸·Î ·Îµå
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½
 	USoundBase* NewSound = Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, *AssetPath));
 
 	if (NewSound)
 	{
-		// ¿Àµð¿À ÄÄÆ÷³ÍÆ®¿¡ »õ »ç¿îµå¸¦ ¼³Á¤ÇÏ°í Àç»ý
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½å¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½
 		AudioComponent->SetSound(NewSound);
 		AudioComponent->Play();
 		UE_LOG(LogTemp, Warning, TEXT("Background sound changed and started playing: %s"), *FileName);

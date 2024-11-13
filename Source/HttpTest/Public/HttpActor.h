@@ -32,17 +32,17 @@ public:
     UPROPERTY(BlueprintAssignable, Category="Room Data")
     FOnRoomDataInitialized OnRoomDataInitialized;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	class AJS_RoomController* pc;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UHttpWidget> Sign_Factory;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UUserWidget> QuestionUIFactory;
 
-	UPROPERTY(EditAnywhere)
-	class UUserWidget* QuestionUI;
+	UPROPERTY()
+	class UKGW_WBP_Question* QuestionUI;
 
 	UPROPERTY(BlueprintReadWrite, Category = "JSON Data")
 	FString StoredJsonResponse;
@@ -81,20 +81,21 @@ public:
 	void OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
 	void ShowQuestionUI();
+	void HidQuestionUI();
 
 	UFUNCTION(BlueprintCallable, Category = "JSON")
     FString StoreJsonResponse();
 
-
 	FString LoginURL = "mirrora.duckdns.org:3326/api/auth/login";
 	FString EnteryLobbyURL = "mirrora.duckdns.org:3326/api/auth/processAndSendData";
 	FString MyRoomURL = "mirrora.duckdns.org:3326/api/auth/userRooms";
+	FString ClickMyRoomURL = "mirrora.duckdns.org:3326/api/auth/getRoomData";  //마이월드 페이지의 방 목록 클릭 시 호출 API
 	FString WallPaperURL = "mirrora.duckdns.org:3326/api/auth/wallpaperupdate";
 	FString HeartURL = "jsonplaceholder.typicode.com/posts";
 	FString EntryMultiWorldURL = "mirrora.duckdns.org:3326/api/auth/";  // <-- BE 작업 완료 후 추가하기
 	
 
-	/* Sunny */
+	/* Sunny start ------------------------------------------------------------------------------------- */ 
 	//캐릭터생성 -> 로비 입장 시 초기 설정
 	UPROPERTY()
 	class USessionGameInstance* SessionGI;
@@ -111,6 +112,22 @@ public:
 	void StartHttpMultyWorld();
 	void ReqPostClickMultiWorld(FString url, FString json);
 	void OnResPostClickMultiWorld(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+
+	//마이월드 인입 시 셋팅
+	class AJS_SoundActor* SoundActor;
+	void SetBackgroundSound();
+
+	class AKGW_RoomlistActor* MyWorldPlayer;
+	void ApplyMyWorldPointLightColors();
+	void ApplyMyWorldNiagaraAssets();
+	void SetMyWorldUIOn();
+	void SetMyWorldUIOff();
+
+	//마이월드 페이지의 방목록 클릭 시 통신
+	void CallHttpClickMyRoomList(FString room_num);
+	void ReqPostClickMyRoomList(FString url, FString json);
+	void OnResPostClickMyRoomList(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+	/* Sunny  end------------------------------------------------------------------------------------ */
 
 
 
@@ -135,5 +152,6 @@ public:
 	void ReqPostRoomList(FString url, FString json);
 
 	void OnResPostRoomList(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+
 
 };

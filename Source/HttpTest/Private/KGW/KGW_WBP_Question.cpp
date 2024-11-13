@@ -11,6 +11,7 @@
 #include "KGW/KGW_RoomlistActor.h"
 #include "Components/WidgetComponent.h"
 #include "KGW/KGW_EnterRoomActor.h"
+#include "CJS/CJS_InnerWorldParticleActor.h"
 
 void UKGW_WBP_Question::NativeConstruct()
 {
@@ -22,6 +23,12 @@ void UKGW_WBP_Question::NativeConstruct()
 
 void UKGW_WBP_Question::OnClickSelect()
 {
+	// QuestionUI Hide
+	HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
+	if (HttpActor)
+	{
+	 	HttpActor->HidQuestionUI();
+	}
 
 // 	FString UserId;
 // 	USessionGameInstance* GameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
@@ -32,18 +39,18 @@ void UKGW_WBP_Question::OnClickSelect()
 // 		UE_LOG(LogTemp, Warning, TEXT("Assigned UserId from MySessionName: %s"), *UserId);
 // 	}
 // 
-// 	// »ç¿ëÀÚ µ¥ÀÌÅÍ¸¦ ¸Ê¿¡ Ãß°¡
+// 	// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Ê¿ï¿½ ï¿½ß°ï¿½
 // 	TMap<FString, FString> MyRoomData;
 // 	MyRoomData.Add("userId", UserId);
 // 
-// 	// JSON Çü½ÄÀ¸·Î º¯È¯
+// 	// JSON ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
 // 	FString Json = UJsonParseLib::MakeJson(MyRoomData);
 // 
-// 	// ·Î±× Ãâ·Â (µð¹ö±ë¿ë)
+// 	// ï¿½Î±ï¿½ ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 // 	UE_LOG(LogTemp, Warning, TEXT("userId: %s"), *UserId);
 // 	UE_LOG(LogTemp, Warning, TEXT("Json Request: %s"), *Json);
 // 	HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
-// 	// ¼­¹ö·Î ¿äÃ» Àü¼Û
+// 	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã» ï¿½ï¿½ï¿½ï¿½
 // 	if (HttpActor)
 // 	{
 // 		HttpActor->ReqPostRoomList(HttpActor->MyRoomURL, Json);
@@ -59,25 +66,34 @@ void UKGW_WBP_Question::OnClickSelect()
 // 
 // 		UE_LOG(LogTemp, Error, TEXT("GameInstance->StoredRoomInfos size: %d"), StoredRoomInfos.Num());
 // 
-// 		// StoredRoomInfos¸¦ »ç¿ëÇÏ¿© ÇÊ¿äÇÑ ÀÛ¾÷ ¼öÇà
+// 		// StoredRoomInfosï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½Û¾ï¿½ ï¿½ï¿½ï¿½ï¿½
 // 	}
 // 	else
 // 	{
 // 		UE_LOG(LogTemp, Error, TEXT("GameInstance is null! Make sure it is initialized properly."));
 // 
-// 	}	
-	ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
-	if (ListActor)
-	{
-		FVector NewListLocation(-471190.0f, 643810.0f, 648270.0f);
-		ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
-	}	
+// 	}	ACJS_InnerWorldParticleActor
+ 	ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+ 	if (ListActor)
+ 	{
+ 		FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
+ 		ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
+		ListActor->ShowMyWorldParticle();
+	}
+ 	
 	EnterRoomActor = Cast<AKGW_EnterRoomActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_EnterRoomActor::StaticClass()));
 	if (EnterRoomActor)
 	{
 		FVector NewRoomLocation(-470930.0f, 643100.0f, 648150.0f);
 		EnterRoomActor->SetActorLocation(NewRoomLocation, true, nullptr, ETeleportType::TeleportPhysics);
+	}	
+	EffectActor = Cast<ACJS_InnerWorldParticleActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_InnerWorldParticleActor::StaticClass()));
+	if (EffectActor)
+	{
+		FVector NewRoomLocation(-471220.0f, 644140.0f, 648530.0f);
+		EffectActor->SetActorLocation(NewRoomLocation, true, nullptr, ETeleportType::TeleportPhysics);
 	}
+
 
 
 // 	 ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
@@ -110,4 +126,18 @@ void UKGW_WBP_Question::OnClickSelect()
 // 	}
 
 	
+}
+
+void UKGW_WBP_Question::PlayLateAppearAnimation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("UKGW_WBP_Question::PlayLateAppearAnimation()"));
+	if (LateAppearAnim)
+	{	
+		PlayAnimation(LateAppearAnim);
+		UE_LOG(LogTemp, Warning, TEXT("UKGW_WBP_Question::PlayLateAppearAnimation() PlayAnimation(LateAppearAnim);"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UKGW_WBP_Question::PlayLateAppearAnimation() Cannt Play Anim"));
+	}
 }
