@@ -31,6 +31,8 @@
 AJS_RoomController::AJS_RoomController()
 {
     PrimaryActorTick.bCanEverTick = true; // Tick Ȱ��ȭ
+
+    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::AJS_RoomController()"));
 }
 
 void AJS_RoomController::Tick(float DeltaTime)
@@ -73,15 +75,15 @@ void AJS_RoomController::BeginPlay()
         UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() No HttpActor"));
     }
 
-    LoginActor = Cast<ACJS_LoginActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_LoginActor::StaticClass()));
-    if (!LoginActor)
-    {
-        UE_LOG(LogTemp, Error, TEXT("LoginActor not found in the level."));
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() Set LoginActor"));
-    }
+	/*LoginActor = Cast<ACJS_LoginActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_LoginActor::StaticClass()));
+	if (!LoginActor)
+	{
+		UE_LOG(LogTemp, Error, TEXT("LoginActor not found in the level."));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() Set LoginActor"));
+	}*/
 
     InitializeUIWidgets();
     CheckDate();
@@ -124,15 +126,17 @@ void AJS_RoomController::BeginPlay()
     else if (LevelName.Contains("Login"))
     {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Login"));
-        if (LoginActor)
-        {
-            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() Set LoginActor"));
-            LoginActor->ShowLoginUI();
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO LoginActor"));
-        }
+        //ShowLoginUI();
+		/* if (LoginActor)
+		 {
+			 UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() Set LoginActor"));
+			 LoginActor->ShowLoginUI();
+		 }
+		 else
+		 {
+			 UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO LoginActor"));
+		 }*/
+
 
     }
     // ------------------------------------------------------------------------------------------------
@@ -208,13 +212,13 @@ void AJS_RoomController::CheckDate()
 void AJS_RoomController::InitializeUIWidgets()
 {
     //FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
-	/*if (LoginUIFactory) {
+	if (LoginUIFactory) {
 		LoginUI = CreateWidget<UHttpWidget>(this, LoginUIFactory);
 		if (LoginUI) {
 			LoginUI->AddToViewport();
 			LoginUI->SetVisibility(ESlateVisibility::Hidden);
 		}
-	}*/
+	}
     if (CR_UIFactory) {
         CR_UI = CreateWidget<UJS_CreateRoomWidget>(this, CR_UIFactory);
         if (CR_UI) {
@@ -234,17 +238,22 @@ void AJS_RoomController::InitializeUIWidgets()
 }
 void AJS_RoomController::ShowLoginUI()
 {
+    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowLoginUI()"));
     if (LoginUI)
     {
-        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowLoginUI()"));
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowLoginUI() LoginUI exsited"));
         LoginUI->SetVisibility(ESlateVisibility::Visible);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::ShowLoginUI() NO LoginUI"));
     }
 }
 void AJS_RoomController::HideLoginUI()
 {
     if (LoginUI)
     {
-        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowLoginUI()"));
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::HideLoginUI()"));
         LoginUI->SetVisibility(ESlateVisibility::Hidden);
     }
 }
@@ -542,7 +551,7 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
     FVector CameraLocation;
     FRotator CameraRotation;
 
-    if (LevelName == "Main_Sky" || LevelName == "Main_Login")
+    if (LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question")
     {
         // �ϴ� ���� ��ġ�� ȸ�� ����
         CameraLocation = FVector(-470047.589317, 643880.89814, 648118.610643);
@@ -575,7 +584,7 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
     {
         TargetCamera->GetCameraComponent()->SetFieldOfView(50);
     }
-    else if (LevelName == "Main_Login"|| LevelName == "Main_Ky")
+    else if (LevelName == "Main_Login"|| LevelName == "Main_Sky" || LevelName == "Main_Question")
     {
         TargetCamera->GetCameraComponent()->SetFieldOfView(90);
     }
