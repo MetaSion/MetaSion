@@ -74,8 +74,10 @@ public:
 ;
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_MyPage;
+        UFUNCTION(BlueprintCallable)
 
     void OnClickCaptureImage();
+            UFUNCTION(BlueprintCallable)
 
     void OnClikMypage();
 
