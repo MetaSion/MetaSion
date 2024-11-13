@@ -37,7 +37,7 @@ void UJS_CreateRoomWidget::NativeConstruct()
 	if (ED_MultiText)
 	{
 		ED_MultiText->SetAutoWrapText(true);
-		ED_MultiText->SetWrapTextAt(550.0f); // ÀûÀýÇÑ °ªÀ¸·Î Á¶Á¤ÇÏ¼¼¿ä
+		ED_MultiText->SetWrapTextAt(550.0f); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½
 		LastValidText = TEXT("");
 	}
 }
@@ -68,9 +68,9 @@ void UJS_CreateRoomWidget::CreateRoomChooseNo()
 void UJS_CreateRoomWidget::CompleteCreateRoom()
 {
 	if (ED_RoomName && !ED_RoomName->GetText().IsEmpty()) {
-		//ÀÌÂÊ¿¡ º¸³»´Â ·ÎÁ÷ Ãß°¡
+		//ï¿½ï¿½ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
 		SwitchToWidget(2);
-		ShowUIForLimitedTime(3);
+		ShowUIForLimitedTime(1.5);
 		if (widgetActor) {
 			widgetActor->SetActorVisibilityVisible();
 		}
@@ -144,7 +144,7 @@ void UJS_CreateRoomWidget::OnTextChanged_SingleLine(const FText& Text)
 	FString CurrentText = Text.ToString();
 	if (CurrentText.Len() > textSize)
 	{
-		// 30ÀÚ ÃÊ°ú ½Ã Àß¶ó³»±â
+		// 30ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ ï¿½ß¶ó³»±ï¿½
 		FString TrimmedText = CurrentText.Left(textSize/10);
 		ED_RoomName->SetText(FText::FromString(TrimmedText));
 	}
@@ -157,22 +157,22 @@ void UJS_CreateRoomWidget::OnTextChanged_MultiLine(const FText& Text)
 	FString CurrentText = Text.ToString();
 	int32 CharacterCount = 0;
 
-	// ÅØ½ºÆ®ÀÇ ½ÇÁ¦ ±æÀÌ¸¦ °è»ê
+	// ï¿½Ø½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½
 	for (const TCHAR& Char : CurrentText)
 	{
-		CharacterCount += (Char <= 0x007F) ? 1 : 3; // ÇÑ±ÛÀº 3·Î °è»ê
+		CharacterCount += (Char <= 0x007F) ? 1 : 3; // ï¿½Ñ±ï¿½ï¿½ï¿½ 3ï¿½ï¿½ ï¿½ï¿½ï¿½
 		UE_LOG(LogTemp, Warning, TEXT("%c"), Char);
 	}
 
-	// ±ÛÀÚ ¼ö Á¦ÇÑÀ» ³Ñ¾úÀ» ¶§ °æ°í ¸Þ½ÃÁö Ç¥½Ã
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
 	if (CharacterCount > MAX_CHARACTER_COUNT)
 	{
-		// ·Î±× Ãâ·ÂÀ¸·Î °æ°í
-		UE_LOG(LogTemp, Warning, TEXT("±ÛÀÚ ¼ö Á¦ÇÑÀ» ÃÊ°úÇß½À´Ï´Ù!"));
+		// ï¿½Î±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+		UE_LOG(LogTemp, Warning, TEXT("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½!"));
 	}
 	else
 	{
-		// Á¦ÇÑÀ» ³ÑÁö ¾ÊÀº °æ¿ì¿¡¸¸ À¯È¿ÇÑ ÅØ½ºÆ®·Î ÀúÀå
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ ï¿½Ø½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		LastValidText = CurrentText;
 	}
 }
@@ -202,16 +202,16 @@ void UJS_CreateRoomWidget::OnTextCommitted_MultiLine(const FText& Text, ETextCom
 //{
 //	FString CurrentText = Text.ToString();
 //
-//	// ¹®ÀÚ¿­ÀÇ ½ÇÁ¦ ±æÀÌ¸¦ °è»ê (UTF-16 ¹®ÀÚ ´ÜÀ§·Î)
+//	// ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ (UTF-16 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 //	int32 CharacterCount = 0;
 //	for (const TCHAR& Char : CurrentText)
 //	{
-//		// ASCII ¹üÀ§ÀÇ ¹®ÀÚ´Â 1·Î, ±× ¿Ü(ÇÑ±Û µî)´Â 2·Î Ä«¿îÆ®
+//		// ASCII ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú´ï¿½ 1ï¿½ï¿½, ï¿½ï¿½ ï¿½ï¿½(ï¿½Ñ±ï¿½ ï¿½ï¿½)ï¿½ï¿½ 2ï¿½ï¿½ Ä«ï¿½ï¿½Æ®
 //		CharacterCount += (Char <= 0x007F) ? 1 : 2;
 //	}
 //
-//	// ¼³Á¤ÇÑ Á¦ÇÑÀ» ÃÊ°úÇÏ¸é Àß¶ó³»±â
-//	if (CharacterCount > 34) // 17±ÛÀÚ * 2 = 34 (ÇÑ±Û ±âÁØ)
+//	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ï¿½Ï¸ï¿½ ï¿½ß¶ó³»±ï¿½
+//	if (CharacterCount > 34) // 17ï¿½ï¿½ï¿½ï¿½ * 2 = 34 (ï¿½Ñ±ï¿½ ï¿½ï¿½ï¿½ï¿½)
 //	{
 //		FString TrimmedText;
 //		int32 CurrentCount = 0;
