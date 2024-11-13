@@ -30,6 +30,11 @@ void UJS_CreateRoomWidget::NativeConstruct()
 	ED_MultiText->OnTextChanged.AddDynamic(this, &UJS_CreateRoomWidget::OnTextChanged_MultiLine);
 	ED_MultiText->OnTextCommitted.AddDynamic(this, &UJS_CreateRoomWidget::OnTextCommitted_MultiLine);
 
+	Btn_CaptureImage->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClickCaptureImage);
+	Btn_MyPage->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClikMypage);
+
+
+
 	pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	httpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
 	widgetActor = Cast<AJS_WidgetFunction>(UGameplayStatics::GetActorOfClass(GetWorld(), AJS_WidgetFunction::StaticClass()));
@@ -40,6 +45,21 @@ void UJS_CreateRoomWidget::NativeConstruct()
 		ED_MultiText->SetWrapTextAt(550.0f); // ������ ������ �����ϼ���
 		LastValidText = TEXT("");
 	}
+}
+void UJS_CreateRoomWidget::OnClickCaptureImage()
+{
+	pc->OnClickButtonImage();
+	UE_LOG(LogTemp, Error, TEXT("captured"));
+
+}
+void UJS_CreateRoomWidget::OnClikMypage()
+{
+	SendCompleteRoomData();
+
+	UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+	pc->SetActorLocationAfterLevelLoad();
+
+
 }
 //widget Switch
 void UJS_CreateRoomWidget::SwitchToWidget(int32 index)
@@ -70,14 +90,20 @@ void UJS_CreateRoomWidget::CompleteCreateRoom()
 	if (ED_RoomName && !ED_RoomName->GetText().IsEmpty()) {
 		//���ʿ� ������ ���� �߰�
 		SwitchToWidget(2);
-		ShowUIForLimitedTime(1.5);
-		if (widgetActor) {
-			widgetActor->SetActorVisibilityVisible();
-		}
-		SendCompleteRoomData();
+// 		ShowUIForLimitedTime(1.5);
+// 		if (widgetActor) {
+// 			widgetActor->SetActorVisibilityVisible();
+// 		}
+		
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UJS_CreateRoomWidget::DelayedSwitchToWidget, 1.5f, false);
+// 		SwitchToWidget(3);
 	}
 }
-
+void UJS_CreateRoomWidget::DelayedSwitchToWidget()
+{
+	SwitchToWidget(3);
+}
 void UJS_CreateRoomWidget::SetPrivate()
 {
 	bPrivate = 1 - bPrivate; // 0 -> 1 -> 0 

@@ -35,15 +35,18 @@ public:
 	class APlayerController* PC;
 
 	// 카메라 =================================================================================================
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	class USpringArmComponent* SpringArmComp;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	class UCameraComponent* CameraComp;
 	FVector Direction; 
 
 	// 머터리얼 ===============================================================================================
 	UPROPERTY()
     UMaterialInstanceDynamic* DynamicMaterialInstance;
+	//	나이아가라 ===============================================================================================
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
+	class UNiagaraComponent* NiagraComp;
 
 	// 인풋 동작 ==============================================================================================
 	UPROPERTY(EditDefaultsOnly, Category = "INPUT")
@@ -63,9 +66,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "INPUT")
 	class UInputAction* IA_QuitGame;
 	
-	void OnMyActionMove(const FInputActionValue& Value);
-	void OnMyActionLook(const FInputActionValue& Value);
-	void OnMyActionJump(const FInputActionValue& Value);
+// 	void OnMyActionMove(const FInputActionValue& Value);
+// 	void OnMyActionLook(const FInputActionValue& Value);
+// 	void OnMyActionJump(const FInputActionValue& Value);
 	void OnMyActionThrow(const FInputActionValue& Value);
 	void OnMyActionClick(const FInputActionValue& Value);
 	void OnMyActionToggleAimPointUI(const FInputActionValue& Value);
@@ -93,10 +96,10 @@ public:
 
 
 	// 부딪혔을 때 ==============================================================================================
-	UPROPERTY(EditDefaultsOnly, Category = "FX")
-	class UParticleSystem* HitVFXFactory;
-	UPROPERTY(EditDefaultsOnly, Category = "FX")
-	class UParticleSystem* SelfHitVFXFactory;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+	class UNiagaraSystem* HitVFXFactory;
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite, Category = "FX")
+	class UNiagaraSystem* SelfHitVFXFactory;
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 	class USoundBase* HitSFX;
 	void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
