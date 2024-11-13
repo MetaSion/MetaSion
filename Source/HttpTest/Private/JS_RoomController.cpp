@@ -74,7 +74,7 @@ void AJS_RoomController::BeginPlay()
     InitializeUIWidgets();
     CheckDate();
     SetInputMode(FInputModeGameOnly());
-    GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, true);
+    GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, false);
 
     SessionGI = Cast<USessionGameInstance>(GetGameInstance());
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
@@ -181,14 +181,14 @@ void AJS_RoomController::CheckDate()
 
 void AJS_RoomController::InitializeUIWidgets()
 {
-    FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
-    if (LoginUIFactory) {
+    //FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+    /*if (LoginUIFactory) {
         LoginUI = CreateWidget<UHttpWidget>(this, LoginUIFactory);
         if (LoginUI) {
             LoginUI->AddToViewport();
             LoginUI->SetVisibility(ESlateVisibility::Hidden);
         }
-    }
+    }*/
     if (CR_UIFactory) {
         CR_UI = CreateWidget<UJS_CreateRoomWidget>(this, CR_UIFactory);
         if (CR_UI) {
@@ -490,16 +490,17 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
 {
     UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SpawnAndSwitchToCamera()"));
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SpawnAndSwitchToCamera() LevelName : %s"), *LevelName);
 
     FVector CameraLocation;
     FRotator CameraRotation;
 
-    if (LevelName == "Main_Sky")
+    if (LevelName == "Main_Sky" || LevelName == "Main_Login")
     {
         // �ϴ� ���� ��ġ�� ȸ�� ����
         CameraLocation = FVector(-470047.589317, 643880.89814, 648118.610643);
         CameraRotation = FRotator(9.157953, 200.435537, 0.000001); 
-        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SpawnAndSwitchToCamera() Set Main_Sky Camera Transform"));
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SpawnAndSwitchToCamera() Set Sky Camera Transform"));
         //CameraRotation = FRotator(0, 0, 0);
     }
     //else if (LevelName == "Main_Room")
@@ -526,6 +527,10 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
     if (LevelName.Contains("Main_LV"))
     {
         TargetCamera->GetCameraComponent()->SetFieldOfView(50);
+    }
+    else if (LevelName == "Main_Login"|| LevelName == "Main_Ky")
+    {
+        TargetCamera->GetCameraComponent()->SetFieldOfView(90);
     }
     if (TargetCamera)
     {

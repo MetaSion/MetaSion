@@ -34,9 +34,6 @@ public:
 
 	UPROPERTY()
 	class AJS_RoomController* pc;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<class UHttpWidget> Sign_Factory;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UUserWidget> QuestionUIFactory;
