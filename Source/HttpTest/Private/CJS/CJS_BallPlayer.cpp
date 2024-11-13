@@ -427,15 +427,16 @@ void ACJS_BallPlayer::OnMyActionThrow(const FInputActionValue& Value)
 	//{
 	//	UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionThrow() - HeartItemFactory is null"));
 	//}
-
-	if (!HasAuthority())
+// 
+// 	if (HasAuthority() && IsLocallyControlled())
+// 	{
+// 		// 서버에서 직접 멀티캐스트 호출
+// 		MulticastRPC_ThrowHeart();
+// 	}
+	 if (!HasAuthority())
 	{
-		ServerRPC_ThrowHeart();  // 클라이언트에서 서버로 요청
-	}
-	else
-	{
-		// 서버에서 직접 멀티캐스트 호출 (서버가 직접 실행할 경우)
-		MulticastRPC_ThrowHeart();
+		// 클라이언트에서 서버로 RPC 호출 요청
+		ServerRPC_ThrowHeart();
 	}
 }
 
@@ -758,6 +759,8 @@ void ACJS_BallPlayer::MulticastRPC_ThrowHeart_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_ThrowHeart()"));
 	// 실제 하트를 던지는 로직 (기존의 OnMyActionThrow 로직을 여기로 옮기기)
+	if (HasAuthority())
+	{
 	if (HeartItemFactory)
 	{
 		// 일정한 방향으로 던지기
@@ -777,6 +780,7 @@ void ACJS_BallPlayer::MulticastRPC_ThrowHeart_Implementation()
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::Multicast_ThrowHeart() - HeartItemFactory is null"));
+	}
 	}
 }
 
