@@ -78,6 +78,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
     float MoveForce;
 
+
 	// 인풋 애니메이션 =========================================================================================
 	UPROPERTY(EditDefaultsOnly, Category = "INPUT")
 	class UInputAction* IA_NumKeys[8];
