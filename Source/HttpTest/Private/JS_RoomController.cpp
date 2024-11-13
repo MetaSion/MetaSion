@@ -109,21 +109,21 @@ void AJS_RoomController::BeginPlay()
     else if (LevelName.Contains("Sky"))
     {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky"));
-        if (SessionGI && SessionGI->bSuccess) {
-            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky-> SessionGI exsited"));
-            if (HttpActor) {
-                HttpActor->ShowQuestionUI();
-            }
-            else
-            {
-                UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() No HttpActor"));
-            }
-            SessionGI->bSuccess = false; // 사용 후 상태 초기화
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
-        }
+        //if (SessionGI && SessionGI->bSuccess) {
+        //    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky-> SessionGI exsited"));
+        //    //if (HttpActor) {
+        //    //    //HttpActor->ShowQuestionUI();
+        //    //}
+        //    else
+        //    {
+        //        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() No HttpActor"));
+        //    }
+        //    SessionGI->bSuccess = false; // 사용 후 상태 초기화
+        //}
+		/*else
+		{
+			UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
+		}*/
     }
     else if (LevelName.Contains("Main_Login"))
     {
