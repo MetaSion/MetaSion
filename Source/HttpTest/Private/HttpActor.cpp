@@ -260,8 +260,7 @@ void AHttpActor::RoomSendDataReqPost(FString url, FString json)
     // ��û�� ������ ����
     req->SetURL(url);
     req->SetVerb(TEXT("POST"));
-    req->SetHeader(TEXT("content-
-    "), TEXT("application/json"));
+    req->SetHeader(TEXT("content-type"), TEXT("application/json"));
     req->SetContentAsString(json);
 
     req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::RoomSendDataResPost);
