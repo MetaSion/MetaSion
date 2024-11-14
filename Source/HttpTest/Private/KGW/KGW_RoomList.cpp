@@ -16,7 +16,8 @@ void UKGW_RoomList::NativeConstruct()
     Super::NativeConstruct();
        
     Btn_InnerWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickInnerWorld);
-    Btn_MultiWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickMultiWorld);      
+    Btn_MultiWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickMultiWorld);
+
 }
 
 void UKGW_RoomList::AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos)
@@ -83,10 +84,76 @@ void UKGW_RoomList::OnClickInnerWorld()
 void UKGW_RoomList::OnClickMultiWorld()
 {
     UE_LOG(LogTemp, Warning, TEXT("UKGW_RoomList::OnClickMultiWorld()"));
-    OpenActor->StartHttpMultyWorld();
+    StartHttpMultyWorld();
 }
 
+//마이월드 -> 멀티월드 버튼 클릭 시 통신
+void UKGW_RoomList::StartHttpMultyWorld()
+{
+    OpenActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
+    if (!OpenActor)
+    {
+        UE_LOG(LogTemp, Error, TEXT("OpenActor is not initialized!"));
+        return;
+    }
 
+    USessionGameInstance* SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+    if (SessionGI)
+    {
+        FString UserId = SessionGI->MySessionName;
+        TMap<FString, FString> MyRoomData;
+        MyRoomData.Add("userId", UserId);
+        FString JsonRequest = UJsonParseLib::MakeJson(MyRoomData);
+
+        // 서버로 요청 전송
+        OpenActor->ReqPostClickMultiWorld(OpenActor->EntryMultiWorldURL, JsonRequest);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("SessionGI is NULL"));
+    }
+    //if (!OpenActor)
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("OpenActor is not initialized!"));
+    //    return;
+    //}
+
+    //USessionGameInstance* SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+    //if (SessionGI)
+    //{
+    //    UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance is set"));
+    //}
+    //else
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("USessionGameInstance is not set"));
+    //}
+    //FString UserId;
+    //if (SessionGI)
+    //{
+    //    UserId = SessionGI->UserId;
+    //    UserId = SessionGI->MySessionName;
+    //    UE_LOG(LogTemp, Warning, TEXT("Assigned UserId from MySessionName: %s"), *UserId);
+    //}
+    //else
+    //{
+    //    UE_LOG(LogTemp, Warning, TEXT("gi Nullptr"));
+    //    return;
+    //}
+
+    //// 사용자 데이터를 맵에 추가
+    //TMap<FString, FString> MyRoomData;
+    //MyRoomData.Add("userId", UserId);
+
+    //// JSON 형식으로 변환
+    //FString JsonRequest = UJsonParseLib::MakeJson(MyRoomData);
+
+    //// 로그 출력 (디버깅용)
+    //UE_LOG(LogTemp, Warning, TEXT("userId: %s"), *UserId);
+    //UE_LOG(LogTemp, Warning, TEXT("Json Request: %s"), *JsonRequest);
+
+    //// 서버로 요청 전송
+    //OpenActor->ReqPostClickMultiWorld(OpenActor->EntryMultiWorldURL, JsonRequest);
+}
 // void UKGW_RoomList::SetFindActive(bool value)
 // {
 // 	//ã�Ⱑ ������ Empty �ؽ�Ʈ �Ⱥ��̰� �ϰ�ʹ�.

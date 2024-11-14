@@ -109,7 +109,7 @@ void USessionGameInstance::OnCreateSessionComplete(FName sessionName, bool bWasS
 	{
 		PRINTLOG(TEXT("OnCreateSessionComplete is Successes"));
 		PRINTLOG(TEXT("Session created successfully with name: %s"), *sessionName.ToString());
-		GetWorld()->ServerTravel(TEXT("/Game/Main/Maps/Main_Lobby?listen"));  
+		GetWorld()->ServerTravel(TEXT("/Game/Junguk/Maps/Lobby"));
 	}
 	else
 	{

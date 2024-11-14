@@ -398,25 +398,7 @@ void AHttpActor::ReqPostChoice(FString url, FString json)
     req->SetHeader(TEXT("content-type"), TEXT("application/json"));
     req->SetContentAsString(json);
 
-    req->OnProcessRequestComplete().BindLambda(
-        [this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
-        {
-            if (!SessionGI)
-            {
-                UE_LOG(LogTemp, Error, TEXT("SessionGI is null in callback!"));
-                return;
-            }
-            OnResPostChoice(Request, Response, bConnectedSuccessfully);
-            SessionGI->bNotFirst = true;
-			/* if (!SessionGI->bNotFirst)
-			 {
-
-			 }*/
-			/*else
-			{
-				OnResPostBackRoom(Request, Response, bConnectedSuccessfully);
-			}*/
-        });
+    req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::OnResPostChoice);
 
     // 요청 처리
     if (!req->ProcessRequest())
@@ -794,38 +776,6 @@ void AHttpActor::OnResPostClickMyRoom(FHttpRequestPtr Request, FHttpResponsePtr 
     }
 }
 
-//마이월드 -> 멀티월드 버튼 클릭 시 통신
-void AHttpActor::StartHttpMultyWorld()
-{
-    //JS ReWrite 이쪽에 방 데이터 송수신 하는 부분 넣고 수신 하는 부분에서 방 이동
-    USessionGameInstance* gi = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
-    FString UserId;
-    if (gi)
-    {
-        UserId = gi->UserId;
-        UserId = gi->MySessionName;
-        UE_LOG(LogTemp, Warning, TEXT("Assigned UserId from MySessionName: %s"), *UserId);
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("gi Nullptr"));
-        return;
-    }
-
-    // 사용자 데이터를 맵에 추가
-    TMap<FString, FString> MyRoomData;
-    MyRoomData.Add("userId", UserId);
-
-    // JSON 형식으로 변환
-    FString JsonRequest = UJsonParseLib::MakeJson(MyRoomData);
-
-    // 로그 출력 (디버깅용)
-    UE_LOG(LogTemp, Warning, TEXT("userId: %s"), *UserId);
-    UE_LOG(LogTemp, Warning, TEXT("Json Request: %s"), *JsonRequest);
-
-    // 서버로 요청 전송
-    ReqPostClickMultiWorld(EntryMultiWorldURL, JsonRequest);
-}
 void AHttpActor::ReqPostClickMultiWorld(FString url, FString json)
 {
     FHttpModule& httpModule = FHttpModule::Get();
