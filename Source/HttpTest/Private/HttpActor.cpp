@@ -304,7 +304,6 @@ void AHttpActor::RoomSendDataResPost(FHttpRequestPtr Request, FHttpResponsePtr R
 
     if (bConnectedSuccessfully && EHttpResponseCodes::IsOk(Response->GetResponseCode()))
     {
-        FMyWorldSetting MyWorldSetting;
 
         FString JsonResponse = Response->GetContentAsString();
         UE_LOG(LogTemp, Warning, TEXT("Received JSON: %s"), *JsonResponse);
@@ -319,10 +318,10 @@ void AHttpActor::RoomSendDataResPost(FHttpRequestPtr Request, FHttpResponsePtr R
         *RoomReceptionData.AIRecommendationData.Music);
 
         //UPDate Data
-        MyWorldSetting.ParticleNum = RoomReceptionData.AIAnalysisData.ParticleNum;
-        MyWorldSetting.Result = RoomReceptionData.AIAnalysisData.Result;
-        MyWorldSetting.UserMusic = RoomReceptionData.AIRecommendationData.Music;
-        UE_LOG(LogTemp, Warning, TEXT(" ParticleNum : %s, Result : %s, UserMusic : %s"), *MyWorldSetting.ParticleNum, *MyWorldSetting.Result, *MyWorldSetting.UserMusic);
+        SessionGI->WorldSetting.ParticleNum = RoomReceptionData.AIAnalysisData.ParticleNum;
+        SessionGI->WorldSetting.Result = RoomReceptionData.AIAnalysisData.Result;
+        SessionGI->WorldSetting.UserMusic = RoomReceptionData.AIRecommendationData.Music;
+        UE_LOG(LogTemp, Warning, TEXT(" ParticleNum : %s, Result : %s, UserMusic : %s"), *SessionGI->WorldSetting.ParticleNum, *SessionGI->WorldSetting.Result, *SessionGI->WorldSetting.UserMusic);
 
         for (const FRGBColorData& ColorData : RoomReceptionData.AIAnalysisData.ArrayColorData) {
             FMyRGBColor MyColor;
@@ -330,7 +329,7 @@ void AHttpActor::RoomSendDataResPost(FHttpRequestPtr Request, FHttpResponsePtr R
             MyColor.G = ColorData.G;
             MyColor.B = ColorData.B;
 
-            MyWorldSetting.RGB18.Add(MyColor);
+            SessionGI->WorldSetting.RGB18.Add(MyColor);
 
             UE_LOG(LogTemp, Warning, TEXT("Added Color - R: %f, G: %f, B: %f"), MyColor.R, MyColor.G, MyColor.B);
         }
