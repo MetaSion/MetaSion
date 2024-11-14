@@ -342,6 +342,7 @@ void AJS_RoomController::SetActorLocationAfterLevelLoad()
         FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
         ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
         UE_LOG(LogTemp, Log, TEXT("ListActor location set successfully."));
+        SetChangeLevelData();
     }
     else
     {
@@ -618,7 +619,7 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
 void AJS_RoomController::SetChangeLevelData()
 {
     AKGW_RoomlistActor* MyWorldPlayer = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
-   FMyWorldSetting WorldSetting;
+   SessionGI->WorldSetting;
 
    AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
    UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
@@ -640,7 +641,7 @@ void AJS_RoomController::SetChangeLevelData()
     // 5.방 목록의 제목을 UI에 넣는다.
     if (SessionGI)
     {
-        SessionGI->InitRoomNameNum(WorldSetting.MyRooms); // 데이터가 제대로 저장되었는지 로그로 확인
+        SessionGI->InitRoomNameNum(SessionGI->WorldSetting.MyRooms); // 데이터가 제대로 저장되었는지 로그로 확인
         UE_LOG(LogTemp, Warning, TEXT("GameInstance->InitRoomInfoList size: %d"), SessionGI->RoomInfoList.Num());
         TArray<FMyWorldRoomInfo> Result;
         Result = SessionGI->GettRoomNameNum(); // 데이터가 제대로 저장되었는지 로그로 확인
@@ -656,9 +657,9 @@ void AJS_RoomController::SetChangeLevelData()
                     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() Showlist updated successfully."));
 
                     // 6.AI 분석 결과를 UI에 넣는다.
-                    Showlist->SetTextLog(WorldSetting.Result);
+                    Showlist->SetTextLog(SessionGI->WorldSetting.Result);
                     // move to sugested tmeplate room 방이동
-                    Showlist->SetWheaterNumb(WorldSetting.Quadrant);
+                    Showlist->SetWheaterNumb(SessionGI->WorldSetting.Quadrant);
 
                 }
                 else
