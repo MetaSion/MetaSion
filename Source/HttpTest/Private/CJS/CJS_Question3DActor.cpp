@@ -9,7 +9,7 @@ void ACJS_Question3DActor::BeginPlay()
 {
     Super::BeginPlay();
 
-   HideQuestionText3D();
+   //HideQuestionText3D();
 
     //HideQuestionText3D();
    
@@ -58,20 +58,20 @@ void ACJS_Question3DActor::HideQuestionText3D()
         UE_LOG(LogTemp, Error, TEXT("ACJS_Question3DActor::ShowQuestionText3D() Text3DComponent not found or not initialized"));
     }
 
-    FTimerHandle TimerHandle;
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACJS_Question3DActor::ShowQuestionText3D, 10.0f, false);
+    //FTimerHandle TimerHandle;
+    //GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACJS_Question3DActor::ShowQuestionText3D, 10.0f, false);
 }
 
-void ACJS_Question3DActor::ShowQuesion1()
-{
-    UE_LOG(LogTemp, Warning, TEXT("CJS_Question3DActor::ShowQuesion1()"));
-    ShowQuestionText3D();
-}
-void ACJS_Question3DActor::ShowQuesion2()
-{
-    UE_LOG(LogTemp, Warning, TEXT("CJS_Question3DActor::ShowQuesion2()"));
-}
-void ACJS_Question3DActor::ShowQuesion3()
-{
-    UE_LOG(LogTemp, Warning, TEXT("CJS_Question3DActor::ShowQuesion3()"));
-}
+//void ACJS_Question3DActor::ShowQuesion1()
+//{
+//    UE_LOG(LogTemp, Warning, TEXT("CJS_Question3DActor::ShowQuesion1()"));
+//    ShowQuestionText3D();
+//}
+//void ACJS_Question3DActor::ShowQuesion2()
+//{
+//    UE_LOG(LogTemp, Warning, TEXT("CJS_Question3DActor::ShowQuesion2()"));
+//}
+//void ACJS_Question3DActor::ShowQuesion3()
+//{
+//    UE_LOG(LogTemp, Warning, TEXT("CJS_Question3DActor::ShowQuesion3()"));
+//}
