@@ -82,6 +82,7 @@ public:
     void ShowHeartUITimer();
     void SpawnAndSwitchToCamera();
 
+    void SetChangeLevelData();
     //KGW==============================================
 
     void OnClickButtonImage();

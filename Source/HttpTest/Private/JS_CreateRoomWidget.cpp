@@ -56,11 +56,7 @@ void UJS_CreateRoomWidget::OnClickCaptureImage()
 void UJS_CreateRoomWidget::OnClikMypage()
 {
 	SendCompleteRoomData();
-
 	UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
-	pc->SetActorLocationAfterLevelLoad();
-
-
 }
 void UJS_CreateRoomWidget::OnClikExplanation()
 {
@@ -100,7 +96,6 @@ void UJS_CreateRoomWidget::CreateRoomChooseNo()
 void UJS_CreateRoomWidget::CompleteCreateRoom()
 {
 	if (ED_RoomName && !ED_RoomName->GetText().IsEmpty()) {
-		//ï¿½ï¿½ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
 		SwitchToWidget(2);
 // 		ShowUIForLimitedTime(1.5);
 // 		if (widgetActor) {
@@ -198,12 +193,12 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 		"\"UserId\": \"%s\","
 		"\"RoomName\": \"%s\","
 		"\"UltraSky_TimeOfDay\": \"%s\","
-		"\"UltraWheather_CloudCoverage\": \"%s\","
-		"\"UltraWheather_Fog\": \"%s\","
-		"\"UltraWheather_Rain\": \"%s\","
-		"\"UltraWheather_Snow\": \"%s\","
-		"\"UltraWheather_Dust\": \"%s\","
-		"\"UltraWheather_Thunder\": \"%s\","
+		"\"UltraWeather_CloudCoverage\": \"%s\","  // ¿ÀÅ¸ ¼öÁ¤
+		"\"UltraWeather_Fog\": \"%s\","
+		"\"UltraWeather_Rain\": \"%s\","
+		"\"UltraWeather_Snow\": \"%s\","
+		"\"UltraWeather_Dust\": \"%s\","
+		"\"UltraWeather_Thunder\": \"%s\","
 		"\"MainObject\": \"%s\","
 		"\"SubObject\": \"%s\","
 		"\"Background\": \"%s\","
@@ -226,14 +221,13 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 		*Background,
 		*WeatherParticle,
 		*RoomDescription,
-		*RoomPP,      // RoomPP °ª Ãß°¡
-		*Quadrant     // Quadrant °ª Ãß°¡
+		*RoomPP,
+		*Quadrant
 	);
-
-	//FString json = UJsonParseLib::RoomSendData_Convert_StructToJson(RoomSendData);
 
 	if (httpActor) {
 		httpActor->RoomSendDataReqPost(httpActor->SaveRoomData, json);
+
 	}
 }
 
