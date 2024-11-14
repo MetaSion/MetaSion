@@ -424,6 +424,137 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
         TSharedPtr<FJsonObject> JsonObject;
         TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(StoredJsonResponse);
         USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
+		/*AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+		UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
+		UKGW_RoomList* Showlist = Cast<UKGW_RoomList>(WidgetComp->GetUserWidgetObject());*/
+
+        if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+        {
+            // 1.요소마다 받아서 SessionGameInstance에 저장을 한다.
+            FMyWorldSetting WorldSetting;
+            // Parse RGB
+            if (JsonObject->HasTypedField<EJson::Object>(TEXT("RGB")))
+            {
+                TSharedPtr<FJsonObject> RGBObject = JsonObject->GetObjectField(TEXT("RGB"));
+                WorldSetting.RGB.R = FCString::Atof(*RGBObject->GetStringField("R"));
+                WorldSetting.RGB.G = FCString::Atof(*RGBObject->GetStringField("G"));
+                WorldSetting.RGB.B = FCString::Atof(*RGBObject->GetStringField("B"));
+            }
+            // Parse RGB18
+            if (JsonObject->HasTypedField<EJson::Object>(TEXT("RGB18")))
+            {
+                TSharedPtr<FJsonObject> RGB18Object = JsonObject->GetObjectField(TEXT("RGB18"));
+                for (int32 i = 1; i <= 6; i++)
+                {
+                    FMyRGBColor Color;
+                    Color.R = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("R%d"), i)));
+                    Color.G = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("G%d"), i)));
+                    Color.B = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("B%d"), i)));
+                    WorldSetting.RGB18.Add(Color);
+                }
+            }
+            // Parse UserMusic
+            WorldSetting.UserMusic = JsonObject->GetStringField(TEXT("userMusic"));
+            // Parse Quadrant
+            WorldSetting.Quadrant = JsonObject->GetStringField(TEXT("Quadrant"));
+            // Parse Initial Room Info
+            WorldSetting.TimeOfDay = JsonObject->GetStringField(TEXT("UltraSky_TimeOfDay"));
+            WorldSetting.CloudCoverage = JsonObject->GetStringField(TEXT("UltraWeather_CloudCoverage"));
+            WorldSetting.Fog = JsonObject->GetStringField(TEXT("UltraWeather_Fog"));
+            WorldSetting.Rain = JsonObject->GetStringField(TEXT("UltraWeather_Rain"));
+            WorldSetting.Snow = JsonObject->GetStringField(TEXT("UltraWeather_Snow"));
+            WorldSetting.Dust = JsonObject->GetStringField(TEXT("UltraWeather_Dust"));
+            WorldSetting.Thunder = JsonObject->GetStringField(TEXT("UltraWeather_Thunder"));
+            WorldSetting.MainObject = JsonObject->GetStringField(TEXT("MainObject"));
+            WorldSetting.SubObject = JsonObject->GetStringField(TEXT("SubObject"));
+            WorldSetting.Background = JsonObject->GetStringField(TEXT("Background"));
+            // Parse ParticleNum
+            WorldSetting.ParticleNum = JsonObject->GetStringField(TEXT("Particle_num"));
+            // Parse Result
+            WorldSetting.Result = JsonObject->GetStringField(TEXT("result"));
+            // Parse Rooms
+            if (JsonObject->HasTypedField<EJson::Array>(TEXT("rooms")))
+            {
+                TArray<TSharedPtr<FJsonValue>> RoomsArray = JsonObject->GetArrayField(TEXT("rooms"));
+                for (const TSharedPtr<FJsonValue>& RoomValue : RoomsArray)
+                {
+                    TSharedPtr<FJsonObject> RoomObject = RoomValue->AsObject();
+                    if (RoomObject.IsValid())
+                    {
+                        FMyWorldRoomInfo RoomInfo;
+                        RoomInfo.MyRoomNum = RoomObject->GetIntegerField(TEXT("room_num"));
+                        RoomInfo.MyRoomName = RoomObject->GetStringField(TEXT("room_name"));
+                        WorldSetting.MyRooms.Add(RoomInfo);
+                    }
+                }
+            }
+            // Store the parsed data in GameInstance or other persistent storage
+            if (UGameInstance* GameInstance = GetGameInstance())
+            {
+//                 USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GameInstance);
+                if (SessionGameInstance)
+                {
+                    SessionGameInstance->WorldSetting = WorldSetting;
+                    //SessionGameInstance->bmyWorldPageOn = true;  // 마이페이지 UI 
+
+                    // 로그 출력
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB: R=%f, G=%f, B=%f"),
+                        WorldSetting.RGB.R, WorldSetting.RGB.G, WorldSetting.RGB.B);
+                    for (int32 i = 0; i < WorldSetting.RGB18.Num(); i++)
+                    {
+                        const FMyRGBColor& Color = WorldSetting.RGB18[i];
+                        UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB18[%d]: R=%f, G=%f, B=%f"), i, Color.R, Color.G, Color.B);
+                    }
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting UserMusic: %s"), *WorldSetting.UserMusic);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Quadrant: %s"), *WorldSetting.Quadrant);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting TimeOfDay: %s"), *WorldSetting.TimeOfDay);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting CloudCoverage: %s"), *WorldSetting.CloudCoverage);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Fog: %s"), *WorldSetting.Fog);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Rain: %s"), *WorldSetting.Rain);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Snow: %s"), *WorldSetting.Snow);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Dust: %s"), *WorldSetting.Dust);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Thunder: %s"), *WorldSetting.Thunder);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting MainObject: %s"), *WorldSetting.MainObject);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting SubObject: %s"), *WorldSetting.SubObject);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Background: %s"), *WorldSetting.Background);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting ParticleNum: %s"), *WorldSetting.ParticleNum);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Result: %s"), *WorldSetting.Result);
+                    for (const FMyWorldRoomInfo& Room : WorldSetting.MyRooms)
+                    {
+                        UE_LOG(LogTemp, Warning, TEXT("Room Number: %d, Room Name: %s"), Room.MyRoomNum, *Room.MyRoomName);
+                    }
+                }
+            }
+            UE_LOG(LogTemp, Warning, TEXT("Successfully parsed and stored WorldSetting"));
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("AHttpActor::OnResPostChoice() Failed to parse JSON data."));
+        }
+    }
+    else
+    {
+        // ��û�� �������� ��
+        UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() POST Request Failed"));
+    }
+    
+}
+void AHttpActor::OnResPostBackRoom(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
+{
+     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice()"));
+    if (bConnectedSuccessfully && Response.IsValid())
+    {
+        // ���������� ������ �޾��� ��
+        FString ResponseContent = Response->GetContentAsString();
+        UE_LOG(LogTemp, Warning, TEXT("POST Response: %s"), *ResponseContent);
+        StoredJsonResponse = ResponseContent;
+        UE_LOG(LogTemp, Warning, TEXT("Stored JSON Response: %s"), *StoredJsonResponse);
+        //StoredJsonResponse = StoredJsonResponsetest;    // <----- 여기부터 수정  (임의값 넣고 확인해 보기)
+
+        // JSON 문자열을 JSON 객체로 파싱
+        TSharedPtr<FJsonObject> JsonObject;
+        TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(StoredJsonResponse);
+        USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
         AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
         UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
         UKGW_RoomList* Showlist = Cast<UKGW_RoomList>(WidgetComp->GetUserWidgetObject());
@@ -527,193 +658,6 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
             }
             UE_LOG(LogTemp, Warning, TEXT("Successfully parsed and stored WorldSetting"));
         
-            // 2.추천 음악을 튼다
-            SetBackgroundSound();
-            // 3.캐릭터 색상을 변경한다.
-            if (MyWorldPlayer)
-            {
-                FMyRGBColor RGB = SessionGI->WorldSetting.RGB;
-                FLinearColor ColorToSet(RGB.R, RGB.G, RGB.B);
-                UE_LOG(LogTemp, Warning, TEXT("Setting Material Color: R=%f, G=%f, B=%f"), ColorToSet.R, ColorToSet.G, ColorToSet.B);
-                MyWorldPlayer->SetMaterialColor(ColorToSet);
-            }
-            // 4.파티클 색을 변경한다 +  감정 파티클을 변경한다.
-            ApplyMyWorldPointLightColors();
-            ApplyMyWorldNiagaraAssets();
-            // 5.방 목록의 제목을 UI에 넣는다.
-            if (SessionGameInstance)
-            {
-                SessionGameInstance->InitRoomNameNum(WorldSetting.MyRooms); // 데이터가 제대로 저장되었는지 로그로 확인
-                UE_LOG(LogTemp, Warning, TEXT("GameInstance->InitRoomInfoList size: %d"), SessionGameInstance->RoomInfoList.Num());
-                TArray<FMyWorldRoomInfo> Result;
-                Result = SessionGameInstance->GettRoomNameNum(); // 데이터가 제대로 저장되었는지 로그로 확인
-                UE_LOG(LogTemp, Warning, TEXT("GameInstance->GEtRoomInfoList size: %d"), Result.Num());
-                if (ListActor)
-                {
-                    if (WidgetComp)
-                    {
-                        if (Showlist)
-                        {
-                            // RoomInfoList 데이터를 위젯에 추가
-                            Showlist->AddSessionSlotWidget(Result);
-                            UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() Showlist updated successfully."));
-
-                            // 6.AI 분석 결과를 UI에 넣는다.
-                            Showlist->SetTextLog(WorldSetting.Result);
-                            // move to sugested tmeplate room 방이동
-                            Showlist->SetWheaterNumb(WorldSetting.Quadrant);
-
-                        }
-                        else
-                        {
-                            UE_LOG(LogTemp, Error, TEXT("Showlist is null! Make sure the widget is correctly set in BP_ListActor."));
-                        }
-                    }
-                    else
-                    {
-                        UE_LOG(LogTemp, Error, TEXT("WidgetComponent not found on BP_ListActor."));
-                    }
-                }
-                else
-                {
-                    UE_LOG(LogTemp, Error, TEXT("No BP_ListActor."));
-                }
-            }
-            else
-            {
-                UE_LOG(LogTemp, Error, TEXT("GameInstance is null!"));
-            }
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("AHttpActor::OnResPostChoice() Failed to parse JSON data."));
-        }
-    }
-    else
-    {
-        // ��û�� �������� ��
-        UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() POST Request Failed"));
-    }
-}
-void AHttpActor::OnResPostBackRoom(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
-{
-    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice()"));
-    if (bConnectedSuccessfully && Response.IsValid())
-    {
-        // ���������� ������ �޾��� ��
-        FString ResponseContent = Response->GetContentAsString();
-        UE_LOG(LogTemp, Warning, TEXT("POST Response: %s"), *ResponseContent);
-        StoredJsonResponse = ResponseContent;
-        UE_LOG(LogTemp, Warning, TEXT("Stored JSON Response: %s"), *StoredJsonResponse);
-        //StoredJsonResponse = StoredJsonResponsetest;    // <----- 여기부터 수정  (임의값 넣고 확인해 보기)
-
-        // JSON 문자열을 JSON 객체로 파싱
-        TSharedPtr<FJsonObject> JsonObject;
-        TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(StoredJsonResponse);
-        USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
-        AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
-        UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
-        UKGW_RoomList* Showlist = Cast<UKGW_RoomList>(WidgetComp->GetUserWidgetObject());
-
-        if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
-        {
-            // 1.요소마다 받아서 SessionGameInstance에 저장을 한다.
-            FMyWorldSetting WorldSetting;
-            // Parse RGB
-            if (JsonObject->HasTypedField<EJson::Object>(TEXT("RGB")))
-            {
-                TSharedPtr<FJsonObject> RGBObject = JsonObject->GetObjectField(TEXT("RGB"));
-                WorldSetting.RGB.R = FCString::Atof(*RGBObject->GetStringField("R"));
-                WorldSetting.RGB.G = FCString::Atof(*RGBObject->GetStringField("G"));
-                WorldSetting.RGB.B = FCString::Atof(*RGBObject->GetStringField("B"));
-            }
-            // Parse RGB18
-            if (JsonObject->HasTypedField<EJson::Object>(TEXT("RGB18")))
-            {
-                TSharedPtr<FJsonObject> RGB18Object = JsonObject->GetObjectField(TEXT("RGB18"));
-                for (int32 i = 1; i <= 6; i++)
-                {
-                    FMyRGBColor Color;
-                    Color.R = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("R%d"), i)));
-                    Color.G = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("G%d"), i)));
-                    Color.B = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("B%d"), i)));
-                    WorldSetting.RGB18.Add(Color);
-                }
-            }
-            // Parse UserMusic
-            WorldSetting.UserMusic = JsonObject->GetStringField(TEXT("userMusic"));
-            // Parse Quadrant
-            WorldSetting.Quadrant = JsonObject->GetStringField(TEXT("Quadrant"));
-            // Parse Initial Room Info
-            WorldSetting.TimeOfDay = JsonObject->GetStringField(TEXT("UltraSky_TimeOfDay"));
-            WorldSetting.CloudCoverage = JsonObject->GetStringField(TEXT("UltraWeather_CloudCoverage"));
-            WorldSetting.Fog = JsonObject->GetStringField(TEXT("UltraWeather_Fog"));
-            WorldSetting.Rain = JsonObject->GetStringField(TEXT("UltraWeather_Rain"));
-            WorldSetting.Snow = JsonObject->GetStringField(TEXT("UltraWeather_Snow"));
-            WorldSetting.Dust = JsonObject->GetStringField(TEXT("UltraWeather_Dust"));
-            WorldSetting.Thunder = JsonObject->GetStringField(TEXT("UltraWeather_Thunder"));
-            WorldSetting.MainObject = JsonObject->GetStringField(TEXT("MainObject"));
-            WorldSetting.SubObject = JsonObject->GetStringField(TEXT("SubObject"));
-            WorldSetting.Background = JsonObject->GetStringField(TEXT("Background"));
-            // Parse ParticleNum
-            WorldSetting.ParticleNum = JsonObject->GetStringField(TEXT("Particle_num"));
-            // Parse Result
-            WorldSetting.Result = JsonObject->GetStringField(TEXT("result"));
-            // Parse Rooms
-            if (JsonObject->HasTypedField<EJson::Array>(TEXT("rooms")))
-            {
-                TArray<TSharedPtr<FJsonValue>> RoomsArray = JsonObject->GetArrayField(TEXT("rooms"));
-                for (const TSharedPtr<FJsonValue>& RoomValue : RoomsArray)
-                {
-                    TSharedPtr<FJsonObject> RoomObject = RoomValue->AsObject();
-                    if (RoomObject.IsValid())
-                    {
-                        FMyWorldRoomInfo RoomInfo;
-                        RoomInfo.MyRoomNum = RoomObject->GetIntegerField(TEXT("room_num"));
-                        RoomInfo.MyRoomName = RoomObject->GetStringField(TEXT("room_name"));
-                        WorldSetting.MyRooms.Add(RoomInfo);
-                    }
-                }
-            }
-            // Store the parsed data in GameInstance or other persistent storage
-            if (UGameInstance* GameInstance = GetGameInstance())
-            {
-                //                 USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GameInstance);
-                if (SessionGameInstance)
-                {
-                    SessionGameInstance->WorldSetting = WorldSetting;
-                    //SessionGameInstance->bmyWorldPageOn = true;  // 마이페이지 UI 
-
-                    // 로그 출력
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB: R=%f, G=%f, B=%f"),
-                        WorldSetting.RGB.R, WorldSetting.RGB.G, WorldSetting.RGB.B);
-                    for (int32 i = 0; i < WorldSetting.RGB18.Num(); i++)
-                    {
-                        const FMyRGBColor& Color = WorldSetting.RGB18[i];
-                        UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB18[%d]: R=%f, G=%f, B=%f"), i, Color.R, Color.G, Color.B);
-                    }
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting UserMusic: %s"), *WorldSetting.UserMusic);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Quadrant: %s"), *WorldSetting.Quadrant);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting TimeOfDay: %s"), *WorldSetting.TimeOfDay);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting CloudCoverage: %s"), *WorldSetting.CloudCoverage);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Fog: %s"), *WorldSetting.Fog);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Rain: %s"), *WorldSetting.Rain);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Snow: %s"), *WorldSetting.Snow);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Dust: %s"), *WorldSetting.Dust);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Thunder: %s"), *WorldSetting.Thunder);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting MainObject: %s"), *WorldSetting.MainObject);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting SubObject: %s"), *WorldSetting.SubObject);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Background: %s"), *WorldSetting.Background);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting ParticleNum: %s"), *WorldSetting.ParticleNum);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Result: %s"), *WorldSetting.Result);
-                    for (const FMyWorldRoomInfo& Room : WorldSetting.MyRooms)
-                    {
-                        UE_LOG(LogTemp, Warning, TEXT("Room Number: %d, Room Name: %s"), Room.MyRoomNum, *Room.MyRoomName);
-                    }
-                }
-            }
-            UE_LOG(LogTemp, Warning, TEXT("Successfully parsed and stored WorldSetting"));
-
             // 2.추천 음악을 튼다
             SetBackgroundSound();
             // 3.캐릭터 색상을 변경한다.
