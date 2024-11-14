@@ -76,9 +76,10 @@ void UKGW_WBP_Question::OnClickSelect()
  	ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
  	if (ListActor)
  	{
- 		FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
- 		ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
+		FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
+		ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
 		ListActor->ShowMyWorldParticle();
+
 	}
  	
 	EnterRoomActor = Cast<AKGW_EnterRoomActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_EnterRoomActor::StaticClass()));
