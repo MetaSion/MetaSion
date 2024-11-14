@@ -91,8 +91,6 @@ void AJS_RoomController::BeginPlay()
     SetInputMode(FInputModeGameOnly());
     GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, false);
 
-    
-
     SessionGI = Cast<USessionGameInstance>(GetGameInstance());
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
     if (LevelName.Contains("Main_LV"))

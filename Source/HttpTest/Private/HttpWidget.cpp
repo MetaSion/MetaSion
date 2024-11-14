@@ -19,8 +19,8 @@ void UHttpWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	//login
-	//btn_Login->OnClicked.AddDynamic(this, &UHttpWidget::SendLoginData);
-	btn_Login->OnClicked.AddDynamic(this, &UHttpWidget::StartLoginText3D);
+	btn_Login->OnClicked.AddDynamic(this, &UHttpWidget::SendLoginData);
+	//btn_Login->OnClicked.AddDynamic(this, &UHttpWidget::StartLoginText3D);
 	//sign_up
 	btn_SignUp->OnClicked.AddDynamic(this, &UHttpWidget::SendSignUpData);
 

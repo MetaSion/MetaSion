@@ -23,6 +23,7 @@ void UKGW_WBP_Question::NativeConstruct()
 
 void UKGW_WBP_Question::OnClickSelect()
 {
+	UE_LOG(LogTemp, Warning, TEXT("UKGW_WBP_Question::OnClickSelect()"));
 	// QuestionUI Hide
 	HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
 	if (HttpActor)
@@ -78,7 +79,7 @@ void UKGW_WBP_Question::OnClickSelect()
  	{
  		FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
  		ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
-		ListActor->ShowMyWorldParticle();
+		//ListActor->ShowMyWorldParticle();
 	}
  	
 	EnterRoomActor = Cast<AKGW_EnterRoomActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_EnterRoomActor::StaticClass()));

@@ -83,6 +83,8 @@ void AHttpActor::BeginPlay()
         else
         {
             UE_LOG(LogTemp, Warning, TEXT("AHttpActor::BeginPlay() MyWorldPlayer in the level."));
+            UE_LOG(LogTemp, Warning, TEXT("AHttpActor::BeginPlay() Call SetMyWorldUIOff()."));
+            SetMyWorldUIOff();
         }
     }
     else
@@ -669,8 +671,9 @@ void AHttpActor::OnResPostBackRoom(FHttpRequestPtr Request, FHttpResponsePtr Res
                 MyWorldPlayer->SetMaterialColor(ColorToSet);
             }
             // 4.파티클 색을 변경한다 +  감정 파티클을 변경한다.
+            UE_LOG(LogTemp, Warning, TEXT("call ApplyMyWorldPointLightColors()"));
             ApplyMyWorldPointLightColors();
-            ApplyMyWorldNiagaraAssets();
+            //ApplyMyWorldNiagaraAssets();
             // 5.방 목록의 제목을 UI에 넣는다.
             if (SessionGameInstance)
             {
@@ -1052,12 +1055,22 @@ void AHttpActor::SetBackgroundSound()
 
 void AHttpActor::ApplyMyWorldPointLightColors()
 {
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ApplyMyWorldPointLightColors()"));
     if (!SessionGI)
     {
         UE_LOG(LogTemp, Error, TEXT("SessionGameInstance is not valid."));
         return;
     }
 
+    /*if (MyWorldPlayer)
+    {   
+        UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ApplyMyWorldPointLightColors() Yes MyWorldPlayer "));
+        MyWorldPlayer->ShowMyWorldParticle();
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::ApplyMyWorldPointLightColors() NO MyWorldPlayer "));
+    }*/
     // Reference to WorldSetting's RGB18 array
     const TArray<FMyRGBColor>& RGB18Array = SessionGI->WorldSetting.RGB18;
 
@@ -1089,6 +1102,7 @@ void AHttpActor::ApplyMyWorldPointLightColors()
 
 void AHttpActor::ApplyMyWorldNiagaraAssets()
 {
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ApplyMyWorldNiagaraAssets()"));
     if (!SessionGI)
     {
         UE_LOG(LogTemp, Error, TEXT("SessionGameInstance is not valid."));
@@ -1100,6 +1114,7 @@ void AHttpActor::ApplyMyWorldNiagaraAssets()
 
     // Convert the Weather string to int32
     int32 ParticleIndex = FCString::Atoi(*ParticleNumString);
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ApplyMyWorldNiagaraAssets() ParticleIndex : %d"), ParticleIndex);
 
     // Assuming ACJS_InnerWorldParticleActor is an actor in the world, find and reference it
     ACJS_InnerWorldParticleActor* InnerWorldParticleActor = Cast<ACJS_InnerWorldParticleActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_InnerWorldParticleActor::StaticClass()));
@@ -1122,6 +1137,7 @@ void AHttpActor::SetMyWorldUIOn()
     if (MyWorldPlayer)
     {
         MyWorldPlayer->ShowMyWorldUI();
+        MyWorldPlayer->ShowMyWorldParticle();
     }
     else
     {
@@ -1133,8 +1149,9 @@ void AHttpActor::SetMyWorldUIOff()
     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SetMyWorldUIOff()"));
     if (MyWorldPlayer)
     {
+        UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SetMyWorldUIOff() MyWorldPlayer OK"));
         MyWorldPlayer->HideMyWorldUI();
-
+        MyWorldPlayer->HideMyWorldParticle();
     }
     else
     {
