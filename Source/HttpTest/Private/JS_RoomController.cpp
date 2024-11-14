@@ -358,8 +358,6 @@ void AJS_RoomController::OnClickButtonImage()
     ScreenCapture();
     R_UI->SendWallPaperData();
     GetWorld()->GetTimerManager().SetTimer(HeartUITimer, this, &AJS_RoomController::ShowHeartUITimer, 1.0f, false);
-
-
 }
 
 //Mouse Interaction --------------------------------------------------------------------------
