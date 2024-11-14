@@ -42,8 +42,14 @@ void AHttpActor::BeginPlay()
 	Super::BeginPlay();
 
     pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-   
-    FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+    if (pc) 
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::BeginPlay():: PC exsited"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::BeginPlay():: No PC"));
+    }
 
     // SessionGameInstance 할당
     SessionGI = Cast<USessionGameInstance>(GetGameInstance());
@@ -65,10 +71,23 @@ void AHttpActor::BeginPlay()
     }
 
     // Find and reference the Roomlist Actor in the level
-    MyWorldPlayer = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
-    if (!MyWorldPlayer)
+    FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+    if (LevelName.Contains("Main_Sky"))
     {
-        UE_LOG(LogTemp, Warning, TEXT("MyWorldPlayer not found in the level."));
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_LV"));
+        MyWorldPlayer = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+        if (!MyWorldPlayer)
+        {
+            UE_LOG(LogTemp, Error, TEXT("AHttpActor::BeginPlay() MyWorldPlayer not found in the level."));
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("AHttpActor::BeginPlay() MyWorldPlayer in the level."));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("AHttpActor::BeginPlay() LevelName : %s"), *LevelName);
     }
 }
 
@@ -78,15 +97,15 @@ void AHttpActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
     // Tick 함수에서 MyWorldPlayer를 다시 찾기 시도
-    if (!MyWorldPlayer)
-    {
-        MyWorldPlayer = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+	/*if (!MyWorldPlayer)
+	{
+		MyWorldPlayer = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
 
-        if (MyWorldPlayer)
-        {
-            UE_LOG(LogTemp, Warning, TEXT("MyWorldPlayer successfully found in Tick."));
-        }
-    }
+		if (MyWorldPlayer)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("MyWorldPlayer successfully found in Tick."));
+		}
+	}*/
 }
 
 //Login -------------------------------------------------------------
@@ -141,14 +160,19 @@ void AHttpActor::LoginResPost(FHttpRequestPtr Request, FHttpResponsePtr Response
         {
             UE_LOG(LogTemp, Error, TEXT("AHttpActor::LoginResPost():: No SessionGM"));
         }
+      
+        if (SessionGI) {
+            UE_LOG(LogTemp, Warning, TEXT("AHttpActor::LoginResPost():: SessionGI exsited"));
+            SessionGI->bSuccess = true; // GameInstance에 상태 저장
+            //UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
 
-        if (pc) {
-            if (SessionGI) {
-                SessionGI->bSuccess = true; // GameInstance에 상태 저장
-            }
-            UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
-            //SetMyWorldUIOff();
+            UGameplayStatics::OpenLevel(this, FName("Main_Question"));
         }
+        else
+        {
+			UE_LOG(LogTemp, Error, TEXT("AHttpActor::LoginResPost():: No SessionGI"));
+        }
+       
     }
     else
     {
@@ -195,66 +219,25 @@ void AHttpActor::SignUpResPost(FHttpRequestPtr Request, FHttpResponsePtr Respons
         UE_LOG(LogTemp, Warning, TEXT("OnResPostTest Failed..."));
     }
 }
-
 //Sign UP End -------------------------------------------------------------
 
-//User -------------------------------------------------------------
-void AHttpActor::UserReqPost(FString url, FString json)
+//WallPaper -------------------------------------------------------------
+void AHttpActor::WallPaperReqPost(FString url, FString json)
 {
     FHttpModule& httpModule = FHttpModule::Get();
     TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
 
-    // ��û�� ������ ����
     req->SetURL(url);
     req->SetVerb(TEXT("POST"));
     req->SetHeader(TEXT("content-type"), TEXT("application/json"));
     req->SetContentAsString(json);
 
-    // ������� �Լ��� ����
-    req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::UserResPost);
-    // ������ ��û
+    req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::WallPaperResPost);
+
     req->ProcessRequest();
 }
 
-void AHttpActor::UserResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
-{
-    if (!Response.IsValid())
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Invalid Response"));
-        return;
-    }
-    if (bConnectedSuccessfully && EHttpResponseCodes::IsOk(Response->GetResponseCode()))
-    {
-        FString result = Response->GetContentAsString();
-        UJsonParseLib::User_Convert_JsonToStruct(result);
-        UE_LOG(LogTemp, Log, TEXT("Post Request Success: %s"), *result);
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("OnResPostTest Failed..."));
-    }
-}
-//User End-------------------------------------------------------------
-
-//ChangeIndex -------------------------------------------------------------
-void AHttpActor::ChangeIndexReqPost(FString url, FString json)
-{
-    FHttpModule& httpModule = FHttpModule::Get();
-    TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
-
-    // ��û�� ������ ����
-    req->SetURL(url);
-    req->SetVerb(TEXT("POST"));
-    req->SetHeader(TEXT("content-type"), TEXT("application/json"));
-    req->SetContentAsString(json);
-
-    req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::ChangeIndexResPost);
-
-    // ������ ��û
-    req->ProcessRequest();
-}
-
-void AHttpActor::ChangeIndexResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
+void AHttpActor::WallPaperResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
     if (!Response.IsValid())
     {
@@ -269,8 +252,8 @@ void AHttpActor::ChangeIndexResPost(FHttpRequestPtr Request, FHttpResponsePtr Re
         FString result = Response->GetContentAsString();
         UE_LOG(LogTemp, Warning, TEXT("Server Response: %s"), *result);
         
-        FChangeIndex ChangerIndexData = UJsonParseLib::ChangeIndex_Convert_JsonToStruct(result);
-        UE_LOG(LogTemp, Warning, TEXT("Parsed room_num: %s"), *ChangerIndexData.room_num);
+        FWallPaperData WallPaperData = UJsonParseLib::WallPaperData_Convert_JsonToStruct(result);
+        UE_LOG(LogTemp, Warning, TEXT("Parsed roomNum: %s"), *WallPaperData.RoomData.RoomNum);
 
         
         APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
@@ -279,7 +262,7 @@ void AHttpActor::ChangeIndexResPost(FHttpRequestPtr Request, FHttpResponsePtr Re
             AJS_RoomController* RoomController = Cast<AJS_RoomController>(PlayerController);
             if (RoomController && RoomController->R_UI)
             {
-                RoomController->R_UI->SetIndex(ChangerIndexData.updatedWallpaperNum, 100);
+                RoomController->R_UI->SetIndex(WallPaperData.UpdatedWallpaperNum, 100);
                 RoomController->GetWorldTimerManager().SetTimer(RoomUIWaitTimerHandle, RoomController, &AJS_RoomController::HideRoomUI, 1.0f, false);
             }
         }
@@ -292,8 +275,8 @@ void AHttpActor::ChangeIndexResPost(FHttpRequestPtr Request, FHttpResponsePtr Re
 }
 //ChangeIndex End-------------------------------------------------------------
 
-//MyRoomInfo -------------------------------------------------------------
-void AHttpActor::MyRoomInfoReqPost(FString url, FString json)
+//CompleteRoomSend and Reception -------------------------------------------------------------
+void AHttpActor::RoomSendDataReqPost(FString url, FString json)
 {
     FHttpModule& httpModule = FHttpModule::Get();
     TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
@@ -304,14 +287,14 @@ void AHttpActor::MyRoomInfoReqPost(FString url, FString json)
     req->SetHeader(TEXT("content-type"), TEXT("application/json"));
     req->SetContentAsString(json);
 
-    req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::MyRoomInfoResPost);
+    req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::RoomSendDataResPost);
 
     // ������ ��û
     req->ProcessRequest();
 }
 
 
-void AHttpActor::MyRoomInfoResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
+void AHttpActor::RoomSendDataResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
     if (!Response.IsValid())
     {
@@ -321,62 +304,44 @@ void AHttpActor::MyRoomInfoResPost(FHttpRequestPtr Request, FHttpResponsePtr Res
 
     if (bConnectedSuccessfully && EHttpResponseCodes::IsOk(Response->GetResponseCode()))
     {
+        FMyWorldSetting MyWorldSetting;
+
         FString JsonResponse = Response->GetContentAsString();
-        FMyRoomInfo MyRoomData = UJsonParseLib::MyRoomInfo_Convert_JsonToStruct(JsonResponse);
-       
-        UE_LOG(LogTemp, Warning, TEXT("MyRoomData = %s"), *JsonResponse);
-      
+        UE_LOG(LogTemp, Warning, TEXT("Received JSON: %s"), *JsonResponse);
+        FRoomReceptionData RoomReceptionData = UJsonParseLib::RoomReceptionData_Convert_JsonToStruct(JsonResponse);
+
+        UE_LOG(LogTemp, Warning, TEXT("UserId : %s, RoomName : %s, RoomNum : %s, 작품 설명 : %s, 파티클 번호 : %s, 음악 이름 : %s"),
+        *RoomReceptionData.UserData.UserId, 
+        *RoomReceptionData.RoomData.RoomName,
+        *RoomReceptionData.RoomData.RoomNum, 
+        *RoomReceptionData.AIAnalysisData.Result,
+        *RoomReceptionData.AIAnalysisData.ParticleNum,
+        *RoomReceptionData.AIRecommendationData.Music);
+
+        //UPDate Data
+        MyWorldSetting.ParticleNum = RoomReceptionData.AIAnalysisData.ParticleNum;
+        MyWorldSetting.Result = RoomReceptionData.AIAnalysisData.Result;
+        MyWorldSetting.UserMusic = RoomReceptionData.AIRecommendationData.Music;
+        UE_LOG(LogTemp, Warning, TEXT(" ParticleNum : %s, Result : %s, UserMusic : %s"), *MyWorldSetting.ParticleNum, *MyWorldSetting.Result, *MyWorldSetting.UserMusic);
+
+        for (const FRGBColorData& ColorData : RoomReceptionData.AIAnalysisData.ArrayColorData) {
+            FMyRGBColor MyColor;
+            MyColor.R = ColorData.R;
+            MyColor.G = ColorData.G;
+            MyColor.B = ColorData.B;
+
+            MyWorldSetting.RGB18.Add(MyColor);
+
+            UE_LOG(LogTemp, Warning, TEXT("Added Color - R: %f, G: %f, B: %f"), MyColor.R, MyColor.G, MyColor.B);
+        }
     }
     else
     {
         UE_LOG(LogTemp, Warning, TEXT("Request Failed: %d"), Response->GetResponseCode());
     }
 }
-//MyRoomInfo End-------------------------------------------------------------
+//CompleteRoomSend and Reception -------------------------------------------------------------
 
-//MyCreateRoomInfo -------------------------------------------------------------
-void AHttpActor::MyCreateRoomInfoReqPost(FString url, FString json)
-{
-    FHttpModule& httpModule = FHttpModule::Get();
-    TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
-
-    // ��û�� ������ ����
-    req->SetURL(url);
-    req->SetVerb(TEXT("POST"));
-    req->SetHeader(TEXT("content-type"), TEXT("application/json"));
-    req->SetContentAsString(json);
-
-    req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::MyCreateRoomInfoResPost);
-
-    // ������ ��û
-    req->ProcessRequest();
-}
-
-void AHttpActor::MyCreateRoomInfoResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
-{
-    if (!Response.IsValid())
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Invalid Response"));
-        return;
-    }
-    // ��û�� ���������� �Ϸ�Ǿ����� Ȯ��
-    if (bConnectedSuccessfully && EHttpResponseCodes::IsOk(Response->GetResponseCode()))
-    {
-        // ������ ���ڿ��� ��������
-        FString result = Response->GetContentAsString();
-        FMyCreateRoomInfo MyCreateRoomInfoData = UJsonParseLib::FMyCreateRoomInfo_Convert_JsonToStruct(result);
-
-        // �������� ��ȯ�� �����͸� �α׷� ���
-        UE_LOG(LogTemp, Log, TEXT("Response Received: userId = %s,RoomNum = %d, RoomName = %s"),
-            *MyCreateRoomInfoData.UserId,
-             MyCreateRoomInfoData.RoomNum,
-            *MyCreateRoomInfoData.RoomName);
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("OnResPostTest Failed..."));
-    }
-}
 
 // RoomData ------------------------------------------------------------
 void AHttpActor::RoomDataReqPost(FString url, FString json)
@@ -402,16 +367,15 @@ void AHttpActor::RoomDataResPost(FHttpRequestPtr Request, FHttpResponsePtr Respo
         UE_LOG(LogTemp, Warning, TEXT("Invalid Response"));
         return;
     }
-    // ��û�� ���������� �Ϸ�Ǿ����� Ȯ��
     if (bConnectedSuccessfully && EHttpResponseCodes::IsOk(Response->GetResponseCode()))
     {
         FString JsonResponse = Response->GetContentAsString();
-        RoomData = UJsonParseLib::RoomData_Convert_JsonToStruct(JsonResponse);
+        //RecommendationData = UJsonParseLib::AIRecommendation_Convert_JsonToStruct(JsonResponse);
 
-        UE_LOG(LogTemp, Warning, TEXT("RoomData initialized: %s"), *RoomData.userMusic);
+        //UE_LOG(LogTemp, Warning, TEXT("RecommendationData initialized: %s"), *RecommendationData.Music);
 
-        // RoomData가 초기화되었음을 알리기 위해 델리게이트 호출
-        OnRoomDataInitialized.Broadcast(RoomData);
+        //// RoomData가 초기화되었음을 알리기 위해 델리게이트 호출
+        //OnAIRecommendationInitialized.Broadcast(RecommendationData);
     }
     else
     {
@@ -433,8 +397,13 @@ void AHttpActor::ReqPostChoice(FString url, FString json)
     req->SetHeader(TEXT("content-type"), TEXT("application/json"));
     req->SetContentAsString(json);
 
-    // ������� �Լ��� ����
-    req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::OnResPostChoice);
+    if (bNotFirst == false) {
+        req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::OnResPostChoice);
+        bNotFirst = true;
+    }
+    else {
+        req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::OnResPostBackRoom);
+    }
     // ������ ��û
 
     req->ProcessRequest();
@@ -442,6 +411,137 @@ void AHttpActor::ReqPostChoice(FString url, FString json)
 void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice()"));
+    if (bConnectedSuccessfully && Response.IsValid())
+    {
+        // ���������� ������ �޾��� ��
+        FString ResponseContent = Response->GetContentAsString();
+        UE_LOG(LogTemp, Warning, TEXT("POST Response: %s"), *ResponseContent);
+        StoredJsonResponse = ResponseContent;
+        UE_LOG(LogTemp, Warning, TEXT("Stored JSON Response: %s"), *StoredJsonResponse);
+        //StoredJsonResponse = StoredJsonResponsetest;    // <----- 여기부터 수정  (임의값 넣고 확인해 보기)
+
+        // JSON 문자열을 JSON 객체로 파싱
+        TSharedPtr<FJsonObject> JsonObject;
+        TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(StoredJsonResponse);
+        USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
+		/*AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+		UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
+		UKGW_RoomList* Showlist = Cast<UKGW_RoomList>(WidgetComp->GetUserWidgetObject());*/
+
+        if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+        {
+            // 1.요소마다 받아서 SessionGameInstance에 저장을 한다.
+            FMyWorldSetting WorldSetting;
+            // Parse RGB
+            if (JsonObject->HasTypedField<EJson::Object>(TEXT("RGB")))
+            {
+                TSharedPtr<FJsonObject> RGBObject = JsonObject->GetObjectField(TEXT("RGB"));
+                WorldSetting.RGB.R = FCString::Atof(*RGBObject->GetStringField("R"));
+                WorldSetting.RGB.G = FCString::Atof(*RGBObject->GetStringField("G"));
+                WorldSetting.RGB.B = FCString::Atof(*RGBObject->GetStringField("B"));
+            }
+            // Parse RGB18
+            if (JsonObject->HasTypedField<EJson::Object>(TEXT("RGB18")))
+            {
+                TSharedPtr<FJsonObject> RGB18Object = JsonObject->GetObjectField(TEXT("RGB18"));
+                for (int32 i = 1; i <= 6; i++)
+                {
+                    FMyRGBColor Color;
+                    Color.R = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("R%d"), i)));
+                    Color.G = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("G%d"), i)));
+                    Color.B = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("B%d"), i)));
+                    WorldSetting.RGB18.Add(Color);
+                }
+            }
+            // Parse UserMusic
+            WorldSetting.UserMusic = JsonObject->GetStringField(TEXT("userMusic"));
+            // Parse Quadrant
+            WorldSetting.Quadrant = JsonObject->GetStringField(TEXT("Quadrant"));
+            // Parse Initial Room Info
+            WorldSetting.TimeOfDay = JsonObject->GetStringField(TEXT("UltraSky_TimeOfDay"));
+            WorldSetting.CloudCoverage = JsonObject->GetStringField(TEXT("UltraWeather_CloudCoverage"));
+            WorldSetting.Fog = JsonObject->GetStringField(TEXT("UltraWeather_Fog"));
+            WorldSetting.Rain = JsonObject->GetStringField(TEXT("UltraWeather_Rain"));
+            WorldSetting.Snow = JsonObject->GetStringField(TEXT("UltraWeather_Snow"));
+            WorldSetting.Dust = JsonObject->GetStringField(TEXT("UltraWeather_Dust"));
+            WorldSetting.Thunder = JsonObject->GetStringField(TEXT("UltraWeather_Thunder"));
+            WorldSetting.MainObject = JsonObject->GetStringField(TEXT("MainObject"));
+            WorldSetting.SubObject = JsonObject->GetStringField(TEXT("SubObject"));
+            WorldSetting.Background = JsonObject->GetStringField(TEXT("Background"));
+            // Parse ParticleNum
+            WorldSetting.ParticleNum = JsonObject->GetStringField(TEXT("Particle_num"));
+            // Parse Result
+            WorldSetting.Result = JsonObject->GetStringField(TEXT("result"));
+            // Parse Rooms
+            if (JsonObject->HasTypedField<EJson::Array>(TEXT("rooms")))
+            {
+                TArray<TSharedPtr<FJsonValue>> RoomsArray = JsonObject->GetArrayField(TEXT("rooms"));
+                for (const TSharedPtr<FJsonValue>& RoomValue : RoomsArray)
+                {
+                    TSharedPtr<FJsonObject> RoomObject = RoomValue->AsObject();
+                    if (RoomObject.IsValid())
+                    {
+                        FMyWorldRoomInfo RoomInfo;
+                        RoomInfo.MyRoomNum = RoomObject->GetIntegerField(TEXT("room_num"));
+                        RoomInfo.MyRoomName = RoomObject->GetStringField(TEXT("room_name"));
+                        WorldSetting.MyRooms.Add(RoomInfo);
+                    }
+                }
+            }
+            // Store the parsed data in GameInstance or other persistent storage
+            if (UGameInstance* GameInstance = GetGameInstance())
+            {
+//                 USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GameInstance);
+                if (SessionGameInstance)
+                {
+                    SessionGameInstance->WorldSetting = WorldSetting;
+                    //SessionGameInstance->bmyWorldPageOn = true;  // 마이페이지 UI 
+
+                    // 로그 출력
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB: R=%f, G=%f, B=%f"),
+                        WorldSetting.RGB.R, WorldSetting.RGB.G, WorldSetting.RGB.B);
+                    for (int32 i = 0; i < WorldSetting.RGB18.Num(); i++)
+                    {
+                        const FMyRGBColor& Color = WorldSetting.RGB18[i];
+                        UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB18[%d]: R=%f, G=%f, B=%f"), i, Color.R, Color.G, Color.B);
+                    }
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting UserMusic: %s"), *WorldSetting.UserMusic);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Quadrant: %s"), *WorldSetting.Quadrant);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting TimeOfDay: %s"), *WorldSetting.TimeOfDay);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting CloudCoverage: %s"), *WorldSetting.CloudCoverage);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Fog: %s"), *WorldSetting.Fog);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Rain: %s"), *WorldSetting.Rain);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Snow: %s"), *WorldSetting.Snow);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Dust: %s"), *WorldSetting.Dust);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Thunder: %s"), *WorldSetting.Thunder);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting MainObject: %s"), *WorldSetting.MainObject);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting SubObject: %s"), *WorldSetting.SubObject);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Background: %s"), *WorldSetting.Background);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting ParticleNum: %s"), *WorldSetting.ParticleNum);
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Result: %s"), *WorldSetting.Result);
+                    for (const FMyWorldRoomInfo& Room : WorldSetting.MyRooms)
+                    {
+                        UE_LOG(LogTemp, Warning, TEXT("Room Number: %d, Room Name: %s"), Room.MyRoomNum, *Room.MyRoomName);
+                    }
+                }
+            }
+            UE_LOG(LogTemp, Warning, TEXT("Successfully parsed and stored WorldSetting"));
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("AHttpActor::OnResPostChoice() Failed to parse JSON data."));
+        }
+    }
+    else
+    {
+        // ��û�� �������� ��
+        UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() POST Request Failed"));
+    }
+    
+}
+void AHttpActor::OnResPostBackRoom(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
+{
+     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice()"));
     if (bConnectedSuccessfully && Response.IsValid())
     {
         // ���������� ������ �޾��� ��
@@ -735,12 +835,12 @@ void AHttpActor::OnResPostClickMultiRoom(FHttpRequestPtr Request, FHttpResponseP
             // 방 정보 처리 로직 <-- 추가 예정
             /*
             UltraSky_TimeOfDay
-			UltraWheather_CloudCoverage
-			UltraWheather_Fog
-			UltraWheather_Rain
-			UltraWheather_Snow
-			UltraWheather_Dust
-			UltraWheather_Thunder
+			UltraWeather_CloudCoverage
+			UltraWeather_Fog
+			UltraWeather_Rain
+			UltraWeather_Snow
+			UltraWeather_Dust
+			UltraWeather_Thunder
 			Particle_num1
 			Particle_num2
 			Particle_num3
@@ -849,9 +949,9 @@ void AHttpActor::OnResPostClickMyRoom(FHttpRequestPtr Request, FHttpResponsePtr 
         UE_LOG(LogTemp, Warning, TEXT("MyRoom Response JSON: %s"), *JsonResponse);
        
         // FRoomData 구조체로 변환
-        RoomData = UJsonParseLib::RoomData_Convert_JsonToStruct(JsonResponse);
-        SessionGI->RoomMusicData = RoomData.userMusic;
-		UE_LOG(LogTemp, Warning, TEXT("RecommendedMusic: %s"), *SessionGI->RoomMusicData);
+        //RecommendationData = UJsonParseLib::AIRecommendation_Convert_JsonToStruct(JsonResponse);
+		/* SessionGI->RoomMusicData = RecommendationData.Music;
+		 UE_LOG(LogTemp, Warning, TEXT("RecommendedMusic: %s"), *SessionGI->RoomMusicData);*/
      
         //MyRoom으로 이동
         APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
@@ -1141,12 +1241,12 @@ g1":null,"b1":null,"r2":null,"g2":null"b2":null,"r3":null,"g3":null,"b3":null,"r
 }
 
 //Getter 함수
-FRoomData AHttpActor::GetRoomData() const
-{
-    FString Rdata = RoomData.userMusic;
-    UE_LOG(LogTemp, Warning, TEXT("RoomData music : %s"), *Rdata);
-    return RoomData;
-}
+//FAIRecommendation AHttpActor::GetAIRecommendation() const
+//{
+//    FString Rdata = RecommendationData.Music;
+//    UE_LOG(LogTemp, Warning, TEXT("RoomData music : %s"), *Rdata);
+//    return RecommendationData;
+//}
 //MyCreateRoomInfo End-------------------------------------------------------------
 
 void AHttpActor::ReqGetWebImage(FString url)
@@ -1157,7 +1257,7 @@ void AHttpActor::ReqGetWebImage(FString url)
 
     // 요청 설정
     req->SetURL(url);
-    req->SetVerb(TEXT("Post"));
+    req->SetVerb(TEXT("POST"));
     req->SetHeader(TEXT("Content-Type"), TEXT("image/jpeg"));
 
     // 응답 처리 함수 바인딩

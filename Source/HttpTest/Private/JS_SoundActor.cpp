@@ -29,7 +29,7 @@ void AJS_SoundActor::BeginPlay()
 
 	/*HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
 	if (HttpActor) {
-		FRoomData RoomData = HttpActor->GetRoomData();
+		FRoomData RoomData = HttpActor->GetAIRecommendation();
 		FString FileName = RoomData.userMusic;
 		SetBackgroundSoundByFileName(FileName);
 	}*/
@@ -37,7 +37,7 @@ void AJS_SoundActor::BeginPlay()
 	HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
 	if (HttpActor)
 	{
-		//OnRoomDataInitialized();
+		//OnAIRecommendationInitialized();
 	}
 }
 
@@ -70,7 +70,7 @@ void AJS_SoundActor::SetBackgroundSoundByFileName(const FString& FileName)
 	}
 }
 
-void AJS_SoundActor::OnRoomDataInitialized()
+void AJS_SoundActor::OnAIRecommendationInitialized()
 {
 	FString FileName = SessionGI->RoomMusicData;
 	SetBackgroundSoundByFileName(FileName);

@@ -82,6 +82,11 @@ public:
     void ShowHeartUITimer();
     void SpawnAndSwitchToCamera();
 
+    void SetChangeLevelData();
+    //KGW==============================================
+
+    void OnClickButtonImage();
+
     //Mouse Interaction
     void OnMouseClick();
 
@@ -139,4 +144,7 @@ public:
     FString subObject ;
     UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     FString background ;
+
+    /* Login Actor */
+    class ACJS_LoginActor* LoginActor;
 };
