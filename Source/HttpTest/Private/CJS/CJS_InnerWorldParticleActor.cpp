@@ -118,11 +118,11 @@ void ACJS_InnerWorldParticleActor::UpdateInnerWorldNiagaraAsset(int32 NiagaraAss
         {
             InnerWorldParticle->SetAsset(SelectedNiagaraSystem); // Set the asset to the NiagaraComponent
             InnerWorldParticle->Activate(); // Activate the Niagara system if needed
-            UE_LOG(LogTemp, Warning, TEXT("Successfully set Niagara asset: %s"), *AssetPath);
+            UE_LOG(LogTemp, Warning, TEXT("ACJS_InnerWorldParticleActor::UpdateInnerWorldNiagaraAsset() Successfully set Niagara asset: %s"), *AssetPath);
         }
         else
         {
-            UE_LOG(LogTemp, Error, TEXT("Failed to load Niagara asset at path: %s"), *AssetPath);
+            UE_LOG(LogTemp, Error, TEXT("ACJS_InnerWorldParticleActor::UpdateInnerWorldNiagaraAsset() Failed to load Niagara asset at path: %s"), *AssetPath);
         }
     }
 }

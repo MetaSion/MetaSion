@@ -91,8 +91,6 @@ void AJS_RoomController::BeginPlay()
     SetInputMode(FInputModeGameOnly());
     GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, false);
 
-    
-
     SessionGI = Cast<USessionGameInstance>(GetGameInstance());
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
     if (LevelName.Contains("Main_LV"))
@@ -139,8 +137,6 @@ void AJS_RoomController::BeginPlay()
 		{
 			UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO LoginActor"));
 		}
-
-
     }
     // ------------------------------------------------------------------------------------------------
 
@@ -222,7 +218,6 @@ void AJS_RoomController::CheckDate()
 
 void AJS_RoomController::InitializeUIWidgets()
 {
-
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
     //FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
@@ -341,7 +336,7 @@ void AJS_RoomController::SetActorLocationAfterLevelLoad()
     {
         FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
         ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
-        UE_LOG(LogTemp, Log, TEXT("ListActor location set successfully."));
+        UE_LOG(LogTemp, Warning, TEXT("ListActor location set successfully."));
         SetChangeLevelData();
     }
     else
@@ -471,7 +466,6 @@ void AJS_RoomController::OnMouseHover(AActor* HoveredActor)
                 UUserWidget* Widget = WidgetComp->GetWidget();
                 if (Widget)
                 {
-
                     if (UWBP_Image* WBPImage = Cast<UWBP_Image>(Widget))
                     {
                         if (!WBPImage->IsAnimationPlaying(WBPImage->ShowImage)) // �̹� �ִϸ��̼��� ���?������ Ȯ��
@@ -550,7 +544,6 @@ void AJS_RoomController::OnMouseHoverEnd(AActor* HoveredActor)
 
             }
         }
-
     }
 }
 
