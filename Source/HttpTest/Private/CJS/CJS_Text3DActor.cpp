@@ -34,7 +34,7 @@ void ACJS_Text3DActor::BeginPlay()
                 UE_LOG(LogTemp, Warning, TEXT("ACJS_Text3DActor::BeginPlay() NewQuesionUI created and hidden"));
             
                 FTimerHandle TimerHandle;
-                GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACJS_Text3DActor::ShowQuestionWidget, 10.0f, false);
+                GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACJS_Text3DActor::ShowQuestionWidget, 5.0f, false);
             }
             else
             {
