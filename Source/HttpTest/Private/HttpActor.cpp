@@ -526,63 +526,6 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                 }
             }
             UE_LOG(LogTemp, Warning, TEXT("Successfully parsed and stored WorldSetting"));
-        
-            // 2.추천 음악을 튼다
-            SetBackgroundSound();
-            // 3.캐릭터 색상을 변경한다.
-            if (MyWorldPlayer)
-            {
-                FMyRGBColor RGB = SessionGI->WorldSetting.RGB;
-                FLinearColor ColorToSet(RGB.R, RGB.G, RGB.B);
-                UE_LOG(LogTemp, Warning, TEXT("Setting Material Color: R=%f, G=%f, B=%f"), ColorToSet.R, ColorToSet.G, ColorToSet.B);
-                MyWorldPlayer->SetMaterialColor(ColorToSet);
-            }
-            // 4.파티클 색을 변경한다 +  감정 파티클을 변경한다.
-            ApplyMyWorldPointLightColors();
-            ApplyMyWorldNiagaraAssets();
-            // 5.방 목록의 제목을 UI에 넣는다.
-            if (SessionGameInstance)
-            {
-                SessionGameInstance->InitRoomNameNum(WorldSetting.MyRooms); // 데이터가 제대로 저장되었는지 로그로 확인
-                UE_LOG(LogTemp, Warning, TEXT("GameInstance->InitRoomInfoList size: %d"), SessionGameInstance->RoomInfoList.Num());
-                TArray<FMyWorldRoomInfo> Result;
-                Result = SessionGameInstance->GettRoomNameNum(); // 데이터가 제대로 저장되었는지 로그로 확인
-                UE_LOG(LogTemp, Warning, TEXT("GameInstance->GEtRoomInfoList size: %d"), Result.Num());
-                if (ListActor)
-                {
-                    if (WidgetComp)
-                    {
-                        if (Showlist)
-                        {
-                            // RoomInfoList 데이터를 위젯에 추가
-                            Showlist->AddSessionSlotWidget(Result);
-                            UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() Showlist updated successfully."));
-
-                            // 6.AI 분석 결과를 UI에 넣는다.
-                            Showlist->SetTextLog(WorldSetting.Result);
-                            // move to sugested tmeplate room 방이동
-                            Showlist->SetWheaterNumb(WorldSetting.Quadrant);
-
-                        }
-                        else
-                        {
-                            UE_LOG(LogTemp, Error, TEXT("Showlist is null! Make sure the widget is correctly set in BP_ListActor."));
-                        }
-                    }
-                    else
-                    {
-                        UE_LOG(LogTemp, Error, TEXT("WidgetComponent not found on BP_ListActor."));
-                    }
-                }
-                else
-                {
-                    UE_LOG(LogTemp, Error, TEXT("No BP_ListActor."));
-                }
-            }
-            else
-            {
-                UE_LOG(LogTemp, Error, TEXT("GameInstance is null!"));
-            }
         }
         else
         {
