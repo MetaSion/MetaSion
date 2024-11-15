@@ -56,29 +56,31 @@ void UKGW_RoomList::SetWheaterNumb(FString TempNUmb)
 void UKGW_RoomList::OnClickInnerWorld()
 {   
     UE_LOG(LogTemp, Warning, TEXT("UKGW_RoomList::OnClickInnerWorld()"));
-    if (!WheatherNum.IsEmpty())
-    { 
-    
-		if (WheatherNum == TEXT("1"))
-		{
-			UGameplayStatics::OpenLevel(this, FName("Main_LV_Spring"));
-		}
-		else if (WheatherNum == TEXT("2"))
-		{
-			UGameplayStatics::OpenLevel(this, FName("Main_LV_Summer"));
+//     if (!WheatherNum.IsEmpty())
+//     { 
+//     
+// 		if (WheatherNum == TEXT("1"))
+// 		{
+// 			UGameplayStatics::OpenLevel(this, FName("Main_LV_Spring"));
+// 		}
+// 		else if (WheatherNum == TEXT("2"))
+// 		{
+// 			UGameplayStatics::OpenLevel(this, FName("Main_LV_Summer"));
+// 
+// 		}
+// 		else if (WheatherNum == TEXT("3"))
+// 		{
+// 			UGameplayStatics::OpenLevel(this, FName("Main_LV_Fall"));
+// 
+// 		}
+// 		else if (WheatherNum == TEXT("4"))
+// 		{
+//             InnerWorldWidget ->SetWinterSnowSlider();
+// 		}
+//     }
 
-		}
-		else if (WheatherNum == TEXT("3"))
-		{
-			UGameplayStatics::OpenLevel(this, FName("Main_LV_Fall"));
+    UGameplayStatics::OpenLevel(this, FName("Main_LV_Winter"));
 
-		}
-		else if (WheatherNum == TEXT("4"))
-		{
-			UGameplayStatics::OpenLevel(this, FName("Main_LV_Winter"));
-            InnerWorldWidget ->SetWinterSnowSlider();
-		}
-    }
 }
 
 void UKGW_RoomList::OnClickMultiWorld()
