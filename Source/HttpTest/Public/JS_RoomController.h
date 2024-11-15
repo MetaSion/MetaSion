@@ -56,7 +56,7 @@ public:
 
 
     FTimerHandle LevelCheckTimerHandle;  // 타이머 핸들러
-
+    FTimerHandle OtherRoomCheckTimerHandle;
     FDateTime LastCheckDate; // 마지막으로 확인한 날짜 (00:00 기준)
     bool bShowLoginScreen = false; // 초기 값 설정
     bool bOnlyIndexSend = false;
@@ -83,6 +83,9 @@ public:
     void SpawnAndSwitchToCamera();
 
     void SetChangeLevelData();
+
+    UFUNCTION(BlueprintCallable, Category = "Camera")
+    void SwitchToCamera();
     //KGW==============================================
 
     void OnClickButtonImage();

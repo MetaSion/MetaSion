@@ -28,6 +28,7 @@
 #include "CJS/CJS_InnerWorldSettingWidget.h"
 #include "CJS/CJS_LoginActor.h"
 #include "KGW/KGW_RoomList.h"
+#include "CineCameraActor.h"
 
 AJS_RoomController::AJS_RoomController()
 {
@@ -89,7 +90,7 @@ void AJS_RoomController::BeginPlay()
     InitializeUIWidgets();
     CheckDate();
     SetInputMode(FInputModeGameOnly());
-    GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, false);
+
 
     SessionGI = Cast<USessionGameInstance>(GetGameInstance());
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
@@ -137,6 +138,12 @@ void AJS_RoomController::BeginPlay()
 		{
 			UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO LoginActor"));
 		}
+    }
+    if (LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question") {
+        GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, false);
+    }
+    else {
+        GetWorldTimerManager().SetTimer(OtherRoomCheckTimerHandle, this, &AJS_RoomController::SwitchToCamera, 0.01f, false);
     }
     // ------------------------------------------------------------------------------------------------
 
@@ -565,7 +572,7 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SpawnAndSwitchToCamera() Set Sky Camera Transform"));
         //CameraRotation = FRotator(0, 0, 0);
     }
-    //else if (LevelName == "Main_Room")
+    //else if (LevelName == "Main_Room")C:/Project/MetaSion/Content/Junguk/Maps/Template/LV_Winter.umap
     else if (LevelName.Contains("Main_LV"))
     {
         // �� ���� ��ġ�� ȸ�� ����
@@ -574,10 +581,6 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
         CameraLocation = FVector(-100.266574, 3428.386539, -455.570113);
         CameraRotation = FRotator(2.600000, -90.800001, 0.0);
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SpawnAndSwitchToCamera() Set Main_LV Camera Transform"));
-    }
-    else
-    {
-        return;  // ���ǿ� ���� ������ ��ȯ
     }
 
     // ī�޶� ���͸� ����
@@ -672,6 +675,36 @@ void AJS_RoomController::SetChangeLevelData()
     {
         UE_LOG(LogTemp, Error, TEXT("GameInstance is null!"));
     }
+}
+void AJS_RoomController::SwitchToCamera()
+{
+    // 월드가 유효한지 확인
+    UWorld* World = GetWorld();
+    if (!World)
+    {
+        UE_LOG(LogTemp, Error, TEXT("World is null."));
+        return;
+    }
+
+    // 월드에서 모든 CineCameraActor 검색
+    TArray<AActor*> FoundActors;
+    UGameplayStatics::GetAllActorsOfClass(World, ACineCameraActor::StaticClass(), FoundActors);
+    FString LevelName = TEXT("LV_Winter");
+    for (AActor* Actor : FoundActors)
+    {
+        if (Actor->GetName() == LevelName) // 이름 일치 확인
+        {
+            ACineCameraActor* TargetCamera = Cast<ACineCameraActor>(Actor);
+            if (TargetCamera)
+            {
+                // 뷰를 해당 카메라로 전환
+                SetViewTarget(TargetCamera);
+                UE_LOG(LogTemp, Log, TEXT("View switched to camera: %s"), *LevelName);
+                return;
+            }
+        }
+    }
+    UE_LOG(LogTemp, Warning, TEXT("Camera with name %s not found."), *LevelName);
 }
 //Screen Capture Start ---------------------------------------------------------------------------------------
 void AJS_RoomController::ScreenCapture()
