@@ -37,12 +37,12 @@ public:
  //   void HideCurrentQuestionActors();
  //   void NextQuestion(); 
 
-	UFUNCTION(BlueprintCallable, Category="Text")
+	/*UFUNCTION(BlueprintCallable, Category="Text")
 	void ShowQuesion1();
 	UFUNCTION(BlueprintCallable, Category="Text")
 	void ShowQuesion2();
 	UFUNCTION(BlueprintCallable, Category="Text")
-	void ShowQuesion3();
+	void ShowQuesion3();*/
 
  //   UFUNCTION()
  //   void OnCompleteSelection();    // WBP_QuestionRenewal의 버튼 클릭 이벤트에 연결될 함수
