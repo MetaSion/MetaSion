@@ -1088,6 +1088,7 @@ void AHttpActor::ApplyMyWorldPointLightColors()
 
 void AHttpActor::ApplyMyWorldNiagaraAssets()
 {
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ApplyMyWorldNiagaraAssets()"));
     if (!SessionGI)
     {
         UE_LOG(LogTemp, Error, TEXT("SessionGameInstance is not valid."));
@@ -1099,6 +1100,7 @@ void AHttpActor::ApplyMyWorldNiagaraAssets()
 
     // Convert the Weather string to int32
     int32 ParticleIndex = FCString::Atoi(*ParticleNumString);
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ApplyMyWorldNiagaraAssets() ParticleIndex : %d"), ParticleIndex);
 
     // Assuming ACJS_InnerWorldParticleActor is an actor in the world, find and reference it
     ACJS_InnerWorldParticleActor* InnerWorldParticleActor = Cast<ACJS_InnerWorldParticleActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_InnerWorldParticleActor::StaticClass()));
@@ -1121,6 +1123,7 @@ void AHttpActor::SetMyWorldUIOn()
     if (MyWorldPlayer)
     {
         MyWorldPlayer->ShowMyWorldUI();
+        MyWorldPlayer->ShowMyWorldParticle();
     }
     else
     {
@@ -1133,6 +1136,7 @@ void AHttpActor::SetMyWorldUIOff()
     if (MyWorldPlayer)
     {
         MyWorldPlayer->HideMyWorldUI();
+        MyWorldPlayer->HideMyWorldParticle();
 
     }
     else
