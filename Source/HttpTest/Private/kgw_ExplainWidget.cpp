@@ -3,6 +3,7 @@
 
 #include "kgw_ExplainWidget.h"
 #include "Components/MultiLineEditableText.h"
+#include "JS_CreateRoomWidget.h"
 
 void Ukgw_ExplainWidget::NativeConstruct()
 {
@@ -13,7 +14,7 @@ void Ukgw_ExplainWidget::NativeConstruct()
 
 }
 
-void Ukgw_ExplainWidget::Initialize(UJS_CreateRoomWidget* InCreateRoomWidget)
+void Ukgw_ExplainWidget::SetCreateRoomWidgetReference(UJS_CreateRoomWidget* InCreateRoomWidget)
 {
 	CreateRoomWidgetRef = InCreateRoomWidget;
 }
@@ -23,7 +24,7 @@ void Ukgw_ExplainWidget::OnClikExplanation()
 
     if (CreateRoomWidgetRef)
     {
-        FString CurrentText = CreateRoomWidgetRef->GetCurrentText();
+         CurrentText = CreateRoomWidgetRef->GetCurrentText();
         SetExplanation(CurrentText);
     }
     else

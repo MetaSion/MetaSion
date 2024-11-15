@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "JS_CreateRoomWidget.h"
 #include "kgw_ExplainWidget.generated.h"
 
 /**
@@ -40,7 +41,7 @@ public:
     UPROPERTY()
  class UJS_CreateRoomWidget* CreateRoomWidgetRef;
 
- void Initialize(UJS_CreateRoomWidget* InCreateRoomWidget);
+ void SetCreateRoomWidgetReference(UJS_CreateRoomWidget* InCreateRoomWidget);
 
 
 
