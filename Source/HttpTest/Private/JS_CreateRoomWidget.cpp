@@ -326,3 +326,7 @@ void UJS_CreateRoomWidget::OnTextCommitted_MultiLine(const FText& Text, ETextCom
 //		ED_MultiText->SetText(FText::FromString(TrimmedText));
 //	}
 //}
+FString UJS_CreateRoomWidget::GetCurrentText() const
+{
+	return CurrentText;
+}

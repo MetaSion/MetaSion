@@ -689,7 +689,7 @@ void ACJS_BallPlayer::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPri
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
 	// Check if the hit actor is another BallPlayer
-	if (Other && Other != this && Other->IsA(ACJS_BallPlayer::StaticClass()))
+	if (Other && Other != this && Other->IsA(ACJS_BallPlayer::StaticClass())&& bCanTriggerEffect)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::NotifyHit() - Collided with another BallPlayer"));
 
@@ -702,7 +702,11 @@ void ACJS_BallPlayer::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPri
 		{
 			UGameplayStatics::PlaySound2D(GetWorld(), HitSFX);
 		}
-		TriggerSelfHitEffects(HitLocation);
+// 		TriggerSelfHitEffects(HitLocation);
+
+		bCanTriggerEffect = false;
+		GetWorldTimerManager().SetTimer(EffectCooldownTimer, this, &ACJS_BallPlayer::ResetEffectCooldown, EffectCooldownTime, false);
+
 	}
 }
 void ACJS_BallPlayer::TriggerSelfHitEffects(FVector HitLocation)
@@ -720,6 +724,12 @@ void ACJS_BallPlayer::TriggerSelfHitEffects(FVector HitLocation)
 	//{
 	//	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSFX, HitLocation);
 	//}
+}
+
+void ACJS_BallPlayer::ResetEffectCooldown()
+{
+
+	bCanTriggerEffect = true;
 }
 
 // 숫자키 애니메이션 작동 (멀티)

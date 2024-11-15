@@ -222,6 +222,6 @@ public:
 
 	//JS
 	bool bSuccess = false; // 상태 유지 변수
-
+	FString MyRoomResult;
 };
 

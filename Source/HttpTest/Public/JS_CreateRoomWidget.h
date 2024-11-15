@@ -158,6 +158,9 @@ public:
     UFUNCTION()
     void OnTextCommitted_MultiLine(const FText& Text, ETextCommit::Type CommitMethod);
 
+    FString GetCurrentText()const ;
+    
+
     UPROPERTY(EditAnywhere)
     int32 textSize = 10000;
 };

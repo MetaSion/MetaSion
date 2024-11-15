@@ -646,9 +646,8 @@ void AJS_RoomController::SetChangeLevelData()
                     // RoomInfoList 데이터를 위젯에 추가
                     Showlist->AddSessionSlotWidget(Result);
                     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() Showlist updated successfully."));
-
                     // 6.AI 분석 결과를 UI에 넣는다.
-                    Showlist->SetTextLog(SessionGI->WorldSetting.Result);
+                    Showlist->SetTextLogAgain(SessionGI->MyRoomResult);
                     // move to sugested tmeplate room 방이동
                     Showlist->SetWheaterNumb(SessionGI->WorldSetting.Quadrant);
 

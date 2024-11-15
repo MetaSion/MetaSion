@@ -308,7 +308,7 @@ void AHttpActor::RoomSendDataResPost(FHttpRequestPtr Request, FHttpResponsePtr R
         FString JsonResponse = Response->GetContentAsString();
         UE_LOG(LogTemp, Warning, TEXT("Received JSON: %s"), *JsonResponse);
         FRoomReceptionData RoomReceptionData = UJsonParseLib::RoomReceptionData_Convert_JsonToStruct(JsonResponse);
-
+        SessionGI->MyRoomResult = RoomReceptionData.AIAnalysisData.Result;
         UE_LOG(LogTemp, Warning, TEXT("UserId : %s, RoomName : %s, RoomNum : %s, 작품 설명 : %s, 파티클 번호 : %s, 음악 이름 : %s"),
         *RoomReceptionData.UserData.UserId, 
         *RoomReceptionData.RoomData.RoomName,

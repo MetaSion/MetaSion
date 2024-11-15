@@ -106,6 +106,12 @@ public:
 	void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
 	void TriggerSelfHitEffects(FVector HitLocation);
 
+	bool bCanTriggerEffect = true;       // 이펙트 출력 가능 여부
+	float EffectCooldownTime = 60.0f;     // 이펙트 출력 쿨다운 시간 (예: 1초)
+	FTimerHandle EffectCooldownTimer;    // 쿨다운 타이머 핸들
+
+	void ResetEffectCooldown();          // 쿨다운 초기화 함수
+
 	// 멀티 적용
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRPC_PlayAnimation(int32 AnimationIndex);

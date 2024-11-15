@@ -60,6 +60,8 @@ public:
 
 	void SetWheaterNumb(FString TempNUmb);
 
+	void SetTextLogAgain(FString explain);
+
 	UPROPERTY(VisibleAnywhere)
 	class AHttpActor* OpenActor;
 
