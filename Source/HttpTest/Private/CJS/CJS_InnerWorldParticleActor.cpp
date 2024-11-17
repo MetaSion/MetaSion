@@ -3,6 +3,7 @@
 
 #include "CJS/CJS_InnerWorldParticleActor.h"
 #include "Components/PointLightComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
@@ -107,8 +108,21 @@ void ACJS_InnerWorldParticleActor::UpdateInnerWorldNiagaraAsset(int32 NiagaraAss
     UE_LOG(LogTemp, Warning, TEXT("ACJS_InnerWorldParticleActor::UpdateInnerWorldNiagaraAsset()"));
     if (InnerWorldParticle)
     {
-        // Construct the asset path based on NiagaraAssetIndex
-        FString AssetPath = FString::Printf(TEXT("/Game/Main/Assets/Emotions/Particle_Num%d.Particle_Num%d"), NiagaraAssetIndex, NiagaraAssetIndex);
+		FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+        UE_LOG(LogTemp, Warning, TEXT("ACJS_InnerWorldParticleActor::UpdateInnerWorldNiagaraAsset() LevelName : %s"), *LevelName);
+		FString AssetPath;
+        if (LevelName.Contains("Winter"))
+        {
+            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_LV_Winter"));
+            // Construct the asset path based on NiagaraAssetIndex
+            AssetPath = FString::Printf(TEXT("/Content/Main/Assets/Emotions/Particle_Num%d.Particle_Num%d"), NiagaraAssetIndex, NiagaraAssetIndex);
+        }
+        else if (LevelName.Contains("Sky"))
+        {
+            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_Sky"));
+            // Construct the asset path based on NiagaraAssetIndex
+            AssetPath = FString::Printf(TEXT("/Content/Main/Assets/NoSound/Particle_Num%d.Particle_Num%d"), NiagaraAssetIndex, NiagaraAssetIndex);
+        }
 
         // Load the Niagara System dynamically from the constructed path
         UNiagaraSystem* SelectedNiagaraSystem = Cast<UNiagaraSystem>(StaticLoadObject(UNiagaraSystem::StaticClass(), nullptr, *AssetPath));
