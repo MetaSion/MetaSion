@@ -20,5 +20,8 @@ public:
 
 	void SetWinterSnowSlider();
 
+	UFUNCTION(BlueprintCallable)
+	void SetInnerWorldUI();
+
 	
 };

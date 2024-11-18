@@ -70,17 +70,17 @@ void ACJS_UserCharacter::BeginPlay()
 		if (subsys && IMC_Player)
 		{
 			subsys->AddMappingContext(IMC_Player, 0);
-			UE_LOG(LogTemp, Warning, TEXT("ACJS_LobbyPlayer::BeginPlay()::IMC_Player Set OK"));
+			//UE_LOG(LogTemp, Warning, TEXT("ACJS_LobbyPlayer::BeginPlay()::IMC_Player Set OK"));
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("ACJS_UserCharacter::BeginPlay()::IMC_Player is null or subsystem is null"));
+			//UE_LOG(LogTemp, Error, TEXT("ACJS_UserCharacter::BeginPlay()::IMC_Player is null or subsystem is null"));
 		}
 		
 	}
 	else
 	{		
-		UE_LOG(LogTemp, Error, TEXT("ACJS_LobbyPlayer::BeginPlay()::PlayerController (pc) is null in BeginPlay"));
+		//UE_LOG(LogTemp, Error, TEXT("ACJS_LobbyPlayer::BeginPlay()::PlayerController (pc) is null in BeginPlay"));
 
 	}
 
@@ -152,14 +152,14 @@ void ACJS_UserCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+		//UE_LOG(LogTemp, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
 
 
 void ACJS_UserCharacter::OnMyActionMove(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionMove()"));
+	//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionMove()"));
 
 	FVector2D v = Value.Get<FVector2D>();
 	FVector MovementDirection = FVector(v.X, v.Y, 0.f);
@@ -171,7 +171,7 @@ void ACJS_UserCharacter::OnMyActionMove(const FInputActionValue& Value)
 
 void ACJS_UserCharacter::OnMyActionLook(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionLook()"));
+	//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionLook()"));
 
 	FVector2D v = Value.Get<FVector2D>();
 	AddControllerPitchInput(-v.Y);
@@ -180,12 +180,12 @@ void ACJS_UserCharacter::OnMyActionLook(const FInputActionValue& Value)
 
 void ACJS_UserCharacter::OnMyActionClick(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionClick()"));
+	//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionClick()"));
 
 	if (!bAimPointUIShowing)
 	{
 		// AimPointUI가 표시되지 않았을 때는 클릭을 무시
-		UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionClick()::bAimPointUIShowing==false return"));
+		//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionClick()::bAimPointUIShowing==false return"));
 		return;
 	}
 
@@ -200,23 +200,23 @@ void ACJS_UserCharacter::OnMyActionClick(const FInputActionValue& Value)
 
 	if (bHit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Hit something!"));
+		//UE_LOG(LogTemp, Warning, TEXT("Hit something!"));
 
 		if (Outhit.Component.IsValid())
 		{
 			FString HitComponentName = Outhit.Component->GetName();
-			UE_LOG(LogTemp, Warning, TEXT("Hit Component: %s"), *HitComponentName);
+			//UE_LOG(LogTemp, Warning, TEXT("Hit Component: %s"), *HitComponentName);
 		}
 
 		AActor* HitActor = Outhit.GetActor();
 		if (HitActor)
 		{
 			FString HitActorName = HitActor->GetName();
-			UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *HitActorName);
+			//UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *HitActorName);
 
 			if (HitActorName.Contains("BP_MultiRoom"))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("BP_MultiRoom Clicked"));	
+				//UE_LOG(LogTemp, Warning, TEXT("BP_MultiRoom Clicked"));	
 				APlayerController* PC = Cast<APlayerController>(GetController());
 				if (PC)
 				{
@@ -227,12 +227,12 @@ void ACJS_UserCharacter::OnMyActionClick(const FInputActionValue& Value)
 				}
 				else
 				{
-					UE_LOG(LogTemp, Error, TEXT("PlayerController is nullptr. Cannt Move to the MultiRoomMap"));
+					//UE_LOG(LogTemp, Error, TEXT("PlayerController is nullptr. Cannt Move to the MultiRoomMap"));
 				}
 			}
 			else if (HitActorName.Contains("BP_MyRoom"))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("BP_MyRoom Clicked"));
+				//UE_LOG(LogTemp, Warning, TEXT("BP_MyRoom Clicked"));
 				APlayerController* PC = Cast<APlayerController>(GetController());
 				if (PC)
 				{
@@ -241,34 +241,34 @@ void ACJS_UserCharacter::OnMyActionClick(const FInputActionValue& Value)
 				}
 				else
 				{
-					UE_LOG(LogTemp, Error, TEXT("PlayerController is nullptr. Cannt Move to the MyRoomMap"));
+					//UE_LOG(LogTemp, Error, TEXT("PlayerController is nullptr. Cannt Move to the MyRoomMap"));
 				}
 			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionClick()::Hit Actor is NULL"));
+			//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionClick()::Hit Actor is NULL"));
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionClick()::No Hit Detected"));
+		//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionClick()::No Hit Detected"));
 	}
 	
 }
 
 void ACJS_UserCharacter::OnAimPointUIStateChanged(bool bIsVisible)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnAimPointUIStateChanged()"));
+	//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnAimPointUIStateChanged()"));
 
 	bAimPointUIShowing = bIsVisible;
 	if (bAimPointUIShowing)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnAimPointUIStateChanged()::bAimPointUIShowing = true"));
+		//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnAimPointUIStateChanged()::bAimPointUIShowing = true"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnAimPointUIStateChanged()::bAimPointUIShowing = false"));
+		//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnAimPointUIStateChanged()::bAimPointUIShowing = false"));
 	}
 }
 
@@ -331,7 +331,7 @@ void ACJS_UserCharacter::Server_RequestMapTravel_Implementation(const FString& M
 
 void ACJS_UserCharacter::OnMyActionToggleAimPointUI(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionToggleAimPointUI()"));
+	//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionToggleAimPointUI()"));
 
 	if (AimPointUI)
 	{
@@ -339,7 +339,7 @@ void ACJS_UserCharacter::OnMyActionToggleAimPointUI(const FInputActionValue& Val
 		{
 			bAimPointUIShowing = true;
 			AimPointUI->SetVisibility(ESlateVisibility::Visible);
-			UE_LOG(LogTemp, Warning, TEXT("AimPointUI is now Visible"));
+			//UE_LOG(LogTemp, Warning, TEXT("AimPointUI is now Visible"));
 
 			// 마우스 커서를 표시하고 입력 모드를 UI와 게임 모두로 설정
 			/*if (PC)
@@ -352,7 +352,7 @@ void ACJS_UserCharacter::OnMyActionToggleAimPointUI(const FInputActionValue& Val
 		{
 			bAimPointUIShowing = false;
 			AimPointUI->SetVisibility(ESlateVisibility::Hidden);
-			UE_LOG(LogTemp, Warning, TEXT("AimPointUI is now Hidden"));
+			//UE_LOG(LogTemp, Warning, TEXT("AimPointUI is now Hidden"));
 
 			// 마우스 커서를 숨기고 입력 모드를 게임 전용으로 설정
 			/*if (PC)

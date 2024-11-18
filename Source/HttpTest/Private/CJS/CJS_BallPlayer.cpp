@@ -427,17 +427,27 @@ void ACJS_BallPlayer::OnMyActionThrow(const FInputActionValue& Value)
 	//{
 	//	UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionThrow() - HeartItemFactory is null"));
 	//}
-// 
-// 	if (HasAuthority() && IsLocallyControlled())
-// 	{
-// 		// 서버에서 직접 멀티캐스트 호출
-// 		MulticastRPC_ThrowHeart();
-// 	}
-	 if (!HasAuthority())
+
+	if (HasAuthority())
 	{
-		// 클라이언트에서 서버로 RPC 호출 요청
+		// 서버에서 직접 하트를 던지기
 		ServerRPC_ThrowHeart();
 	}
+	else
+	{
+		// 클라이언트에서 서버로 RPC 호출
+		ServerRPC_ThrowHeart();
+	}
+
+	 //// 서버에 하트던지기 요청
+	 //if (HasAuthority())
+	 //{
+		// MulticastRPC_ThrowHeart(); // 서버는 직접 멀티캐스트 실행
+	 //}
+	 //else
+	 //{
+		// ServerRPC_ThrowHeart(); // 클라이언트는 서버에 요청
+	 //}
 }
 
 void ACJS_BallPlayer::OnMyActionClick(const FInputActionValue& Value)
@@ -745,22 +755,15 @@ void ACJS_BallPlayer::ServerRPC_ThrowHeart_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::ServerRPC_ThrowHeart()"));
 	// 서버에서만 하트 생성
-
-		MulticastRPC_ThrowHeart(); // 모든 클라이언트에게 하트를 던지라고 브로드캐스트
-	
+	MulticastRPC_ThrowHeart(); // 모든 클라이언트에게 하트를 던지라고 브로드캐스트
 }
-
 bool ACJS_BallPlayer::ServerRPC_ThrowHeart_Validate()
 {
 	return true;
 }
-
 void ACJS_BallPlayer::MulticastRPC_ThrowHeart_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_ThrowHeart()"));
-	// 실제 하트를 던지는 로직 (기존의 OnMyActionThrow 로직을 여기로 옮기기)
-	if (HasAuthority())
-	{
 	if (HeartItemFactory)
 	{
 		// 일정한 방향으로 던지기
@@ -775,13 +778,17 @@ void ACJS_BallPlayer::MulticastRPC_ThrowHeart_Implementation()
 		{
 			FVector LaunchDirection = SpawnRotation.Vector();
 			SpawnedHeart->ProjectileMovementComp->Velocity = LaunchDirection * SpawnedHeart->ProjectileMovementComp->InitialSpeed;
-		}	
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::Multicast_ThrowHeart() - ACJS_HeartActor is null"));
+		}
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::Multicast_ThrowHeart() - HeartItemFactory is null"));
 	}
-	}
+
 }
 
  

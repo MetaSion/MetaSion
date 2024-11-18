@@ -105,25 +105,25 @@ void AJS_RoomController::BeginPlay()
             UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
         }
     }
-    else if (LevelName.Contains("Sky"))
-    {
-        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky"));
-        //if (SessionGI && SessionGI->bSuccess) {
-        //    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky-> SessionGI exsited"));
-        //    //if (HttpActor) {
-        //    //    //HttpActor->ShowQuestionUI();
-        //    //}
-        //    else
-        //    {
-        //        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() No HttpActor"));
-        //    }
-        //    SessionGI->bSuccess = false; // 사용 후 상태 초기화
-        //}
-		/*else
-		{
-			UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
-		}*/
-    }
+  //  else if (LevelName.Contains("Sky"))
+  //  {
+  //      UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky"));
+  //      //if (SessionGI && SessionGI->bSuccess) {
+  //      //    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky-> SessionGI exsited"));
+  //      //    //if (HttpActor) {
+  //      //    //    //HttpActor->ShowQuestionUI();
+  //      //    //}
+  //      //    else
+  //      //    {
+  //      //        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() No HttpActor"));
+  //      //    }
+  //      //    SessionGI->bSuccess = false; // 사용 후 상태 초기화
+  //      //}
+		///*else
+		//{
+		//	UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
+		//}*/
+  //  }
     else if (LevelName.Contains("Main_Login"))
     {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Login"));
@@ -151,6 +151,7 @@ void AJS_RoomController::BeginPlay()
 void AJS_RoomController::SetupInputComponent()
 {
     Super::SetupInputComponent();
+    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SetupInputComponent()"));
 
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
     {
@@ -169,8 +170,13 @@ void AJS_RoomController::SetupInputComponent()
     // EnhancedInputComponent ����
     if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
     {
+         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SetupPlayerInputComponent UEnhancedInputComponent set"));
+         // Mouse Click Event
          EnhancedInputComponent->BindAction(IA_LeftMouse, ETriggerEvent::Triggered, this, &AJS_RoomController::OnMouseClick);
+         // Inner World Setting UI
          EnhancedInputComponent->BindAction(IA_SettingUI, ETriggerEvent::Started, this, &AJS_RoomController::ShowSettingUI);
+         // Inner World UI
+         EnhancedInputComponent->BindAction(IA_InnerWorldUI, ETriggerEvent::Started, this, &AJS_RoomController::ShowInnerWorldUIThird);
     }
 }
 
@@ -218,28 +224,34 @@ void AJS_RoomController::CheckDate()
 
 void AJS_RoomController::InitializeUIWidgets()
 {
-    FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets()"));
     //FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
 	if (LoginUIFactory) {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() LoginUIFactory exsited"));
 		LoginUI = CreateWidget<UHttpWidget>(this, LoginUIFactory);
 		if (LoginUI) {
+            UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() LoginUI set"));
 			LoginUI->AddToViewport();
 			LoginUI->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
     if (CR_UIFactory) {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() CR_UIFactory exsited"));
         CR_UI = CreateWidget<UJS_CreateRoomWidget>(this, CR_UIFactory);
         if (CR_UI) {
+            UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() CR_UI set"));
             CR_UI->AddToViewport();
             CR_UI->SetVisibility(ESlateVisibility::Hidden);
         }
     }
     if (R_UIFactory)
     {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() CR_UIFactory exsited"));
         R_UI = CreateWidget<UJS_RoomWidget>(this, R_UIFactory);
         if (R_UI)
         {
+            UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() R_UI set"));
             R_UI->AddToViewport();
             R_UI->SetVisibility(ESlateVisibility::Hidden);
         }
@@ -753,11 +765,107 @@ void AJS_RoomController::InitInnerWorldSetting()
     HttpActor->ApplyMyWorldPointLightColors();
     HttpActor->ApplyMyWorldNiagaraAssets();
 }
+
+/* Inner World UI (After Setting UI Hidden) */
+void AJS_RoomController::ShowInnerWorldUIZero()
+{
+    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowInnerWorldUIZero()"));
+    if (CR_UIFactory)
+    {
+        if (!CR_UI)
+        {
+            UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() not exsited InnerWorldUI"));
+			CR_UI = CreateWidget<UJS_CreateRoomWidget>(GetWorld(), CR_UIFactory);
+			if (CR_UI)
+			{
+				UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() InnerWorldUI assigned"));
+				CR_UI->SetVisibility(ESlateVisibility::Visible);
+                CR_UI->SwitchToWidget(0);
+				UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() InnerWorldUI set Visible"));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() No InnerWorldUI"));
+			}
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() already exsited InnerWorldUI"));
+            CR_UI->SetVisibility(ESlateVisibility::Visible);
+            CR_UI->SwitchToWidget(0);
+            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIZero() InnerWorldUI set Visible"));
+        }
+
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::ShowInnerWorldUIZero() Failed to create CR_UIFactory"));
+    }
+  
+
+}
+void AJS_RoomController::ShowInnerWorldUIThird()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird()"));
+    if (CR_UIFactory)
+    {
+        if (!CR_UI)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird() not exsited InnerWorldUI"));
+            CR_UI = CreateWidget<UJS_CreateRoomWidget>(GetWorld(), CR_UIFactory);
+            if (CR_UI)
+            {
+                UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird() InnerWorldUI assigned"));
+                CR_UI->SetVisibility(ESlateVisibility::Visible);
+                CR_UI->DelayedSwitchToWidget();
+                UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird() InnerWorldUI set Visible"));
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::ShowInnerWorldUIThird() No InnerWorldUI"));
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::ShowInnerWorldUIThird() already exsited InnerWorldUI"));
+            CR_UI->SetVisibility(ESlateVisibility::Visible);
+            CR_UI->DelayedSwitchToWidget();
+            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird() InnerWorldUI set Visible"));
+        }
+
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::ShowInnerWorldUIThird() Failed to create CR_UIFactory"));
+    }
+}
+void AJS_RoomController::HideInnerWorldUI()
+{
+    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::HideInnerWorldUI()"));
+    if (CR_UI)
+    {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::HideInnerWorldUI() CR_UI exsied"));
+       /* UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::HideInnerWorldUI() InnerWorldUI is existed"));
+        CR_UI->SetVisibility(ESlateVisibility::Hidden);
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::HideInnerWorldUI() InnerWorldUI set Hidden"));*/
+
+        CR_UI->RemoveFromParent();
+        CR_UI = nullptr;
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::HideInnerWorldUI() Inner World UI Remove"));
+    
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::HideInnerWorldUI() No InnerWorldUI"));
+    }
+}
+
 //Initial Inner World Setting End --------------------------------------------------------------------------
 
 //Inner World Setting UI Start -----------------------------------------------------------------------------
 void AJS_RoomController::ShowSettingUI()
 {
+    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowSettingUI()"));
     // SettingUIFactory가 유효하고 SettingUI가 생성되지 않은 경우에만 생성
     if (SettingUIFactory && !SettingUI)
     {
@@ -781,6 +889,7 @@ void AJS_RoomController::ShowSettingUI()
 }
 void AJS_RoomController::HideSettingUI()
 {
+    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::HideSettingUI()"));
     if (SettingUI)
     {
         // SettingUI를 화면에서 제거

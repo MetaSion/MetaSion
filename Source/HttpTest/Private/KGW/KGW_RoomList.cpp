@@ -92,6 +92,7 @@ void UKGW_RoomList::OnClickMultiWorld()
 //마이월드 -> 멀티월드 버튼 클릭 시 통신
 void UKGW_RoomList::StartHttpMultyWorld()
 {
+    UE_LOG(LogTemp, Warning, TEXT("UKGW_RoomList::StartHttpMultyWorld()"));
     OpenActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
     if (!OpenActor)
     {
@@ -108,7 +109,9 @@ void UKGW_RoomList::StartHttpMultyWorld()
         FString JsonRequest = UJsonParseLib::MakeJson(MyRoomData);
 
         // 서버로 요청 전송
-        OpenActor->ReqPostClickMultiWorld(OpenActor->EntryMultiWorldURL, JsonRequest);
+        //OpenActor->ReqPostClickMultiWorld(OpenActor->EntryMultiWorldURL, JsonRequest);
+        FString StoredJsonResponsetest = TEXT("{\"UserId\":\"testuser\",\"R\":1.0,\"G\":0.9225690792809692,\"B\":0.4,\"SimilarUsers\":[{\"UserId\":\"user_8\",\"EmotionScore\":82.0,\"RoomName\":\"Sunny World\"},{\"UserId\":\"user_8\",\"EmotionScore\":82.0,\"RoomName\":\"Sol World\"},{\"UserId\":\"abc11\",\"EmotionScore\":81.0,\"RoomName\":\"KW World\"}],\"OppositeUsers\":[{\"UserId\":\"user_1\",\"EmotionScore\":283.5,\"RoomName\":\"JW World\"},{\"UserId\":\"user_3\",\"EmotionScore\":321.0,\"RoomName\":\"DL World\"}]}");
+        OpenActor->CallStartMakeSession(StoredJsonResponsetest);
     }
     else
     {
