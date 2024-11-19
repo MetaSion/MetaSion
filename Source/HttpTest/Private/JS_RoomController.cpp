@@ -293,6 +293,8 @@ void AJS_RoomController::InitializeUIWidgets()
         {
             Ex_UI->AddToViewport();
             Ex_UI->SetVisibility(ESlateVisibility::Hidden);
+        }
+    }
     if (ChatUIFactory)
     {
         UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() ChatUIFactory exsited"));
