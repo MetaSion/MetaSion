@@ -63,8 +63,8 @@ public:
     UPROPERTY(meta=(BindWidget))
     class UBorder* CreateRoomCompelete;
 
-    UPROPERTY(meta=(BindWidget))
-    class UMultiLineEditableText* Txt_Explane;
+    //UPROPERTY(meta=(BindWidget))
+    //class UMultiLineEditableText* Txt_Explane;
 
     
     UPROPERTY(EditAnywhere)
@@ -73,47 +73,8 @@ public:
     UPROPERTY(EditAnywhere)
     FString RoomDescription;
 
-        UPROPERTY(EditAnywhere)
+    UPROPERTY(EditAnywhere)
     FString CurrentText;
-
-
-
-
-    //KGW==================================
-
-    	UPROPERTY(meta = (BindWidget))
-	class UButton* Btn_CaptureImage;
-
-;
-	UPROPERTY(meta = (BindWidget))
-	class UButton* Btn_MyPage;
-    	UPROPERTY(meta = (BindWidget))
-	class UButton* Btn_Explanation;
-
-    UPROPERTY(meta = (BindWidgetAnim),BlueprintReadWrite, Transient)
-    class UWidgetAnimation* appear;
-
-
-    
-        UFUNCTION(BlueprintCallable)
-
-    void OnClickCaptureImage();
-            UFUNCTION(BlueprintCallable)
-
-    void OnClikMypage();
-
-                UFUNCTION(BlueprintCallable)
-
-    void OnClikExplanation();
-
-    UFUNCTION(BlueprintCallable)
-
-    void SetExplanation(const FString& Text);
-
-
-
-
-
 
     UPROPERTY(BlueprintReadWrite)
     int32 bPrivate = 0;
@@ -160,4 +121,35 @@ public:
 
     UPROPERTY(EditAnywhere)
     int32 textSize = 10000;
+
+
+    //KGW ==================================
+    UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_CaptureImage;
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_MyPage;
+    UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_Explanation;
+    UPROPERTY(meta = (BindWidgetAnim),BlueprintReadWrite, Transient)
+    class UWidgetAnimation* appear;   
+    UFUNCTION(BlueprintCallable)
+    void OnClickCaptureImage();
+    UFUNCTION(BlueprintCallable)
+    void OnClikMypage();
+    UFUNCTION(BlueprintCallable)
+    void OnClikExplanation();
+    UFUNCTION(BlueprintCallable)
+    void SetExplanation(const FString& Text);
+
+
+    //CJS ==================================
+    UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	class UCJS_ChatWidget* ChatUI;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UCJS_ChatTextWidget> ChatTextWidgetFactory;
+	//UPROPERTY()
+	//class UCJS_ChatTextWidget* ChatTextWidget;
+
+    UFUNCTION()
+    void HandleSendButtonClicked();
 };

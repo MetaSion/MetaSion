@@ -13,6 +13,10 @@
 #include "JS_WidgetFunction.h"
 #include "Components/MultiLineEditableText.h"
 #include "Components/MultiLineEditableTextBox.h"
+#include "CJS/CJS_ChatWidget.h"
+#include "CJS/CJS_ChatTextWidget.h"
+#include "Components/ScrollBox.h"
+#include "Components/TextBlock.h"
 
 void UJS_CreateRoomWidget::NativeConstruct()
 {
@@ -35,6 +39,11 @@ void UJS_CreateRoomWidget::NativeConstruct()
 	Btn_MyPage->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClikMypage);
 	Btn_Explanation->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClikExplanation);
 
+	if (ChatUI && ChatUI->Btn_Send)
+	{
+		// Btn_Send 클릭 이벤트 바인딩
+		ChatUI->Btn_Send->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::HandleSendButtonClicked);
+	}
 
 	pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	httpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
@@ -60,16 +69,61 @@ void UJS_CreateRoomWidget::OnClikMypage()
 }
 void UJS_CreateRoomWidget::OnClikExplanation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation()"))
 	SetExplanation(CurrentText);
 }
 void UJS_CreateRoomWidget::SetExplanation(const FString& Text)
-{ 
-	// chat widget에서 작업하도록 넘기기 <---------------------- 여기 수정
-	
-	Txt_Explane->SetText(FText::FromString(Text));
-		
-	
+{ 	
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation()"))
+	//Txt_Explane->SetText(FText::FromString(Text));
+
+	if (ChatUI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation() ChatUI exsited"))
+		ChatUI->SetEdit_RoomInfo(Text);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::SetExplanation() ChatUI is null!"));
+	}
 }
+
+// Send 버튼 클릭 시
+void UJS_CreateRoomWidget::HandleSendButtonClicked()
+{
+	if (!ChatUI || !ChatUI->Edit_InputText || !ChatUI->Scroll_MsgList || !ChatTextWidgetFactory)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ChatUI or required components are not initialized!"));
+		return;
+	}
+
+	// Edit_InputText에서 텍스트 가져오기
+	FString InputText = ChatUI->Edit_InputText->GetText().ToString();
+	if (InputText.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Input text is empty, ignoring send."));
+		return;
+	}
+
+	// WBP_CJS_ChatTextWidget 생성
+	UCJS_ChatTextWidget* NewChatText = CreateWidget<UCJS_ChatTextWidget>(this, ChatTextWidgetFactory);
+	if (!NewChatText || !NewChatText->Txt_Msg)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to create ChatTextWidget or Txt_Msg is null!"));
+		return;
+	}
+
+	// Txt_Msg에 텍스트 설정
+	NewChatText->Txt_Msg->SetText(FText::FromString(InputText));
+
+	// 생성된 ChatTextWidget을 Scroll_MsgList에 추가
+	ChatUI->Scroll_MsgList->AddChild(NewChatText);
+	ChatUI->Scroll_MsgList->ScrollToEnd(); // 스크롤 맨 아래로 이동
+
+	// Edit_InputText 초기화
+	ChatUI->Edit_InputText->SetText(FText::GetEmpty());
+}
+
 //widget Switch
 void UJS_CreateRoomWidget::SwitchToWidget(int32 index)
 {

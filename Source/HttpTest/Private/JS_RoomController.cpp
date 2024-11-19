@@ -28,6 +28,7 @@
 #include "CJS/CJS_InnerWorldSettingWidget.h"
 #include "CJS/CJS_LoginActor.h"
 #include "KGW/KGW_RoomList.h"
+#include "CJS/CJS_ChatWidget.h"
 
 AJS_RoomController::AJS_RoomController()
 {
@@ -256,6 +257,17 @@ void AJS_RoomController::InitializeUIWidgets()
             R_UI->SetVisibility(ESlateVisibility::Hidden);
         }
     }
+    if (ChatUIFactory)
+    {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() ChatUIFactory exsited"));
+        ChatUI = CreateWidget<UCJS_ChatWidget>(this, ChatUIFactory);
+        if (ChatUI)
+        {
+            UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() ChatUI set"));
+            ChatUI->AddToViewport();
+            ChatUI->SetVisibility(ESlateVisibility::Hidden);
+        }
+    }
 }
 void AJS_RoomController::ShowLoginUI()
 {
@@ -357,6 +369,7 @@ void AJS_RoomController::SetActorLocationAfterLevelLoad()
     }
 }
 
+
 void AJS_RoomController::OnClickButtonImage()
 {
     HideCreateRoomUI();
@@ -442,19 +455,19 @@ void AJS_RoomController::OnMouseClick()
                 //OpenMultiWorld();
 
             }
-            else if (HitActor->ActorHasTag(TEXT("ChatWidget")))  //  <-- 채팅 위젯 추가
-            {
-                UE_LOG(LogTemp, Warning, TEXT("ChatWidget Hit - Loading Chat Widget"));
-                if (ChatActorFactory)
-                {
-                    // ChatActorFactory가 ACJS_JS_WidgetFunction 타입임을 보장
-                    ACJS_JS_WidgetFunction* ChatFunction = Cast<ACJS_JS_WidgetFunction>(ChatActorFactory);
-                    if (ChatFunction)
-                    {
-                        ChatFunction->ToggleChatUIVisible();
-                    }
-                }
-            }
+            //else if (HitActor->ActorHasTag(TEXT("ChatWidget")))  //  <-- 채팅 위젯 추가
+            //{
+            //    UE_LOG(LogTemp, Warning, TEXT("ChatWidget Hit - Loading Chat Widget"));
+            //    if (ChatActorFactory)
+            //    {
+            //        // ChatActorFactory가 ACJS_JS_WidgetFunction 타입임을 보장
+            //        ACJS_JS_WidgetFunction* ChatFunction = Cast<ACJS_JS_WidgetFunction>(ChatActorFactory);
+            //        if (ChatFunction)
+            //        {
+            //            ChatFunction->ToggleChatUIVisible();
+            //        }
+            //    }
+            //}
 
         }
     }
