@@ -40,15 +40,13 @@ public:
 	TSubclassOf<class UJS_CreateRoomWidget> CR_UIFactory;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UJS_RoomWidget> R_UIFactory;
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UJS_ExplainWidget> Ex_UIFactory;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	class UHttpWidget* LoginUI;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	class UJS_CreateRoomWidget* CR_UI;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	class UJS_RoomWidget* R_UI;
 
     UPROPERTY(EditAnywhere)
@@ -100,7 +98,7 @@ public:
     class USessionGameInstance* SessionGI;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UCJS_InnerWorldSettingWidget> SettingUIFactory;
-    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    UPROPERTY(BlueprintReadWrite)
 	class UCJS_InnerWorldSettingWidget* SettingUI;
 
     void ShowSettingUI();
@@ -135,12 +133,14 @@ public:
     void HideInnerWorldUI();
 
       /* Chat Widget */
-    UPROPERTY(EditDefaultsOnly, Category = "Heart")
-	class ACJS_JS_WidgetFunction* ChatActorFactory;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UCJS_ChatWidget> ChatUIFactory;
+    UPROPERTY(BlueprintReadWrite)
+	class UCJS_ChatWidget* ChatUI;
+
 
 
     //KGW==============================================
-
     void OnClickButtonImage();
 
     //Mouse Interaction
