@@ -775,9 +775,9 @@ void AHttpActor::OnResPostClickMyRoom(FHttpRequestPtr Request, FHttpResponsePtr 
         UE_LOG(LogTemp, Warning, TEXT("Request Failed: %d"), Response->GetResponseCode());
     }
 }
-
 void AHttpActor::ReqPostClickMultiWorld(FString url, FString json)
 {
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ReqPostClickMultiWorld()"));
     FHttpModule& httpModule = FHttpModule::Get();
     TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
 
@@ -792,26 +792,32 @@ void AHttpActor::ReqPostClickMultiWorld(FString url, FString json)
 }
 void AHttpActor::OnResPostClickMultiWorld(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostClickMultiWorld()"));
     if (bConnectedSuccessfully && Response.IsValid())
     {
         FString ResponseContent = Response->GetContentAsString();
         UE_LOG(LogTemp, Log, TEXT("POST Response: %s"), *ResponseContent);
         StoredJsonResponse = ResponseContent;  // <-- 실제 통신 시
-        UE_LOG(LogTemp, Warning, TEXT("Stored JSON Response: %s"), *StoredJsonResponse);
-        //StoredJsonResponse = StoredJsonResponsetest;  // <-- 테스트 시   
-        if (SessionGI)
-        {
-            UE_LOG(LogTemp, Warning, TEXT("SessionGM is OK"));
-            SessionGI->SetNetInfoCharacterTOLobby(StoredJsonResponse);
-            SessionGI->FindSessions();
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("SessionGM is NULL"));
-        }
+        UE_LOG(LogTemp, Warning, TEXT("Stored JSON Response: %s"), *StoredJsonResponse);  
+        CallStartMakeSession(StoredJsonResponse);
     }
-
 }
+void AHttpActor::CallStartMakeSession(FString result)
+{
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::CallStartMakeSession()"));
+    StoredJsonResponse = StoredJsonResponsetest;  // <-- 테스트 시   
+    if (SessionGI)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("SessionGM is OK"));
+        SessionGI->SetNetInfoCharacterTOLobby(result);
+        SessionGI->FindSessions();
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("SessionGM is NULL"));
+    }
+}
+
 
 // 추천 음악 틀기
 void AHttpActor::SetBackgroundSound()

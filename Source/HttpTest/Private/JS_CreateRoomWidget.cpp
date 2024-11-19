@@ -64,6 +64,7 @@ void UJS_CreateRoomWidget::OnClikExplanation()
 }
 void UJS_CreateRoomWidget::SetExplanation(const FString& Text)
 { 
+	// chat widgetЛ≈░Л└° Л·▒Л≈┘М∙≤К▐└К║² К└≤Й╦╟Й╦╟ <---------------------- Л≈╛Й╦╟ Л┬≤Л═∙
 	
 	Txt_Explane->SetText(FText::FromString(Text));
 		
@@ -72,6 +73,7 @@ void UJS_CreateRoomWidget::SetExplanation(const FString& Text)
 //widget Switch
 void UJS_CreateRoomWidget::SwitchToWidget(int32 index)
 {
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SwitchToWidget()"));
 	if (CR_WidgetSwitcher) {
 		CR_WidgetSwitcher->SetActiveWidgetIndex(index);
 	}
@@ -109,9 +111,9 @@ void UJS_CreateRoomWidget::CompleteCreateRoom()
 }
 void UJS_CreateRoomWidget::DelayedSwitchToWidget()
 {
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::DelayedSwitchToWidget()"));
 	SwitchToWidget(3);
 	PlayAnimation(appear);
-
 }
 void UJS_CreateRoomWidget::SetPrivate()
 {
@@ -165,7 +167,7 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 	RoomSendData.RoomInfoData.RoomName = ED_RoomName->GetText().ToString();
 	RoomSendData.RoomInfoData.RoomDescription = ED_MultiText->GetText().ToString();*/
 
-	// ют╥б╣х ╟╙╣Ию╩ ╪ЖаЩ
+	// О©╫т╥б╣О©╫ О©╫О©╫О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫
 	FString UserId = "testuser";
 	FString UltraSky_TimeOfDay = "1200";
 	FString UltraWeather_CloudCoverage = "1";
@@ -181,19 +183,19 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 	FString RoomName = ED_RoomName->GetText().ToString();
 	RoomDescription = ED_MultiText->GetText().ToString();
 
-	// цъ╟║╣х ╟╙: bPrivate -> RoomPP ╨╞х╞
+	// О©╫ъ╟О©╫О©╫О©╫ О©╫О©╫: bPrivate -> RoomPP О©╫О©╫х╞
 	FString RoomPP = FString::FromInt(bPrivate);
 
-	// цъ╟║╣х ╟╙: Quadrant (цъа╓╣х ╟╙, аВа╒ ╪Ёа╓гь аж╪╪©Д)
-	FString Quadrant = "1";  // ©╧╫ц ╟╙, ╫га╕ ╟╙ю╩ Ёж╬Наж╪╪©Д.
+	// О©╫ъ╟О©╫О©╫О©╫ О©╫О©╫: Quadrant (О©╫О©╫О©╫О©╫О©╫О©╫ О©╫О©╫, О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫О©╫О©╫ О©╫ж╪О©╫О©╫О©╫)
+	FString Quadrant = "1";  // О©╫О©╫О©╫О©╫ О©╫О©╫, О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫ О©╫ж╬О©╫О©╫ж╪О©╫О©╫О©╫.
 
-	// ╪Ж╣©ю╦╥н JSON ╧╝юз©╜ю╩ ╩Щ╪╨
+	// О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫ JSON О©╫О©╫О©╫з©О©╫О©╫О©╫ О©╫О©╫О©╫О©╫
 	FString json = FString::Printf(TEXT(
 		"{"
 		"\"UserId\": \"%s\","
 		"\"RoomName\": \"%s\","
 		"\"UltraSky_TimeOfDay\": \"%s\","
-		"\"UltraWeather_CloudCoverage\": \"%s\","  // ©юе╦ ╪Жа╓
+		"\"UltraWeather_CloudCoverage\": \"%s\","  // О©╫О©╫е╦ О©╫О©╫О©╫О©╫
 		"\"UltraWeather_Fog\": \"%s\","
 		"\"UltraWeather_Rain\": \"%s\","
 		"\"UltraWeather_Snow\": \"%s\","
@@ -249,25 +251,25 @@ void UJS_CreateRoomWidget::OnTextChanged_MultiLine(const FText& Text)
 	CurrentText = Text.ToString();
 	int32 CharacterCount = 0;
 
-	// О©╫ь╫О©╫ф╝О©╫О©╫ О©╫О©╫О©╫О©╫ О©╫О©╫О©╫л╦О©╫ О©╫О©╫О©?
+	// О©╫ь╫О©╫ф╝О©╫О©╫ О©╫О©╫О©╫О©╫ О©╫О©╫О©╫л╦О©╫ О©╫О©╫О©╫?
 	for (const TCHAR& Char : CurrentText)
 	{
-		CharacterCount += (Char <= 0x007F) ? 1 : 3; // гя╠шю╨ 3╥н ╟Х╩Й
+		CharacterCount += (Char <= 0x007F) ? 1 : 3; // О©╫я╠О©╫О©╫О©╫ 3О©╫О©╫ О©╫О©╫О©╫
 		//UE_LOG(LogTemp, Warning, TEXT("%c"), Char);
 
-		CharacterCount += (Char <= 0x007F) ? 1 : 3; // О©╫я╠О©╫О©╫О©╫ 3О©╫О©╫ О©╫О©╫О©?
+		CharacterCount += (Char <= 0x007F) ? 1 : 3; // О©╫я╠О©╫О©╫О©╫ 3О©╫О©╫ О©╫О©╫О©╫?
 		UE_LOG(LogTemp, Warning, TEXT("%c"), Char);
 	}
 
-	// О©╫О©╫О©╫О©╫ О©╫О©╫ О©╫О©╫О©╫О©╫О©╫О©╫ О©╫я╬О©╫О©╫О©╫ О©╫О©╫ О©╫О©╫О©?О©╫ч╫О©╫О©╫О©╫ г╔О©╫О©╫
+	// О©╫О©╫О©╫О©╫ О©╫О©╫ О©╫О©╫О©╫О©╫О©╫О©╫ О©╫я╬О©╫О©╫О©╫ О©╫О©╫ О©╫О©╫О©╫?О©╫ч╫О©╫О©╫О©╫ г╔О©╫О©╫
 	if (CharacterCount > MAX_CHARACTER_COUNT)
 	{
-		// О©╫н╠О©╫ О©╫О©╫О©╫О©╫О©╫О©╫О©?О©╫О©╫О©?
+		// О©╫н╠О©╫ О©╫О©╫О©╫О©╫О©╫О©╫О©╫?О©╫О©╫О©╫?
 		UE_LOG(LogTemp, Warning, TEXT("О©╫О©╫О©╫О©╫ О©╫О©╫ О©╫О©╫О©╫О©╫О©╫О©╫ О©╫й╟О©╫О©╫ъ╫О©╫О©╫о╢О©╫!"));
 	}
 	else
 	{
-		// О©╫О©╫О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫ О©╫О©╫Л©║О©╫О©?О©╫О©╫х©О©╫О©╫ О©╫ь╫О©╫ф╝О©╫О©╫ О©╫О©╫О©╫О©╫
+		// О©╫О©╫О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫ О©╫О©╫Л©║О©╫О©╫?О©╫О©╫х©О©╫О©╫ О©╫ь╫О©╫ф╝О©╫О©╫ О©╫О©╫О©╫О©╫
 		LastValidText = CurrentText;
 	}
 }
@@ -297,7 +299,7 @@ void UJS_CreateRoomWidget::OnTextCommitted_MultiLine(const FText& Text, ETextCom
 //{
 //	FString CurrentText = Text.ToString();
 //
-//	// О©╫О©╫О©╫з©О©╫О©╫О©╫ О©╫О©╫О©╫О©╫ О©╫О©╫О©╫л╦О©╫ О©╫О©╫О©?(UTF-16 О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫О©╫О©╫)
+//	// О©╫О©╫О©╫з©О©╫О©╫О©╫ О©╫О©╫О©╫О©╫ О©╫О©╫О©╫л╦О©╫ О©╫О©╫О©╫?(UTF-16 О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫О©╫О©╫)
 //	int32 CharacterCount = 0;
 //	for (const TCHAR& Char : CurrentText)
 //	{
