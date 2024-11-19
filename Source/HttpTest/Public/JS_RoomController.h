@@ -40,6 +40,10 @@ public:
 	TSubclassOf<class UJS_CreateRoomWidget> CR_UIFactory;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UJS_RoomWidget> R_UIFactory;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UJS_ExplainWidget> Ex_UIFactory;
+
 	UPROPERTY(EditAnywhere)
 	class UHttpWidget* LoginUI;
 	UPROPERTY(EditAnywhere)
@@ -47,8 +51,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UJS_RoomWidget* R_UI;
 
-    FTimerHandle LevelCheckTimerHandle;  // 타이머 핸들러
+    UPROPERTY(EditAnywhere)
+	class UJS_ExplainWidget* Ex_UI;
 
+    FTimerHandle LevelCheckTimerHandle;  // 타이머 핸들러
+    FTimerHandle OtherRoomCheckTimerHandle;
     FDateTime LastCheckDate; // 마지막으로 확인한 날짜 (00:00 기준)
     bool bShowLoginScreen = false; // 초기 값 설정
     bool bOnlyIndexSend = false;
@@ -77,6 +84,15 @@ public:
     void SpawnAndSwitchToCamera();
 
     void SetChangeLevelData();
+
+    UFUNCTION(BlueprintCallable, Category = "Camera")
+    void SwitchToCamera();
+
+    //ExplainUI
+    UFUNCTION(BlueprintCallable)
+    void ShowExplainUI();
+    void HideExplainUI();
+    //KGW==============================================
 
 
     /* Inner World Setting UI */
