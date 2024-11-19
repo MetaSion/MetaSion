@@ -45,6 +45,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UJS_RoomWidget> R_UIFactory;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UJS_ExplainWidget> Ex_UIFactory;
+
 	UPROPERTY(EditAnywhere)
 	class UHttpWidget* LoginUI;
 
@@ -54,6 +57,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UJS_RoomWidget* R_UI;
 
+    UPROPERTY(EditAnywhere)
+	class UJS_ExplainWidget* Ex_UI;
 
     FTimerHandle LevelCheckTimerHandle;  // 타이머 핸들러
     FTimerHandle OtherRoomCheckTimerHandle;
@@ -86,6 +91,11 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Camera")
     void SwitchToCamera();
+
+    //ExplainUI
+    UFUNCTION(BlueprintCallable)
+    void ShowExplainUI();
+    void HideExplainUI();
     //KGW==============================================
 
     void OnClickButtonImage();

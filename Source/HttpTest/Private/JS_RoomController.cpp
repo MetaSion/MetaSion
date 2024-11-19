@@ -29,6 +29,7 @@
 #include "CJS/CJS_LoginActor.h"
 #include "KGW/KGW_RoomList.h"
 #include "CineCameraActor.h"
+#include "JS_ExplainWidget.h"
 
 AJS_RoomController::AJS_RoomController()
 {
@@ -106,9 +107,11 @@ void AJS_RoomController::BeginPlay()
             UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
         }
     }
-    else if (LevelName.Contains("Sky"))
+    else if (LevelName.Contains("Main_Sky"))
     {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky"));
+        PlayUIAnimation();
+        ShowExplainUI();
         //if (SessionGI && SessionGI->bSuccess) {
         //    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky-> SessionGI exsited"));
         //    //if (HttpActor) {
@@ -251,6 +254,15 @@ void AJS_RoomController::InitializeUIWidgets()
             R_UI->SetVisibility(ESlateVisibility::Hidden);
         }
     }
+    if (Ex_UIFactory)
+    {
+        Ex_UI = CreateWidget<UJS_ExplainWidget>(this, Ex_UIFactory);
+        if (Ex_UI)
+        {
+            Ex_UI->AddToViewport();
+            Ex_UI->SetVisibility(ESlateVisibility::Hidden);
+        }
+    }
 }
 void AJS_RoomController::ShowLoginUI()
 {
@@ -316,9 +328,13 @@ void AJS_RoomController::HideRoomUI()
 void AJS_RoomController::PlayUIAnimation()
 {
     UE_LOG(LogTemp, Log, TEXT(" AJS_RoomController::PlayUIAnimation()"));
+    FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
-    if (R_UI) {
+    if (R_UI && (LevelName == "LV_Spring" || LevelName == "LV_Summer" || LevelName == "LV_Fall" || LevelName == "LV_Winter")) {
         R_UI->PlayAnimation(R_UI->CameraSutterEffect);
+    }
+    else if (Ex_UI && LevelName == "Main_Sky") {
+        Ex_UI->NextSwitchWidget();
     }
 }
 void AJS_RoomController::ShowHeartUITimer()
@@ -326,9 +342,19 @@ void AJS_RoomController::ShowHeartUITimer()
     if (R_UI) {
         //R_UI->VTB_Heart->SetVisibility(ESlateVisibility::Visible);
     }
-    
 }
 //Room --------------------------------------------------------------------------
+
+//Explain UI
+void AJS_RoomController::ShowExplainUI()
+{
+    if(Ex_UI) Ex_UI->SetVisibility(ESlateVisibility::Visible);
+}
+void AJS_RoomController::HideExplainUI()
+{
+    if (Ex_UI) Ex_UI->SetVisibility(ESlateVisibility::Hidden);
+}
+//Explain UI End
 
 //myWorld -> MultiWorld:: Make Session
 //void AJS_RoomController::OpenMultiWorld()
