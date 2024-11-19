@@ -205,8 +205,6 @@ void AJS_RoomController::SetupInputComponent()
          EnhancedInputComponent->BindAction(IA_LeftMouse, ETriggerEvent::Triggered, this, &AJS_RoomController::OnMouseClick);
          // Inner World Setting UI
          EnhancedInputComponent->BindAction(IA_SettingUI, ETriggerEvent::Started, this, &AJS_RoomController::ShowSettingUI);
-         // Inner World UI
-         EnhancedInputComponent->BindAction(IA_InnerWorldUI, ETriggerEvent::Started, this, &AJS_RoomController::ShowInnerWorldUIThird);
     }
 }
 
@@ -894,41 +892,6 @@ void AJS_RoomController::ShowInnerWorldUIZero()
     }
   
 
-}
-void AJS_RoomController::ShowInnerWorldUIThird()
-{
-    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird()"));
-    if (CR_UIFactory)
-    {
-        if (!CR_UI)
-        {
-            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird() not exsited InnerWorldUI"));
-            CR_UI = CreateWidget<UJS_CreateRoomWidget>(GetWorld(), CR_UIFactory);
-            if (CR_UI)
-            {
-                UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird() InnerWorldUI assigned"));
-                CR_UI->SetVisibility(ESlateVisibility::Visible);
-                CR_UI->DelayedSwitchToWidget();
-                UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird() InnerWorldUI set Visible"));
-            }
-            else
-            {
-                UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::ShowInnerWorldUIThird() No InnerWorldUI"));
-            }
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::ShowInnerWorldUIThird() already exsited InnerWorldUI"));
-            CR_UI->SetVisibility(ESlateVisibility::Visible);
-            CR_UI->DelayedSwitchToWidget();
-            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird() InnerWorldUI set Visible"));
-        }
-
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::ShowInnerWorldUIThird() Failed to create CR_UIFactory"));
-    }
 }
 void AJS_RoomController::HideInnerWorldUI()
 {

@@ -22,105 +22,76 @@ public:
     virtual void NativeConstruct() override;
 
     UPROPERTY(EditAnywhere)
+	class AHttpActor* httpActor;
+    UPROPERTY(EditAnywhere)
 	class AJS_WidgetFunction* widgetActor;
-
 	UPROPERTY(EditAnywhere)
 	class AJS_RoomController* pc;
 
+
+
     UPROPERTY(meta=(BindWidget))
-    class UButton* btn_CreateRoom_Yes;
-    
+    class UButton* btn_CreateRoom_Yes;   
     UPROPERTY(meta=(BindWidget))
     class UButton* btn_CreateRoom_No;
-
     UPROPERTY(meta=(BindWidget))
-    class UButton* btn_CompleteCreateRoom;
-    
+    class UButton* btn_CompleteCreateRoom;  
     UPROPERTY(meta = (BindWidget))
-    class UEditableText* ED_RoomName;
-    
+    class UEditableText* ED_RoomName; 
     UPROPERTY(meta = (BindWidget))
     class UMultiLineEditableText* ED_MultiText;
-
     UPROPERTY(meta=(BindWidget))
     class UButton* btn_CreateRoom_Private;
-
-     UPROPERTY(meta=(BindWidget))
-    class UButton* btn_CreateRoom_Public;
-    
+    UPROPERTY(meta=(BindWidget))
+    class UButton* btn_CreateRoom_Public;    
     UPROPERTY(meta=(BindWidget))
     class UWidgetSwitcher* CR_WidgetSwitcher;
-
     UPROPERTY(meta=(BindWidget))
-    class UWidgetSwitcher* CR_WidgetSwitcherPP;
-    
+    class UWidgetSwitcher* CR_WidgetSwitcherPP;   
     UPROPERTY(meta=(BindWidget))
-    class UVerticalBox* VB_CreateRoom_Q1;
-    
+    class UVerticalBox* VB_CreateRoom_Q1; 
     UPROPERTY(meta=(BindWidget))
-    class UVerticalBox* VB_CreateRoom_Q2;
-    
+    class UVerticalBox* VB_CreateRoom_Q2; 
     UPROPERTY(meta=(BindWidget))
-    class UBorder* CreateRoomCompelete;
-
-    //UPROPERTY(meta=(BindWidget))
-    //class UMultiLineEditableText* Txt_Explane;
-
-    
-    UPROPERTY(EditAnywhere)
-	class AHttpActor* httpActor;
+    class UBorder* CreateRoomCompelete;   
 
     UPROPERTY(EditAnywhere)
     FString RoomDescription;
-
     UPROPERTY(EditAnywhere)
     FString CurrentText;
-
     UPROPERTY(BlueprintReadWrite)
     int32 bPrivate = 0;
-
+    UPROPERTY(EditAnywhere)
+    int32 textSize = 10000;
     FTimerHandle Handler;
 
     UFUNCTION(BlueprintCallable)
-    void SwitchToWidget(int32 index);
-    
+    void SwitchToWidget(int32 index);  
     UFUNCTION(BlueprintCallable)
     void SwitchToWidget_PP(int32 index);
     UFUNCTION()
-    void CreateRoomChooseYes();
-    
+    void CreateRoomChooseYes();   
     UFUNCTION()
     void CreateRoomChooseNo();
-
     UFUNCTION()
     void CompleteCreateRoom();
-
     void DelayedSwitchToWidget();
-
     UFUNCTION()
     void SetPrivate();
-    
     UFUNCTION(BlueprintCallable)
-    void ShowUIForLimitedTime(float DurationInSeconds);
-    
+    void ShowUIForLimitedTime(float DurationInSeconds);   
     UFUNCTION()
     void HideUI();
-
     //Send CompleteRoom
     UFUNCTION()
 	void SendCompleteRoomData();
-
     UFUNCTION()
     void OnTextChanged_SingleLine(const FText& Text);
-
    UFUNCTION()
     void OnTextChanged_MultiLine(const FText& Text);
-
     UFUNCTION()
     void OnTextCommitted_MultiLine(const FText& Text, ETextCommit::Type CommitMethod);
 
-    UPROPERTY(EditAnywhere)
-    int32 textSize = 10000;
 
 
     //KGW ==================================
@@ -142,7 +113,11 @@ public:
     void SetExplanation(const FString& Text);
 
 
+
+
     //CJS ==================================
+    UPROPERTY()
+    class USessionGameInstance* SessionGI;
     UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	class UCJS_ChatWidget* ChatUI;
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
@@ -152,4 +127,6 @@ public:
 
     UFUNCTION()
     void HandleSendButtonClicked();
+    UFUNCTION()
+    void AddChatMessage(const FString& msg);
 };

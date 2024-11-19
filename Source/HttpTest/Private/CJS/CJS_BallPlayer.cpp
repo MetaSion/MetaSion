@@ -12,6 +12,7 @@
 
 #include "HttpActor.h"
 #include "JsonParseLib.h"
+#include "JS_CreateRoomWidget.h"
 
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -95,19 +96,19 @@ void ACJS_BallPlayer::BeginPlay()
 	Super::BeginPlay();
 
 	// 오로라 색상 변경
-	ModifyAuroraColors();
+	//ModifyAuroraColors();
 
 	// SessionGameInstance 할당  // <--- 통신 적용 시 (생성자의 InitJsonData() 주석 처리하기)
-	/*SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+	SessionGI = Cast<USessionGameInstance>(GetGameInstance());
 	if (SessionGI)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance is set"));
-		InitJsonData(SessionGI->GetNetInfoCharacterTOLobby());
+		//InitJsonData(SessionGI->GetNetInfoCharacterTOLobby());
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("USessionGameInstance is not set"));
-	}*/
+	}
 
 	// Initialize from JSON data
 	InitializeFromJson(JsonData);
@@ -127,21 +128,21 @@ void ACJS_BallPlayer::BeginPlay()
 
 				// InitColorValue를 사용하여 TransmitB 파라미터 설정
 				DynamicMaterialInstance->SetVectorParameterValue(FName("TransmitB"), InitColorValue);
-				UE_LOG(LogTemp, Warning, TEXT("SkeletalMesh Material color set using 'TransmitB' parameter to R: %f, G: %f, B: %f"), InitColorValue.R, InitColorValue.G, InitColorValue.B);
+				//UE_LOG(LogTemp, Warning, TEXT("SkeletalMesh Material color set using 'TransmitB' parameter to R: %f, G: %f, B: %f"), InitColorValue.R, InitColorValue.G, InitColorValue.B);
 			}
 			else
 			{
-				UE_LOG(LogTemp, Error, TEXT("Failed to create Dynamic Material Instance."));
+				//UE_LOG(LogTemp, Error, TEXT("Failed to create Dynamic Material Instance."));
 			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("MaterialInterface is null."));
+			//UE_LOG(LogTemp, Error, TEXT("MaterialInterface is null."));
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("SkeletalMeshComponent (GetMesh()) is null."));
+		//UE_LOG(LogTemp, Error, TEXT("SkeletalMeshComponent (GetMesh()) is null."));
 	}
 	// 초기 회전값을 Identity로 설정
 	//MaterialRotationQuat = FQuat::Identity;
@@ -176,7 +177,7 @@ void ACJS_BallPlayer::BeginPlay()
 	PC = Cast<APlayerController>(Controller);
 	if (PC)
 	{
-		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::BeginPlay()::PlayerController (pc) is assigned in BeginPlay"));
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::BeginPlay()::PlayerController (pc) is assigned in BeginPlay"));
 	}
 	else
 	{
@@ -197,11 +198,11 @@ void ACJS_BallPlayer::BeginPlay()
 	// 애니메이션 시퀀스 배열이 제대로 설정되었는지 확인
 	if (AnimSequences.Num() == 8)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::BeginPlay() - AnimSequences initialized with 8 elements"));
+		//UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::BeginPlay() - AnimSequences initialized with 8 elements"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::BeginPlay() - AnimSequences does not have 8 elements"));
+		//UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::BeginPlay() - AnimSequences does not have 8 elements"));
 	}
 
 	// WBP_AimPoint 위젯 생성
@@ -212,17 +213,17 @@ void ACJS_BallPlayer::BeginPlay()
 		{
 			AimPointUI->AddToViewport();
 			AimPointUI->SetVisibility(ESlateVisibility::Hidden);
-			UE_LOG(LogTemp, Warning, TEXT("AimPointUI successfully created and added to viewport & Hidden right now"));
+			//UE_LOG(LogTemp, Warning, TEXT("AimPointUI successfully created and added to viewport & Hidden right now"));
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("Failed to create AimPointUI Widget"));
+			//UE_LOG(LogTemp, Error, TEXT("Failed to create AimPointUI Widget"));
 		}
-		UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::BeginPlay()::WBP_AimPoint is assigned!"));
+		//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::BeginPlay()::WBP_AimPoint is assigned!"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("ACJS_UserCharacter::BeginPlay()::WBP_AimPoint is not assigned! Please assign it in the Blueprint."));
+		//UE_LOG(LogTemp, Error, TEXT("ACJS_UserCharacter::BeginPlay()::WBP_AimPoint is not assigned! Please assign it in the Blueprint."));
 	}
 	
 	bAimPointUIShowing = false;
@@ -230,15 +231,12 @@ void ACJS_BallPlayer::BeginPlay()
 
 
 	// HttpActor 초기화 시도
-	//HttpActor = Cast<ACJS_HttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ACJS_HttpActor::StaticClass()));
 	HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
 	if (HttpActor == nullptr)
 	{
 		// HttpActor를 찾지 못한 경우, 새로 생성
 		FActorSpawnParameters SpawnParams;
-		//HttpActor = GetWorld()->SpawnActor<ACJS_HttpActor>(ACJS_HttpActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 		HttpActor = GetWorld()->SpawnActor<AHttpActor>(AHttpActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
-
 		if (HttpActor)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("HttpActor spawned successfully."));
@@ -255,7 +253,6 @@ void ACJS_BallPlayer::BeginPlay()
 	
 	/*USessionGameInstance* sgi = Cast<USessionGameInstance>(GetGameInstance());
 	sgi->AssignSessionNameFromPlayerState();*/
-
 
 	// 물리 시뮬레이션 활성화
 // 	if (GetMesh())
@@ -309,8 +306,8 @@ void ACJS_BallPlayer::Tick(float DeltaTime)
 // 
 // 		// 방향을 리셋
 // 		Direction = FVector::ZeroVector;
-	}
-// }
+	//}
+}
 
 
 // Called to bind functionality to input  =========================================================================================================================================
@@ -345,27 +342,29 @@ void ACJS_BallPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		input->BindAction(IA_AimPoint, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionToggleAimPointUI);
 		// 게임 종료
 		input->BindAction(IA_QuitGame, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionQuitGame);
+		// 체험 UI
+		input->BindAction(IA_InnerWorldUI, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionShowInnerWorldUI);
 		// 숫자키 애니메이션 (인덱스 사용해 바인딩)
 		for (int32 i = 0; i < 8; i++)
 		{
 			if (IA_NumKeys[i])
 			{
 				// 로그 출력 추가
-				UE_LOG(LogTemp, Warning, TEXT("Binding action for Key %d with Index %d"), i, i);
+				//UE_LOG(LogTemp, Warning, TEXT("Binding action for Key %d with Index %d"), i, i);
 				input->BindAction(IA_NumKeys[i], ETriggerEvent::Started, this, &ACJS_BallPlayer::OnNumberKeyPressed, i);
 			}
 			else
 			{
 				// 로그 출력: 인풋 액션이 null일 경우
-				UE_LOG(LogTemp, Error, TEXT("IA_NumKeys[%d] is null"), i);
+				//UE_LOG(LogTemp, Error, TEXT("IA_NumKeys[%d] is null"), i);
 			}
 		}
 		// Log to check if input actions are bound
-		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::SetupPlayerInputComponent() - Input actions are bound"));
+		//UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::SetupPlayerInputComponent() - Input actions are bound"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::SetupPlayerInputComponent():: EnhancedInputComponent is null"));
+		//UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::SetupPlayerInputComponent():: EnhancedInputComponent is null"));
 	}
 }
 
@@ -404,30 +403,7 @@ void ACJS_BallPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 // }
 void ACJS_BallPlayer::OnMyActionThrow(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionThrow()"));
-	//if (HeartItemFactory)
-	//{
-	//	// Get the spawn location and rotation from the actor
-	//	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * HeartSpawnPosition.X + GetActorUpVector() * HeartSpawnPosition.Z;
-	//	FRotator SpawnRotation = GetActorRotation();
-
-	//	// Spawn the heart actor
-	//	FActorSpawnParameters SpawnParams;
-	//	SpawnParams.Owner = this;
-	//	ACJS_HeartActor* SpawnedHeart = GetWorld()->SpawnActor<ACJS_HeartActor>(HeartItemFactory, SpawnLocation, SpawnRotation, SpawnParams);
-
-	//	if (SpawnedHeart && SpawnedHeart->ProjectileMovementComp)
-	//	{
-	//		// Apply an initial impulse to make the heart fly forward
-	//		FVector LaunchDirection = SpawnRotation.Vector();
-	//		SpawnedHeart->ProjectileMovementComp->Velocity = LaunchDirection * SpawnedHeart->ProjectileMovementComp->InitialSpeed;
-	//	}
-	//}
-	//else
-	//{
-	//	UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionThrow() - HeartItemFactory is null"));
-	//}
-
+	//UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionThrow()"));
 	if (HasAuthority())
 	{
 		// 서버에서 직접 하트를 던지기
@@ -438,22 +414,11 @@ void ACJS_BallPlayer::OnMyActionThrow(const FInputActionValue& Value)
 		// 클라이언트에서 서버로 RPC 호출
 		ServerRPC_ThrowHeart();
 	}
-
-	 //// 서버에 하트던지기 요청
-	 //if (HasAuthority())
-	 //{
-		// MulticastRPC_ThrowHeart(); // 서버는 직접 멀티캐스트 실행
-	 //}
-	 //else
-	 //{
-		// ServerRPC_ThrowHeart(); // 클라이언트는 서버에 요청
-	 //}
 }
 
 void ACJS_BallPlayer::OnMyActionClick(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionClick()"));
-
+	//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionClick()"));
 	if (!bAimPointUIShowing)
 	{
 		// AimPointUI가 표시되지 않았을 때는 클릭을 무시
@@ -472,23 +437,23 @@ void ACJS_BallPlayer::OnMyActionClick(const FInputActionValue& Value)
 
 	if (bHit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Hit something!"));
+		//UE_LOG(LogTemp, Warning, TEXT("Hit something!"));
 
 		if (Outhit.Component.IsValid())
 		{
 			FString HitComponentName = Outhit.Component->GetName();
-			UE_LOG(LogTemp, Warning, TEXT("Hit Component: %s"), *HitComponentName);
+			//UE_LOG(LogTemp, Warning, TEXT("Hit Component: %s"), *HitComponentName);
 		}
 
 		AActor* HitActor = Outhit.GetActor();
 		if (HitActor)
 		{
 			FString HitActorName = HitActor->GetName();
-			UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *HitActorName);
+			//UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *HitActorName);
 
 			if (HitActorName.Contains("MultiRoom"))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("BP_CJS_MultiRoom Clicked"));
+				//UE_LOG(LogTemp, Warning, TEXT("BP_CJS_MultiRoom Clicked"));
 				if (PC)
 				{				
 					//RequestMoveMultiRoom(PC);
@@ -501,7 +466,7 @@ void ACJS_BallPlayer::OnMyActionClick(const FInputActionValue& Value)
 					if (GameInstance)
 					{
 						UserId = GameInstance->MySessionName;
-						UE_LOG(LogTemp, Warning, TEXT("Assigned UserId from MySessionName: %s"), *UserId);
+						//UE_LOG(LogTemp, Warning, TEXT("Assigned UserId from MySessionName: %s"), *UserId);
 					}
 					
 					// MultiRoomActors의 인덱스를 찾기
@@ -516,16 +481,16 @@ void ACJS_BallPlayer::OnMyActionClick(const FInputActionValue& Value)
 							ClickedRoomNum = UserObject->GetStringField(TEXT("roomNum"));
 							//ClickedRoomNum = "3";  // <-- 미리 방 정보 추가로 다 가지고 있어야 함.
 							//UE_LOG(LogTemp, Warning, TEXT("MultiRoomActor Owner UserId: %s, RoomNum: %s"), *RoomOwner, *ClickedRoomNum);
-							UE_LOG(LogTemp, Warning, TEXT("MultiRoomActor RoomOwner: %s, RoomNum: %s"), *RoomOwner, *ClickedRoomNum);
+							//UE_LOG(LogTemp, Warning, TEXT("MultiRoomActor RoomOwner: %s, RoomNum: %s"), *RoomOwner, *ClickedRoomNum);
 						}
 						else
 						{
-							UE_LOG(LogTemp, Error, TEXT("Failed to retrieve UserObject from AllUsersArray"));
+							//UE_LOG(LogTemp, Error, TEXT("Failed to retrieve UserObject from AllUsersArray"));
 						}
 					}
 					else
 					{
-						UE_LOG(LogTemp, Error, TEXT("Could not find the MultiRoomActor in MultiRoomActors or invalid index in AllUsersArray"));
+						//UE_LOG(LogTemp, Error, TEXT("Could not find the MultiRoomActor in MultiRoomActors or invalid index in AllUsersArray"));
 					}
 
 					// 사용자 데이터를 맵에 추가
@@ -540,21 +505,21 @@ void ACJS_BallPlayer::OnMyActionClick(const FInputActionValue& Value)
 					FString json = UJsonParseLib::MakeJson(MultiRoomData);
 
 					// 로그 출력 (디버깅용)
-					UE_LOG(LogTemp, Warning, TEXT("MakeJson() Ok!!!!"));
-					UE_LOG(LogTemp, Warning, TEXT("userId: %s, room_num: %s"), *UserId, *ClickedRoomNum);
-					UE_LOG(LogTemp, Warning, TEXT("json: %s"), *json);
+					//UE_LOG(LogTemp, Warning, TEXT("MakeJson() Ok!!!!"));
+					//UE_LOG(LogTemp, Warning, TEXT("userId: %s, room_num: %s"), *UserId, *ClickedRoomNum);
+					//UE_LOG(LogTemp, Warning, TEXT("json: %s"), *json);
 
 					HttpActor->ReqPostClickMultiRoom(MultiRoomURL, json);
-					UE_LOG(LogTemp, Warning, TEXT("----------  post reqeust done"));
+					//UE_LOG(LogTemp, Warning, TEXT("----------  post reqeust done"));
 				}
 				else
 				{
-					UE_LOG(LogTemp, Error, TEXT("PlayerController is nullptr. Cannt Move to the MultiRoomMap"));
+					//UE_LOG(LogTemp, Error, TEXT("PlayerController is nullptr. Cannt Move to the MultiRoomMap"));
 				}
 			}
 			else if (HitActorName.Contains("MyRoom"))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("BP_CJS_MyRoom Clicked"));
+				//UE_LOG(LogTemp, Warning, TEXT("BP_CJS_MyRoom Clicked"));
 				if (PC)
 				{
 					//JS ReWrite 이쪽에 방 데이터 송수신 하는 부분 넣고 수신 하는 부분에서 방 이동
@@ -564,7 +529,7 @@ void ACJS_BallPlayer::OnMyActionClick(const FInputActionValue& Value)
 					{
 						//UserId = GameInstance->MySessionName;
 						UserId = "testuser";
-						UE_LOG(LogTemp, Warning, TEXT("Assigned UserId from MySessionName: %s"), *UserId);
+						//UE_LOG(LogTemp, Warning, TEXT("Assigned UserId from MySessionName: %s"), *UserId);
 					}
 
 					// 사용자 데이터를 맵에 추가
@@ -575,66 +540,183 @@ void ACJS_BallPlayer::OnMyActionClick(const FInputActionValue& Value)
 					FString JsonRequest = UJsonParseLib::MakeJson(MyRoomData);
 
 					// 로그 출력 (디버깅용)
-					UE_LOG(LogTemp, Warning, TEXT("userId: %s"), *UserId);
-					UE_LOG(LogTemp, Warning, TEXT("Json Request: %s"), *JsonRequest);
+					//UE_LOG(LogTemp, Warning, TEXT("userId: %s"), *UserId);
+					//UE_LOG(LogTemp, Warning, TEXT("Json Request: %s"), *JsonRequest);
 
 					// 서버로 요청 전송
 					HttpActor->ReqPostClickMyRoom(HttpActor->MyRoomURL, JsonRequest);
 				}
 				else
 				{
-					UE_LOG(LogTemp, Error, TEXT("PlayerController is nullptr. Cannt Move to the MyRoomMap"));
+					//UE_LOG(LogTemp, Error, TEXT("PlayerController is nullptr. Cannt Move to the MyRoomMap"));
 				}
 			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionClick()::Hit Actor is NULL"));
+			//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionClick()::Hit Actor is NULL"));
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionClick()::No Hit Detected"));
+		//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::OnMyActionClick()::No Hit Detected"));
 	}
 
 }
 
 void ACJS_BallPlayer::OnMyActionToggleAimPointUI(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionToggleAimPointUI()"));
+	//UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionToggleAimPointUI()"));
 	if (AimPointUI)
 	{
 		if (!bAimPointUIShowing)
 		{
 			bAimPointUIShowing = true;
 			AimPointUI->SetVisibility(ESlateVisibility::Visible);
-			UE_LOG(LogTemp, Warning, TEXT("AimPointUI is now Visible, Visibility State: %d"), (int32)AimPointUI->GetVisibility());
+			//UE_LOG(LogTemp, Warning, TEXT("AimPointUI is now Visible, Visibility State: %d"), (int32)AimPointUI->GetVisibility());
 		}
 		else
 		{
 			bAimPointUIShowing = false;
 			AimPointUI->SetVisibility(ESlateVisibility::Hidden);
-			UE_LOG(LogTemp, Warning, TEXT("AimPointUI is now Hidden, Visibility State: %d"), (int32)AimPointUI->GetVisibility());
+			//UE_LOG(LogTemp, Warning, TEXT("AimPointUI is now Hidden, Visibility State: %d"), (int32)AimPointUI->GetVisibility());
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("AimPointUI is null! UI cannot be toggled."));
+		//UE_LOG(LogTemp, Error, TEXT("AimPointUI is null! UI cannot be toggled."));
 	}
 }
 
 void ACJS_BallPlayer::OnMyActionQuitGame(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionQuitGame()"));
+	//UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionQuitGame()"));
 	if (GEngine) // Check if GEngine is valid
 	{
 		// Display a log message (optional)
-		UE_LOG(LogTemp, Warning, TEXT("ESC key pressed. Exiting game..."));
+		//UE_LOG(LogTemp, Warning, TEXT("ESC key pressed. Exiting game..."));
 
 		// Quit the game
 		FGenericPlatformMisc::RequestExit(false);
 	}
 }
+
+void ACJS_BallPlayer::OnMyActionShowInnerWorldUI(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI()"));
+
+	if (!SessionGI)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() SessionGI is null"));
+		return;
+	}
+
+	if (SessionGI->GetbRefRoomUIMultiOn())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() SessionGI->GetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
+		return;
+	}
+	else
+	{
+		SessionGI->SetbRefRoomUIMultiOn(true);
+		if (SessionGI->GetbRefRoomUIMultiOn())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() After SessionGI->SetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
+			if (CR_UIFactory)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() CR_UIFactory exsited"));
+				if (!CR_UI)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() not exsited InnerWorldUI"));
+					CR_UI = CreateWidget<UJS_CreateRoomWidget>(GetWorld(), CR_UIFactory);
+					if (CR_UI)
+					{
+						UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() InnerWorldUI assigned"));
+						CR_UI->AddToViewport();
+						CR_UI->SetVisibility(ESlateVisibility::Visible);
+						CR_UI->DelayedSwitchToWidget();
+						UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() InnerWorldUI set Visible"));
+					}
+					else
+					{
+						UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() No InnerWorldUI"));
+					}
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT(" ACJS_BallPlayer::OnMyActionShowInnerWorldUI() already exsited InnerWorldUI"));
+					CR_UI->SetVisibility(ESlateVisibility::Visible);
+					CR_UI->DelayedSwitchToWidget();
+					UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() InnerWorldUI set Visible"));
+				}
+
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() Failed to create CR_UIFactory"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI()SessionGI->GetbRefRoomUIMultiOn() true!! "));
+		}
+	}	
+}
+// 체험방 UI 멀티플레이 적용 시
+void ACJS_BallPlayer::ServerRPC_Chat_Implementation(const FString& msg)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::ServerRPC_Chat_Implementation()"));
+	if (HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::ServerRPC_Chat() - Server received message: %s"), *FString(msg));
+
+		// 서버에서 멀티캐스트 호출
+		MulticastRPC_Chat(msg);
+	}
+}
+void ACJS_BallPlayer::MulticastRPC_Chat_Implementation(const FString& msg)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation()"));
+	/*if (CR_UI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() CR_UI exsied"));
+		CR_UI->AddChatMessage(msg);
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() Set CR_UI Chat Message"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() CR_UI NO"));
+	}*/
+
+	if (!CR_UI && CR_UIFactory)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() CR_UI is null, cannot add chat message"));
+		// 클라이언트에서 CR_UI가 생성되지 않았으면 새로 생성
+		CR_UI = CreateWidget<UJS_CreateRoomWidget>(GetWorld(), CR_UIFactory);
+		if (CR_UI)
+		{
+			CR_UI->AddToViewport();
+			CR_UI->SetVisibility(ESlateVisibility::Visible);
+			UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() CR_UI created and visible"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() Failed to create CR_UI"));
+		}
+	}
+
+	if (CR_UI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() CR_UI exists, adding chat message"));
+		CR_UI->AddChatMessage(msg);
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() AddChatMessage executed"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() CR_UI is null, cannot add chat message"));
+	}
+}
+
 
 void ACJS_BallPlayer::OnNumberKeyPressed(const FInputActionValue& Value, int32 KeyIndex)
 {
@@ -1077,7 +1159,10 @@ void ACJS_BallPlayer::ExecuteWallPaperPython()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Python is not available in this build."));
+		UE_LOG(LogTemp, Error, TEXT("Python is not available in this build."));
 	}
 }
+
+
+
 

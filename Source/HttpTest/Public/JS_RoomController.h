@@ -21,6 +21,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+
     /* Input */
     virtual void SetupInputComponent() override;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
@@ -29,8 +30,6 @@ public:
 	UInputAction* IA_LeftMouse;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* IA_SettingUI;
-     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	UInputAction* IA_InnerWorldUI;
 
 
     /* UI */
@@ -129,7 +128,6 @@ public:
 
     /* Inner World UI */
     void ShowInnerWorldUIZero();
-    void ShowInnerWorldUIThird();
     void HideInnerWorldUI();
 
       /* Chat Widget */
@@ -151,19 +149,15 @@ public:
     void OnMouseHoverEnd(AActor* HoveredActor);
 
 
-    //myWorld -> MultiWorld:: Make Session
-     /*   UPROPERTY()
-	class AHttpActor* HttpActor;*/
-
     //void OpenMultiWorld();
     void SetActorLocationAfterLevelLoad();
     AActor* CurrentHoveredActor = nullptr;
 
 
+
     /* Screen Capture + Wallpaper Python Auto Execute */
     void ScreenCapture();
     void ExecuteWallPaperPython();
-
 
     /* Http Actor */
     class AHttpActor* HttpActor;
