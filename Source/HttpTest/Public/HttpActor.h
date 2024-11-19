@@ -103,6 +103,7 @@ public:
 	//마이월드 -> 멀티월드 버튼 클릭 시 통신
 	void ReqPostClickMultiWorld(FString url, FString json);
 	void OnResPostClickMultiWorld(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+	void CallStartMakeSession(FString result);
 
 	//마이월드 인입 시 셋팅
 	class AJS_SoundActor* SoundActor;
