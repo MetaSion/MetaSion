@@ -111,20 +111,22 @@ void UJS_CreateRoomWidget::HandleSendButtonClicked()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() SessionGI set."));
 		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() SessionGI->bRefRoomUIMultiOn : %d"), SessionGI->GetbRefRoomUIMultiOn());
-		if (!SessionGI->GetbRefRoomUIMultiOn())
+		if (!SessionGI->GetbRefRoomUIMultiOn())  // InnerWorld (싱글 플레이)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Call AddChatMessage()"));
 			AddChatMessage(InputText);
 		}
-		else
+		else  // MultiWorld (멀티 플레이)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Call ServerRPC"));
-			APlayerController* OwningPlayer = GetOwningPlayer();
+			APlayerController* OwningPlayer = GetWorld()->GetFirstPlayerController();
 			if (OwningPlayer)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set APlayerController"));
 				ACJS_BallPlayer* player = Cast<ACJS_BallPlayer>(OwningPlayer->GetPawn());
 				if (player)
 				{
+					UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set ACJS_BallPlayer"));
 					player->ServerRPC_Chat(InputText);
 				}
 				else
