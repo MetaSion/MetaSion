@@ -38,32 +38,33 @@
 #include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraFunctionLibrary.h"
 #include "GameFramework/Actor.h"
 #include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraComponent.h"
+#include "JS_RoomController.h"
 
 
 
 // Sets default values
 ACJS_BallPlayer::ACJS_BallPlayer() : Super()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
- 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
- 	//SpringArmComp->SetupAttachment(RootComponent);
- 	//SpringArmComp->SetupAttachment(GetCapsuleComponent());
- 	SpringArmComp->SetupAttachment(RootComponent);
- 	//SpringArmComp->SetRelativeLocation(FVector(0, 0, 0));
+	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
+	//SpringArmComp->SetupAttachment(RootComponent);
+	//SpringArmComp->SetupAttachment(GetCapsuleComponent());
+	SpringArmComp->SetupAttachment(RootComponent);
+	//SpringArmComp->SetRelativeLocation(FVector(0, 0, 0));
 //  	SpringArmComp->TargetArmLength = 3000.f;
 //  	SpringArmComp->SocketOffset = FVector(0.f, 0.f, 100.0f);
 //  	SpringArmComp->bUsePawnControlRotation = true;
- 
- 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
- 	CameraComp->SetupAttachment(SpringArmComp);
- 	//CameraComp->bUsePawnControlRotation = true;
+
+	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+	CameraComp->SetupAttachment(SpringArmComp);
+	//CameraComp->bUsePawnControlRotation = true;
 //  	CameraComp->bUsePawnControlRotation = false;
-		
-		NiagraComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComp"));
-		NiagraComp-> SetupAttachment(RootComponent);
- 	// 컨트롤러 회전 사용 설정
+
+	NiagraComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComp"));
+	NiagraComp->SetupAttachment(RootComponent);
+	// 컨트롤러 회전 사용 설정
 //  	bUseControllerRotationYaw = true;
 //  	// 캐릭터가 이동 방향을 따르지 않도록 설정
 //  	GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -73,11 +74,11 @@ ACJS_BallPlayer::ACJS_BallPlayer() : Super()
 
 	// 멀티 플레이 적용
 	bReplicates = true; // 네트워크 복제를 설정
-    SetReplicateMovement(true); // 이동 복제를 설정
+	SetReplicateMovement(true); // 이동 복제를 설정
 
 
 	// 초기 설정 ================================================================================
-	/* 재질 색상 설정 */ 
+	/* 재질 색상 설정 */
 	//SetInitColorValue(1.0, 0.9225690792809692, 0.4);
 	//InitColorValue = FLinearColor(0.1, 1.0, 0.7);
 	/* 추천방 정보 설정 */
@@ -87,7 +88,7 @@ ACJS_BallPlayer::ACJS_BallPlayer() : Super()
 	InitJsonData(Json);  //<-- 테스트 시 (통신 x)
 
 }
-	
+
 
 
 // Called when the game starts or when spawned
@@ -185,6 +186,7 @@ void ACJS_BallPlayer::BeginPlay()
 		return;
 	}
 
+
 	// 애니메이션 시퀀스가 제대로 로드되었는지 확인 (1개씩 적용)
 	/*if (TestAnimSequence)
 	{
@@ -194,7 +196,7 @@ void ACJS_BallPlayer::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::BeginPlay() - TestAnimSequence is not set"));
 	}*/
-	
+
 	// 애니메이션 시퀀스 배열이 제대로 설정되었는지 확인
 	if (AnimSequences.Num() == 8)
 	{
@@ -209,7 +211,7 @@ void ACJS_BallPlayer::BeginPlay()
 	if (WBP_AimPoint)  // WBP_aimpoint가 올바르게 할당되어 있는지 확인
 	{
 		AimPointUI = CreateWidget<UCJS_AimPointWidget>(GetWorld(), WBP_AimPoint);
-		if (AimPointUI) 
+		if (AimPointUI)
 		{
 			AimPointUI->AddToViewport();
 			AimPointUI->SetVisibility(ESlateVisibility::Hidden);
@@ -225,7 +227,7 @@ void ACJS_BallPlayer::BeginPlay()
 	{
 		//UE_LOG(LogTemp, Error, TEXT("ACJS_UserCharacter::BeginPlay()::WBP_AimPoint is not assigned! Please assign it in the Blueprint."));
 	}
-	
+
 	bAimPointUIShowing = false;
 
 
@@ -250,7 +252,7 @@ void ACJS_BallPlayer::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("HttpActor found and cast successfully."));
 	}
-	
+
 	/*USessionGameInstance* sgi = Cast<USessionGameInstance>(GetGameInstance());
 	sgi->AssignSessionNameFromPlayerState();*/
 
@@ -277,7 +279,7 @@ void ACJS_BallPlayer::BeginPlay()
 // 
 // 	// 기본 이동 힘 설정
 // 	MoveForce = 150.0f;
-	
+
 }
 
 // Called every frame
@@ -286,27 +288,27 @@ void ACJS_BallPlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-// 	// 카메라 Yaw를 따라 캐릭터 Yaw 회전을 업데이트
-// 	if (Controller)
-// 	{
-// 		FRotator NewRotation = GetActorRotation();
-// 		NewRotation.Yaw = Controller->GetControlRotation().Yaw;
-// 		SetActorRotation(NewRotation);
-// 	}
+	// 	// 카메라 Yaw를 따라 캐릭터 Yaw 회전을 업데이트
+	// 	if (Controller)
+	// 	{
+	// 		FRotator NewRotation = GetActorRotation();
+	// 		NewRotation.Yaw = Controller->GetControlRotation().Yaw;
+	// 		SetActorRotation(NewRotation);
+	// 	}
 
-	// 디버그 로그로 Direction 확인
-	//UE_LOG(LogTemp, Warning, TEXT("Direction: X=%f, Y=%f, Z=%f"), Direction.X, Direction.Y, Direction.Z);
+		// 디버그 로그로 Direction 확인
+		//UE_LOG(LogTemp, Warning, TEXT("Direction: X=%f, Y=%f, Z=%f"), Direction.X, Direction.Y, Direction.Z);
 
-// 	// 방향에 힘을 적용하여 이동
-// 	if (!Direction.IsNearlyZero())
-// 	{
-// 		FVector Force = Direction * MoveForce;
-// 		//GetMesh()->AddForce(Force, NAME_None, true);
-// 		GetMesh()->AddImpulse(Force, NAME_None, true);
-// 
-// 		// 방향을 리셋
-// 		Direction = FVector::ZeroVector;
-	//}
+	// 	// 방향에 힘을 적용하여 이동
+	// 	if (!Direction.IsNearlyZero())
+	// 	{
+	// 		FVector Force = Direction * MoveForce;
+	// 		//GetMesh()->AddForce(Force, NAME_None, true);
+	// 		GetMesh()->AddImpulse(Force, NAME_None, true);
+	// 
+	// 		// 방향을 리셋
+	// 		Direction = FVector::ZeroVector;
+		//}
 }
 
 
@@ -328,13 +330,13 @@ void ACJS_BallPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	UEnhancedInputComponent* input = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	if (input)
 	{
-// 		// 이동
-// 		input->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ACJS_BallPlayer::OnMyActionMove);
-// 		// 방향
-// 		input->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ACJS_BallPlayer::OnMyActionLook);
-// 		// 점프
-// 		input->BindAction(IA_Jump, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionJump);
-		// 던지기
+		// 		// 이동
+		// 		input->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ACJS_BallPlayer::OnMyActionMove);
+		// 		// 방향
+		// 		input->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ACJS_BallPlayer::OnMyActionLook);
+		// 		// 점프
+		// 		input->BindAction(IA_Jump, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionJump);
+				// 던지기
 		input->BindAction(IA_Throw, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionThrow);
 		// 클릭
 		input->BindAction(IA_Click, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionClick);
@@ -455,7 +457,7 @@ void ACJS_BallPlayer::OnMyActionClick(const FInputActionValue& Value)
 			{
 				//UE_LOG(LogTemp, Warning, TEXT("BP_CJS_MultiRoom Clicked"));
 				if (PC)
-				{				
+				{
 					//RequestMoveMultiRoom(PC);
 
 					// GameInstance에서 MySessionName 값을 가져옴
@@ -468,7 +470,7 @@ void ACJS_BallPlayer::OnMyActionClick(const FInputActionValue& Value)
 						UserId = GameInstance->MySessionName;
 						//UE_LOG(LogTemp, Warning, TEXT("Assigned UserId from MySessionName: %s"), *UserId);
 					}
-					
+
 					// MultiRoomActors의 인덱스를 찾기
 					ActorIndex = MultiRoomActors.IndexOfByKey(HitActor);
 					if (ActorIndex != INDEX_NONE && AllUsersArray.IsValidIndex(ActorIndex))
@@ -500,7 +502,7 @@ void ACJS_BallPlayer::OnMyActionClick(const FInputActionValue& Value)
 					//MultiRoomData.Add("userId", UserId);
 
 					MultiRoomData.Add("room_num", ClickedRoomNum);
-					
+
 					// JSON 형식으로 변환
 					FString json = UJsonParseLib::MakeJson(MultiRoomData);
 
@@ -622,45 +624,62 @@ void ACJS_BallPlayer::OnMyActionShowInnerWorldUI(const FInputActionValue& Value)
 		if (SessionGI->GetbRefRoomUIMultiOn())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() After SessionGI->SetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
-			if (CR_UIFactory)
+			auto* myPC = Cast<AJS_RoomController>(Controller);
+			if (myPC && myPC->CR_UIFactory)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() CR_UIFactory exsited"));
-				if (!CR_UI)
+				if (!myPC->CR_UI)
 				{
 					UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() not exsited InnerWorldUI"));
-					CR_UI = CreateWidget<UJS_CreateRoomWidget>(GetWorld(), CR_UIFactory);
-					if (CR_UI)
+
+					//auto* myPC = Cast<AJS_RoomController>(Controller);
+					myPC->CR_UI = CreateWidget<UJS_CreateRoomWidget>(myPC, myPC->CR_UIFactory);
+					if (myPC && myPC->CR_UI)
 					{
-						UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() InnerWorldUI assigned"));
-						CR_UI->AddToViewport();
+						UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() AJS_RoomController Set"));
+						CR_UI = myPC->CR_UI;
 						CR_UI->SetVisibility(ESlateVisibility::Visible);
 						CR_UI->DelayedSwitchToWidget();
-						UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() InnerWorldUI set Visible"));
+						UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() CR_UI assigned from RoomController"));
 					}
-					else
+					/*else
 					{
-						UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() No InnerWorldUI"));
-					}
+						UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() Failed to assign CR_UI from RoomController"));
+						myPC->CR_UI = CreateWidget<UJS_CreateRoomWidget>(GetWorld(), myPC->CR_UIFactory);
+						if (myPC->CR_UI)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() InnerWorldUI assigned"));
+							myPC->CR_UI->AddToViewport();
+							myPC->CR_UI->SetVisibility(ESlateVisibility::Visible);
+							myPC->CR_UI->DelayedSwitchToWidget();
+							UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() InnerWorldUI set Visible"));
+						}
+						else
+						{
+							UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() No InnerWorldUI"));
+						}
+					}*/
 				}
 				else
 				{
 					UE_LOG(LogTemp, Error, TEXT(" ACJS_BallPlayer::OnMyActionShowInnerWorldUI() already exsited InnerWorldUI"));
+					CR_UI = myPC->CR_UI;
 					CR_UI->SetVisibility(ESlateVisibility::Visible);
 					CR_UI->DelayedSwitchToWidget();
 					UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() InnerWorldUI set Visible"));
 				}
-
 			}
 			else
 			{
-				UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() Failed to create CR_UIFactory"));
+				UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() MyPC No CR_UIFactory"));
+				return;
 			}
 		}
 		else
 		{
 			UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI()SessionGI->GetbRefRoomUIMultiOn() true!! "));
 		}
-	}	
+	}
 }
 // 체험방 UI 멀티플레이 적용 시
 void ACJS_BallPlayer::ServerRPC_Chat_Implementation(const FString& msg)
@@ -668,44 +687,56 @@ void ACJS_BallPlayer::ServerRPC_Chat_Implementation(const FString& msg)
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::ServerRPC_Chat_Implementation()"));
 	if (HasAuthority())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::ServerRPC_Chat_Implementation() I am the server!"));
 		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::ServerRPC_Chat() - Server received message: %s"), *FString(msg));
-
 		// 서버에서 멀티캐스트 호출
 		MulticastRPC_Chat(msg);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::ServerRPC_Chat_Implementation() I am a client!"));
 	}
 }
 void ACJS_BallPlayer::MulticastRPC_Chat_Implementation(const FString& msg)
 {
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation()"));
-	/*if (CR_UI)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() CR_UI exsied"));
-		CR_UI->AddChatMessage(msg);
-		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() Set CR_UI Chat Message"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() CR_UI NO"));
-	}*/
 
-	if (!CR_UI && CR_UIFactory)
+	//if (!CR_UI && CR_UIFactory)
+	//{
+	//	UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() CR_UI is null, cannot add chat message"));
+	//	// 클라이언트에서 CR_UI가 생성되지 않았으면 새로 생성
+	//	CR_UI = CreateWidget<UJS_CreateRoomWidget>(GetWorld(), CR_UIFactory);
+	//	if (CR_UI)
+	//	{
+	//		CR_UI->AddToViewport();
+	//		CR_UI->SetVisibility(ESlateVisibility::Visible);
+	//		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() CR_UI created and visible"));
+	//	}
+	//	else
+	//	{
+	//		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() Failed to create CR_UI"));
+	//	}
+	//}
+
+	if (!CR_UI) // 타인
 	{
 		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() CR_UI is null, cannot add chat message"));
-		// 클라이언트에서 CR_UI가 생성되지 않았으면 새로 생성
-		CR_UI = CreateWidget<UJS_CreateRoomWidget>(GetWorld(), CR_UIFactory);
-		if (CR_UI)
+		
+		APlayerController* player = GetWorld()->GetFirstPlayerController();
+		auto* MyPC = Cast<AJS_RoomController>(player);
+		if (MyPC && MyPC->CR_UI)
 		{
-			CR_UI->AddToViewport();
-			CR_UI->SetVisibility(ESlateVisibility::Visible);
-			UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() CR_UI created and visible"));
+			UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() AJS_RoomController Set"));
+			CR_UI = MyPC->CR_UI;
+			UE_LOG(LogTemp, Warning, TEXT("CR_UI assigned from RoomController in MulticastRPC_Chat_Implementation"));
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() Failed to create CR_UI"));
+			UE_LOG(LogTemp, Error, TEXT("Failed to assign CR_UI from RoomController in MulticastRPC_Chat_Implementation"));
 		}
 	}
 
-	if (CR_UI)
+	if (CR_UI) // 본인
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MulticastRPC_Chat_Implementation() CR_UI exists, adding chat message"));
 		CR_UI->AddChatMessage(msg);
@@ -873,7 +904,7 @@ void ACJS_BallPlayer::MulticastRPC_ThrowHeart_Implementation()
 
 }
 
- 
+
 // 멀티방 이동
 void ACJS_BallPlayer::RequestMoveMultiRoom(APlayerController* RequestingPC)
 {
@@ -911,7 +942,7 @@ void ACJS_BallPlayer::ServerRPC_RequestMoveMultiRoom_Implementation(APlayerContr
 	{
 		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::ServerRPC_RequestMoveMultiRoom_Implementation():: NO RequestingPC"));
 	}
-	
+
 }
 
 // 로비 진입 시, 캐릭터 초기 설정 ================================================================================================
@@ -1113,7 +1144,7 @@ void ACJS_BallPlayer::FindMultiRoomList(FString roomNum, FString newPlayerNum)
 			FString RoomNum = UserObject->GetStringField(TEXT("roomNum"));
 
 			// 만일 roomNum이 AllUsersArray에 있다면 
-			if(RoomNum == roomNum)
+			if (RoomNum == roomNum)
 			{
 				multiRoomIndex = i;
 				break;
