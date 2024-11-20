@@ -8,7 +8,7 @@ public class HttpTest : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "HTTP", "Json", "JsonUtilities", "OnlineSubsystem", "OnlineSubsystemSteam", "Slate", "SlateCore", "PythonScriptPlugin", "Niagara", "Engine" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "HTTP", "Json", "JsonUtilities", "OnlineSubsystem", "OnlineSubsystemSteam", "Slate", "SlateCore", "PythonScriptPlugin", "Niagara", "CinematicCamera", "Engine" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

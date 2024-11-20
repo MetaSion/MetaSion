@@ -16,7 +16,7 @@ void UJS_RoomWidget::NativeConstruct()
    
    httpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
 }
-//WallPaper -> RoomData -> RoomNum ¿äÃ»
+//WallPaper -> RoomData -> RoomNum ï¿½ï¿½Ã»
 void UJS_RoomWidget::SendWallPaperData()
 {
     if (!httpActor)
@@ -28,7 +28,7 @@ void UJS_RoomWidget::SendWallPaperData()
     FWallPaperData WallPaperData;
     WallPaperData.RoomData.RoomNum = "3";
    /* FString json = UJsonParseLib::WallPaperData_Convert_StructToJson(WallPaperData);*/
-    // JSON ¹®ÀÚ¿­À» ¼öµ¿À¸·Î »ý¼º
+    // JSON ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	FString json = FString::Printf(TEXT(
 		"{"
 		"\"RoomNum\": \"%s\""
@@ -36,10 +36,10 @@ void UJS_RoomWidget::SendWallPaperData()
 		*WallPaperData.RoomData.RoomNum
 	);
 
-    // »ý¼ºµÈ JSONÀ» ·Î±×·Î Ãâ·Â
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ JSONï¿½ï¿½ ï¿½Î±×·ï¿½ ï¿½ï¿½ï¿½
     UE_LOG(LogTemp, Warning, TEXT("Generated JSON: %s"), *json);
 
-    // ÀÌÈÄ HTTP ¿äÃ» µî¿¡¼­ json »ç¿ë °¡´É
+    // ï¿½ï¿½ï¿½ï¿½ HTTP ï¿½ï¿½Ã» ï¿½î¿¡ï¿½ï¿½ json ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     if (httpActor)
     {
         httpActor->WallPaperReqPost(httpActor->WallPaperURL, json);
@@ -68,9 +68,9 @@ void UJS_RoomWidget::SendWallPaperData()
 
 void UJS_RoomWidget::SetIndex(FString roomNumber, int absWallPaperIndex)
 {
-    // roomNumber´Â ÀÌ¹Ì FStringÀÌ¹Ç·Î ¹Ù·Î ¼³Á¤ÇÕ´Ï´Ù.
+    // roomNumberï¿½ï¿½ ï¿½Ì¹ï¿½ FStringï¿½Ì¹Ç·ï¿½ ï¿½Ù·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
     txt_index->SetText(FText::FromString(roomNumber));
-    // absWallPaperIndex¸¦ FStringÀ¸·Î º¯È¯ÇÑ ÈÄ ¼³Á¤ÇÕ´Ï´Ù.
+    // absWallPaperIndexï¿½ï¿½ FStringï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
     txt_absindex->SetText(FText::FromString(FString::FromInt(absWallPaperIndex)));
 }
 
