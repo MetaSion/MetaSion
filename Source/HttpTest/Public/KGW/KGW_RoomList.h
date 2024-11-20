@@ -16,7 +16,6 @@ class HTTPTEST_API UKGW_RoomList : public UUserWidget
 	GENERATED_BODY()
 
 public:
-
 	//  		UPROPERTY(meta=(BindWidget))
 	// 	class UTextBlock* Text_Finding;
 	virtual void  NativeConstruct() override;
@@ -66,7 +65,7 @@ public:
 		UPROPERTY(VisibleAnywhere)
 	class UCJS_InnerWorldSettingWidget* InnerWorldWidget;
 
-
+	void StartHttpMultyWorld();
 	
 
 };

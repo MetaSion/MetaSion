@@ -68,9 +68,8 @@ public:
 
 	void ReqPostChoice(FString url, FString json);
 	void OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
-	void OnResPostBackRoom(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+	//void OnResPostBackRoom(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
-	bool bNotFirst = false;
 
 	void ShowQuestionUI();
 	void HidQuestionUI();
@@ -102,7 +101,6 @@ public:
 	void OnResPostClickMyRoom(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
 	//마이월드 -> 멀티월드 버튼 클릭 시 통신
-	void StartHttpMultyWorld();
 	void ReqPostClickMultiWorld(FString url, FString json);
 	void OnResPostClickMultiWorld(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 

@@ -36,6 +36,7 @@ void AKGW_RoomlistActor::BeginPlay()
     {
         UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::BeginPlay() Set EffectActor"));
         HideMyWorldParticle();
+        HideMyWorldUI();
     }
     else
     {
@@ -88,7 +89,8 @@ void AKGW_RoomlistActor::SetMaterialColor(FLinearColor newColor)
     UMaterialInstanceDynamic* DynamicMaterial = meshComp->CreateAndSetMaterialInstanceDynamicFromMaterial(0, meshComp->GetMaterial(0));
     if (DynamicMaterial)
     {
-        DynamicMaterial->SetVectorParameterValue(FName("TransmitB"), newColor); // "BaseColor"는 실제 파라미터 이름으로 교체해야 합니다
+        //DynamicMaterial->SetVectorParameterValue(FName("TransmitB"), newColor); // "BaseColor"는 실제 파라미터 이름으로 교체해야 합니다
+        DynamicMaterial->SetVectorParameterValue(FName("InnerColor"), newColor); // "BaseColor"는 실제 파라미터 이름으로 교체해야 합니다
         UE_LOG(LogTemp, Warning, TEXT("Material color set to R: %f, G: %f, B: %f"), newColor.R, newColor.G, newColor.B);
     }
     else
@@ -137,13 +139,11 @@ void AKGW_RoomlistActor::HideMyWorldUI()
             //UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::ShowMyWorldUI() GameInstance->bmyWorldPageOn = true"));
 
             // 전체 보이도록 설정하기
-            if (boxComp) boxComp->SetVisibility(true);
-            if (meshComp) meshComp->SetVisibility(true);
-            if (BillboardComp) BillboardComp->SetVisibility(true);
-            if (WidgetComponent) WidgetComponent->SetVisibility(true);
+            if (boxComp) boxComp->SetVisibility(false);
+            if (meshComp) meshComp->SetVisibility(false);
+            if (BillboardComp) BillboardComp->SetVisibility(false);
+            if (WidgetComponent) WidgetComponent->SetVisibility(false);
             UE_LOG(LogTemp, Warning, TEXT("AKGW_RoomlistActor::HideMyWorldUI() - All components are now hidden"));
-
-           
    /*     }
         else
         {
