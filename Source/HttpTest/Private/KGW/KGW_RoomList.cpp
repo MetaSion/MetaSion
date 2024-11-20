@@ -10,14 +10,29 @@
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "CJS/CJS_InnerWorldSettingWidget.h"
+#include "Components/WidgetSwitcher.h"
+
 
 void UKGW_RoomList::NativeConstruct()
 {
     Super::NativeConstruct();
-       
-    Btn_InnerWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickInnerWorld);
-    Btn_MultiWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickMultiWorld);
+    
+    btn_ShowParticle->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowParticleUI);
+	btn_AIAnalysis->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowAIAnalysisUI);
+	btn_MyRoom->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickInnerWorld);
+	btn_MyRoom_List->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowMyRoomListUI);
+	btn_List_of_all_rooms->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowListOfAllRooms);
+    btn_MultiWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickMultiWorld);
+}
 
+void UKGW_RoomList::ChangeCanvas(int32 index)
+{
+    if (WS_RoomList) {
+        WS_RoomList->SetActiveWidgetIndex(index);
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("TxtBox_Report nullptr"));
+    }
 }
 
 void UKGW_RoomList::AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos)
@@ -44,8 +59,12 @@ void UKGW_RoomList::AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInf
 
 void UKGW_RoomList::SetTextLog(FString explain)
 {
-    TxtBox_Report->SetText(FText::FromString(explain));
-    
+    if (TxtBox_Report) {
+        TxtBox_Report->SetText(FText::FromString(explain));
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("TxtBox_Report nullptr"));
+    }
 }
 void UKGW_RoomList::SetWheaterNumb(FString TempNUmb)
 {

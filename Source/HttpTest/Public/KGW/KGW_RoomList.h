@@ -30,15 +30,53 @@ public:
 	class UMultiLineEditableTextBox* TxtBox_Report;
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* Btn_InnerWorld;
+	class UButton* btn_ShowParticle;
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* Btn_MultiWorld;
+	class UButton* btn_AIAnalysis;
 
+	UPROPERTY(meta = (BindWidget))
+	class UButton* btn_MyRoom;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* btn_MyRoom_List;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* btn_List_of_all_rooms;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* btn_MultiWorld;
+
+	class UWidgetSwitcher* WS_RoomList;
 	
-
+	
 	void AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos);
 
+	// switcher index마다 다른 canvas보여야함.
+	void ChangeCanvas(int32 index);
+	UFUNCTION()
+	void ShowParticleUI()
+	{
+		ChangeCanvas(1);
+	}
+
+	UFUNCTION()
+	void ShowAIAnalysisUI()
+	{
+		ChangeCanvas(2);
+	}
+
+	UFUNCTION()
+	void ShowMyRoomListUI()
+	{
+		ChangeCanvas(3);
+	}
+
+	UFUNCTION()
+	void ShowListOfAllRooms()
+	{
+		ChangeCanvas(4);
+	}
 	// 	void SetRecomendRoomName(const )
 
 	// 	void SetFindActive(bool value);
