@@ -5,58 +5,101 @@
 #include "Components/WidgetSwitcher.h"
 #include "JS_RoomController.h"
 #include "Kismet/GameplayStatics.h"
-#include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraFunctionLibrary.h"
+#include "NiagaraFunctionLibrary.h"
+#include "JS_ShowColorActor.h"
+#include "Animation/WidgetAnimation.h"
+#include "Components/TextBlock.h"
+#include "HttpActor.h"
+#include "CJS/SessionGameInstance.h"
 
 void UJS_ExplainWidget::NativeConstruct()
 {
-	Super::NativeConstruct();
-	/*Ex_WidgetSwitcher->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::CreateRoomChooseYes);*/
-    pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-    //Animation array reset
-    Animations.Add(TextAnimation_1);
-    Animations.Add(TextAnimation_2);
-    Animations.Add(TextAnimation_3);
-    Animations.Add(TextAnimation_4);
+    Super::NativeConstruct();
 
-    // Check the array size
-    UE_LOG(LogTemp, Log, TEXT("Animations array size: %d"), Animations.Num());
+    // Initialize animations array
+    Animations = {
+        TextAnimation_1,
+        TextAnimation_2,
+        TextAnimation_3,
+        TextAnimation_4
+    };
 
-    if (Ex_WidgetSwitcher && Animations.Num() > 0)
+    CurrentBallActor = nullptr;
+    CurrentParticleActor = nullptr;
+    CurrentAnimationIndex = 0;
+
+    FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+    if (Ex_WidgetSwitcher && !Animations.IsEmpty() && LevelName == "Test_Main_Sky")
     {
         Ex_WidgetSwitcher->SetActiveWidgetIndex(0);
         if (Animations[0])
         {
+            CurrentAnimationIndex = 0;
             PlayAnimation(Animations[0]);
+
+            // 애니메이션 시작 1초 후에 액션 실행
+            GetWorld()->GetTimerManager().SetTimer(
+                ActionTimerHandle,
+                this,
+                &UJS_ExplainWidget::ExecuteActionWithDelay,
+                ActionDelay,
+                false);
+
+            Nextindex = 1;
         }
-        Nextindex = 1;
     }
-}
-void UJS_ExplainWidget::SwitchToWidget()
+
+    FString JsonString = TEXT("{\"values\": [3, 2, 1, \"testuser\"]}");
+    httpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
+    httpActor->ReqPostChoice(httpActor->EnteryLobbyURL, JsonString);
+
+    SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+ }
+
+void UJS_ExplainWidget::ExecuteActionWithDelay()
 {
-	if (Ex_WidgetSwitcher && Nextindex < Animations.Num()) {
-        Ex_WidgetSwitcher->SetActiveWidgetIndex(Nextindex);
-        if (Animations[Nextindex]) {
-            PlayAnimation(Animations[Nextindex]); // Animation sequential play
-        }
-        HandleActionForIndex(Nextindex); // Check the NextIndex and Play Action  
-        Nextindex++;
-    }
-    else {
-        pc->HideExplainUI();
-        GetWorld()->GetTimerManager().ClearTimer(UISwitchTimerHandle);
-        Nextindex = 0;
-    }
+    // 현재 애니메이션 인덱스에 해당하는 액션 실행
+    HandleActionForIndex(CurrentAnimationIndex);
 }
 
-void UJS_ExplainWidget::NextSwitchWidget()
+void UJS_ExplainWidget::OnAnimationFinished_Implementation(const UWidgetAnimation* Animation)
 {
-    if (pc && Nextindex < 4 && !GetWorld()->GetTimerManager().IsTimerActive(UISwitchTimerHandle)) // pc and Nextindex and Timer Check
+    Super::OnAnimationFinished_Implementation(Animation);
+
+    // 현재 액터들을 정리
+    CleanupCurrentActors();
+
+    if (Nextindex < Animations.Num())
     {
-        pc->GetWorld()->GetTimerManager().SetTimer(UISwitchTimerHandle, this, &UJS_ExplainWidget::SwitchToWidget, 5.0f, true);
+        if (Ex_WidgetSwitcher)
+        {
+            Ex_WidgetSwitcher->SetActiveWidgetIndex(Nextindex);
+        }
+
+        if (Animations[Nextindex])
+        {
+            CurrentAnimationIndex = Nextindex;
+            PlayAnimation(Animations[Nextindex]);
+
+            // 다음 애니메이션 시작 1초 후에 액션 실행
+            GetWorld()->GetTimerManager().SetTimer(
+                ActionTimerHandle,
+                this,
+                &UJS_ExplainWidget::ExecuteActionWithDelay,
+                ActionDelay,
+                false);
+
+            Nextindex++;
+        }
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("GetWorld() returned nullptr! Ensure the widget is added to the viewport."));
+        if (pc)
+        {
+            pc->HideExplainUI();
+        }
+        Nextindex = 0;
+        CurrentAnimationIndex = 0;
     }
 }
 
@@ -65,19 +108,15 @@ void UJS_ExplainWidget::HandleActionForIndex(int32 index)
     switch (index)
     {
     case 0:
-        // 볼이 스폰되고 통신으로 받은 색상을 보여줌
         SpawnBall();
         break;
     case 1:
-        // 파티클이 스폰되고 움직이는 걸 보여줌
         SpawnParticle();
         break;
     case 2:
-        // 통신으로 받은 AI 분석내용을 순차적으로 보여줌
         ShowAIAnalysis();
         break;
     case 3:
-        // 애니메이션이 끝날 때 마이페이지로 이동
         ShowMyPage();
         break;
     default:
@@ -88,41 +127,100 @@ void UJS_ExplainWidget::HandleActionForIndex(int32 index)
 //Ball Spawn
 void UJS_ExplainWidget::SpawnBall()
 {
-    FVector Location = FVector(-470047.589317, 643880.89814, 648118.610643);
-    FRotator Rotation = FRotator(9.157953, 200.435537, 0.000001);
-    AKGW_RoomlistActor* SpawnedActor = GetWorld()->SpawnActor<AKGW_RoomlistActor>(SpawnBallActorFactory, Location, Rotation);
-    if (!SpawnedActor) {
-        UE_LOG(LogTemp, Warning, TEXT("Failed to spawn actor at location: %s"), *Location.ToString());
+    if (!SpawnShowColorActorFactory)
+    {
+        UE_LOG(LogTemp, Error, TEXT("SpawnShowColorActorFactory is not set!"));
+        return;
+    }
+
+    // 이전 액터 정리
+    if (CurrentBallActor)
+    {
+        CurrentBallActor->Destroy();
+        CurrentBallActor = nullptr;
+    }
+
+    FVector Location = FVector(-470270, 643800, 648140);
+    FRotator Rotation = FRotator::ZeroRotator;
+
+    CurrentBallActor = GetWorld()->SpawnActor<AJS_ShowColorActor>(
+        SpawnShowColorActorFactory, Location, Rotation);
+
+    if (CurrentBallActor)
+    {
+        UE_LOG(LogTemp, Log, TEXT("Successfully spawned ball at Location: %s"), *Location.ToString());
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to spawn ball!"));
     }
 }
 
 void UJS_ExplainWidget::SpawnParticle()
 {
-    //if (!ParticleActorFactory) {
-    //    UE_LOG(LogTemp, Error, TEXT("ParticleActorFactory is not set!"));
-    //    return;
-    //}
+    if (!ParticleActorFactory)
+    {
+        UE_LOG(LogTemp, Error, TEXT("ParticleActorFactory is not set!"));
+        return;
+    }
 
-    //FVector Location = FVector(-470047.589317, 643880.89814, 648118.610643);
-    //FRotator Rotation = FRotator::ZeroRotator;
-    //FVector Scale = FVector(1.f);
+    // 이전 액터 정리
+    if (CurrentParticleActor)
+    {
+        CurrentParticleActor->Destroy();
+        CurrentParticleActor = nullptr;
+    }
 
-    //// 파티클 액터 스폰
-    //AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ParticleActorFactory, Location, Rotation);
-    //if (SpawnedActor){
-    //    UE_LOG(LogTemp, Log, TEXT("Successfully spawned particle actor."));
-    //}
-    //else {
-    //    UE_LOG(LogTemp, Error, TEXT("Failed to spawn particle actor."));
-    //}
+    FVector Location = FVector(-470990.0f, 643490.0f, 648180.0f);
+    FRotator Rotation = FRotator::ZeroRotator;
+
+    CurrentParticleActor = GetWorld()->SpawnActor<AActor>(
+        ParticleActorFactory, Location, Rotation);
+
+    if (CurrentParticleActor)
+    {
+        UE_LOG(LogTemp, Log, TEXT("Successfully spawned particle actor"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to spawn particle actor"));
+    }
 }
 
 void UJS_ExplainWidget::ShowAIAnalysis()
 {
-    
+    UE_LOG(LogTemp, Error, TEXT("In SHowAIAnalysis"));
+    SetAIAnalysis(SessionGI->AIResult);
 }
 
 void UJS_ExplainWidget::ShowMyPage()
 {
-    
+    UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+}
+
+void UJS_ExplainWidget::CleanupCurrentActors()
+{
+    // 기존 액터 제거
+    if (CurrentBallActor)
+    {
+        CurrentBallActor->Destroy();
+        CurrentBallActor = nullptr;
+    }
+
+    if (CurrentParticleActor)
+    {
+        CurrentParticleActor->Destroy();
+        CurrentParticleActor = nullptr;
+    }
+
+    // 타이머가 아직 실행 중이라면 정리
+    if (GetWorld())
+    {
+        GetWorld()->GetTimerManager().ClearTimer(ActionTimerHandle);
+    }
+}
+
+void UJS_ExplainWidget::SetAIAnalysis(const FString& Text)
+{
+    txt_AIAnalysis->SetText(FText::FromString(Text));
 }

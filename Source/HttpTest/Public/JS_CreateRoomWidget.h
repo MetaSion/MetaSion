@@ -53,7 +53,10 @@ public:
     UPROPERTY(meta=(BindWidget))
     class UVerticalBox* VB_CreateRoom_Q2; 
     UPROPERTY(meta=(BindWidget))
-    class UBorder* CreateRoomCompelete;   
+    class UBorder* CreateRoomCompelete;
+
+    UPROPERTY(meta=(BindWidget))
+    class UMultiLineEditableText* Txt_Explane;
 
     UPROPERTY(EditAnywhere)
     FString RoomDescription;

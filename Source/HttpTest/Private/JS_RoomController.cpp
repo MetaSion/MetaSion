@@ -108,7 +108,7 @@ void AJS_RoomController::BeginPlay()
             UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
         }
     }
-    else if (LevelName.Contains("Main_Sky"))
+    else if (LevelName.Contains("Test_Main_Sky"))
     {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky"));
         PlayUIAnimation();
@@ -162,7 +162,7 @@ void AJS_RoomController::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO LoginActor"));
 		}
     }
-    if (LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question") {
+    if (LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question" || LevelName  == "Test_Main_Sky") {
         GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, false);
     }
     else {
@@ -374,8 +374,8 @@ void AJS_RoomController::PlayUIAnimation()
     if (R_UI && (LevelName == "LV_Spring" || LevelName == "LV_Summer" || LevelName == "LV_Fall" || LevelName == "LV_Winter")) {
         R_UI->PlayAnimation(R_UI->CameraSutterEffect);
     }
-    else if (Ex_UI && LevelName == "Main_Sky") {
-        Ex_UI->NextSwitchWidget();
+    else if (Ex_UI && LevelName == "Test_Main_Sky") {
+        Ex_UI->PlayAnimation(Ex_UI->Animations[0]);
     }
 }
 void AJS_RoomController::ShowHeartUITimer()
@@ -386,7 +386,7 @@ void AJS_RoomController::ShowHeartUITimer()
 }
 //Room --------------------------------------------------------------------------
 
-//Explain UI
+//Explain UI --------------------------------------------------------------------------
 void AJS_RoomController::ShowExplainUI()
 {
     if(Ex_UI) Ex_UI->SetVisibility(ESlateVisibility::Visible);
@@ -395,7 +395,7 @@ void AJS_RoomController::HideExplainUI()
 {
     if (Ex_UI) Ex_UI->SetVisibility(ESlateVisibility::Hidden);
 }
-//Explain UI End
+//Explain UI End --------------------------------------------------------------------------
 
 //myWorld -> MultiWorld:: Make Session
 //void AJS_RoomController::OpenMultiWorld()
@@ -405,18 +405,18 @@ void AJS_RoomController::HideExplainUI()
 //}
 void AJS_RoomController::SetActorLocationAfterLevelLoad()
 {
-    AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
-    if (ListActor)
-    {
-        FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
-        ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
-        UE_LOG(LogTemp, Warning, TEXT("ListActor location set successfully."));
-        SetChangeLevelData();
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("ListActor not found in the new level."));
-    }
+	AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+	if (ListActor)
+	{
+		FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
+		ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
+		UE_LOG(LogTemp, Warning, TEXT("ListActor location set successfully."));
+		SetChangeLevelData();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ListActor not found in the new level."));
+	}
 }
 
 
@@ -632,7 +632,7 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
     FVector CameraLocation;
     FRotator CameraRotation;
 
-    if (LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question")
+    if (LevelName == "Test_Main_Sky" || LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question")
     {
         // �ϴ� ���� ��ġ�� ȸ�� ����
         CameraLocation = FVector(-470047.589317, 643880.89814, 648118.610643);
