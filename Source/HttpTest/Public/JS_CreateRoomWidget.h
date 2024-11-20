@@ -59,11 +59,6 @@ public:
     class UMultiLineEditableText* Txt_Explane;
 
     UPROPERTY(EditAnywhere)
-	class AHttpActor* httpActor;
-
-    class UBorder* CreateRoomCompelete;   
-
-    UPROPERTY(EditAnywhere)
     FString RoomDescription;
     UPROPERTY(EditAnywhere)
     FString CurrentText;
