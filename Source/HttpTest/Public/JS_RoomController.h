@@ -21,48 +21,46 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+
+    /* Input */
     virtual void SetupInputComponent() override;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-    class AHttpActor* HttpActor;
-
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputMappingContext* IMC_Controller;
-
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* IA_LeftMouse;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* IA_SettingUI;
 
 
-    // �������̽��� ���� UI
+    /* UI */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UHttpWidget>  LoginUIFactory;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UJS_CreateRoomWidget> CR_UIFactory;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UJS_RoomWidget> R_UIFactory;
-
-	UPROPERTY(EditAnywhere)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UJS_ExplainWidget> Ex_UIFactory;
+	UPROPERTY()
 	class UHttpWidget* LoginUI;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	class UJS_CreateRoomWidget* CR_UI;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	class UJS_RoomWidget* R_UI;
 
+    UPROPERTY(EditAnywhere)
+	class UJS_ExplainWidget* Ex_UI;
 
     FTimerHandle LevelCheckTimerHandle;  // 타이머 핸들러
-
+    FTimerHandle OtherRoomCheckTimerHandle;
     FDateTime LastCheckDate; // 마지막으로 확인한 날짜 (00:00 기준)
     bool bShowLoginScreen = false; // 초기 값 설정
     bool bOnlyIndexSend = false;
     bool bShowUI = false;
     bool bSuccess = false;
     void CheckDate();
+    
+    
     // UI
     void InitializeUIWidgets();
 
@@ -83,40 +81,23 @@ public:
     void SpawnAndSwitchToCamera();
 
     void SetChangeLevelData();
+
+    UFUNCTION(BlueprintCallable, Category = "Camera")
+    void SwitchToCamera();
+
+    //ExplainUI
+    UFUNCTION(BlueprintCallable)
+    void ShowExplainUI();
+    void HideExplainUI();
     //KGW==============================================
 
-    void OnClickButtonImage();
-
-    //Mouse Interaction
-    void OnMouseClick();
-
-    //Mouse Hover
-    void OnMouseHover(AActor* HoveredActor);
-    void OnMouseHoverEnd(AActor* HoveredActor);
-
-    //myWorld -> MultiWorld:: Make Session
- /*   UPROPERTY()
-	class AHttpActor* HttpActor;*/
-
-    //void OpenMultiWorld();
-    void SetActorLocationAfterLevelLoad();
-    AActor* CurrentHoveredActor = nullptr;
-
-
-    /* Screen Capture + Wallpaper Python Auto Execute */
-    void ScreenCapture();
-    void ExecuteWallPaperPython();
-
-    /* Chat Widget */
-    UPROPERTY(EditDefaultsOnly, Category = "Heart")
-	class ACJS_JS_WidgetFunction* ChatActorFactory;
 
     /* Inner World Setting UI */
     UPROPERTY()
     class USessionGameInstance* SessionGI;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UCJS_InnerWorldSettingWidget> SettingUIFactory;
-    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    UPROPERTY(BlueprintReadWrite)
 	class UCJS_InnerWorldSettingWidget* SettingUI;
 
     void ShowSettingUI();
@@ -144,6 +125,42 @@ public:
     FString subObject ;
     UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     FString background ;
+
+    /* Inner World UI */
+    void ShowInnerWorldUIZero();
+    void HideInnerWorldUI();
+
+      /* Chat Widget */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UCJS_ChatWidget> ChatUIFactory;
+    UPROPERTY(BlueprintReadWrite)
+	class UCJS_ChatWidget* ChatUI;
+
+
+
+    //KGW==============================================
+    void OnClickButtonImage();
+
+    //Mouse Interaction
+    void OnMouseClick();
+
+    //Mouse Hover
+    void OnMouseHover(AActor* HoveredActor);
+    void OnMouseHoverEnd(AActor* HoveredActor);
+
+
+    //void OpenMultiWorld();
+    void SetActorLocationAfterLevelLoad();
+    AActor* CurrentHoveredActor = nullptr;
+
+
+
+    /* Screen Capture + Wallpaper Python Auto Execute */
+    void ScreenCapture();
+    void ExecuteWallPaperPython();
+
+    /* Http Actor */
+    class AHttpActor* HttpActor;
 
     /* Login Actor */
     class ACJS_LoginActor* LoginActor;

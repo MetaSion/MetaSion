@@ -193,6 +193,12 @@ public:
 	void SetNetInfoCharacterTOLobby(FString info);
 	FString GetNetInfoCharacterTOLobby();
 
+	// 체험방 UI (멀티 적용 확인용)
+	bool bRefRoomUIMultiOn = false;
+	bool GetbRefRoomUIMultiOn();
+	void SetbRefRoomUIMultiOn(bool value);
+
+
 	/* --------------------------------------------------------------------------------------------------------------------------- */
 	// MyWorld Setting 시 필요한 정보 저장한 구조체의 변수
 	// WorldSetting variable to store the parsed JSON data
@@ -224,5 +230,6 @@ public:
 	bool bSuccess = false; // 상태 유지 변수
 	bool bNotFirst = false;
 	FString UserId = TEXT("testuser");
+	FString AIResult;
 };
 

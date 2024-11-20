@@ -28,6 +28,9 @@
 #include "CJS/CJS_InnerWorldSettingWidget.h"
 #include "CJS/CJS_LoginActor.h"
 #include "KGW/KGW_RoomList.h"
+#include "CineCameraActor.h"
+#include "JS_ExplainWidget.h"
+#include "CJS/CJS_ChatWidget.h"
 
 AJS_RoomController::AJS_RoomController()
 {
@@ -89,7 +92,7 @@ void AJS_RoomController::BeginPlay()
     InitializeUIWidgets();
     CheckDate();
     SetInputMode(FInputModeGameOnly());
-    GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, false);
+
 
     SessionGI = Cast<USessionGameInstance>(GetGameInstance());
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
@@ -105,9 +108,11 @@ void AJS_RoomController::BeginPlay()
             UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
         }
     }
-    else if (LevelName.Contains("Sky"))
+    else if (LevelName.Contains("Test_Main_Sky"))
     {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky"));
+        PlayUIAnimation();
+        ShowExplainUI();
         //if (SessionGI && SessionGI->bSuccess) {
         //    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky-> SessionGI exsited"));
         //    //if (HttpActor) {
@@ -124,6 +129,25 @@ void AJS_RoomController::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
 		}*/
     }
+  //  else if (LevelName.Contains("Sky"))
+  //  {
+  //      UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky"));
+  //      //if (SessionGI && SessionGI->bSuccess) {
+  //      //    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky-> SessionGI exsited"));
+  //      //    //if (HttpActor) {
+  //      //    //    //HttpActor->ShowQuestionUI();
+  //      //    //}
+  //      //    else
+  //      //    {
+  //      //        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() No HttpActor"));
+  //      //    }
+  //      //    SessionGI->bSuccess = false; // 사용 후 상태 초기화
+  //      //}
+		///*else
+		//{
+		//	UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
+		//}*/
+  //  }
     else if (LevelName.Contains("Main_Login"))
     {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Login"));
@@ -138,6 +162,12 @@ void AJS_RoomController::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO LoginActor"));
 		}
     }
+    if (LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question" || LevelName  == "Test_Main_Sky") {
+        GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, false);
+    }
+    else {
+        GetWorldTimerManager().SetTimer(OtherRoomCheckTimerHandle, this, &AJS_RoomController::SwitchToCamera, 0.01f, false);
+    }
     // ------------------------------------------------------------------------------------------------
 
     //FTimerHandle TimerHandle;
@@ -151,6 +181,7 @@ void AJS_RoomController::BeginPlay()
 void AJS_RoomController::SetupInputComponent()
 {
     Super::SetupInputComponent();
+    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SetupInputComponent()"));
 
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
     {
@@ -169,7 +200,10 @@ void AJS_RoomController::SetupInputComponent()
     // EnhancedInputComponent ����
     if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
     {
+         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SetupPlayerInputComponent UEnhancedInputComponent set"));
+         // Mouse Click Event
          EnhancedInputComponent->BindAction(IA_LeftMouse, ETriggerEvent::Triggered, this, &AJS_RoomController::OnMouseClick);
+         // Inner World Setting UI
          EnhancedInputComponent->BindAction(IA_SettingUI, ETriggerEvent::Started, this, &AJS_RoomController::ShowSettingUI);
     }
 }
@@ -218,30 +252,56 @@ void AJS_RoomController::CheckDate()
 
 void AJS_RoomController::InitializeUIWidgets()
 {
-    FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets()"));
     //FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
 	if (LoginUIFactory) {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() LoginUIFactory exsited"));
 		LoginUI = CreateWidget<UHttpWidget>(this, LoginUIFactory);
 		if (LoginUI) {
+            UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() LoginUI set"));
 			LoginUI->AddToViewport();
 			LoginUI->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
     if (CR_UIFactory) {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() CR_UIFactory exsited"));
         CR_UI = CreateWidget<UJS_CreateRoomWidget>(this, CR_UIFactory);
         if (CR_UI) {
+            UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() CR_UI set"));
             CR_UI->AddToViewport();
             CR_UI->SetVisibility(ESlateVisibility::Hidden);
         }
     }
     if (R_UIFactory)
     {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() CR_UIFactory exsited"));
         R_UI = CreateWidget<UJS_RoomWidget>(this, R_UIFactory);
         if (R_UI)
         {
+            UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() R_UI set"));
             R_UI->AddToViewport();
             R_UI->SetVisibility(ESlateVisibility::Hidden);
+        }
+    }
+    if (Ex_UIFactory)
+    {
+        Ex_UI = CreateWidget<UJS_ExplainWidget>(this, Ex_UIFactory);
+        if (Ex_UI)
+        {
+            Ex_UI->AddToViewport();
+            Ex_UI->SetVisibility(ESlateVisibility::Hidden);
+        }
+    }
+    if (ChatUIFactory)
+    {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() ChatUIFactory exsited"));
+        ChatUI = CreateWidget<UCJS_ChatWidget>(this, ChatUIFactory);
+        if (ChatUI)
+        {
+            UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() ChatUI set"));
+            ChatUI->AddToViewport();
+            ChatUI->SetVisibility(ESlateVisibility::Hidden);
         }
     }
 }
@@ -309,9 +369,13 @@ void AJS_RoomController::HideRoomUI()
 void AJS_RoomController::PlayUIAnimation()
 {
     UE_LOG(LogTemp, Log, TEXT(" AJS_RoomController::PlayUIAnimation()"));
+    FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
-    if (R_UI) {
+    if (R_UI && (LevelName == "LV_Spring" || LevelName == "LV_Summer" || LevelName == "LV_Fall" || LevelName == "LV_Winter")) {
         R_UI->PlayAnimation(R_UI->CameraSutterEffect);
+    }
+    else if (Ex_UI && LevelName == "Test_Main_Sky") {
+        Ex_UI->PlayAnimation(Ex_UI->Animations[0]);
     }
 }
 void AJS_RoomController::ShowHeartUITimer()
@@ -319,9 +383,19 @@ void AJS_RoomController::ShowHeartUITimer()
     if (R_UI) {
         //R_UI->VTB_Heart->SetVisibility(ESlateVisibility::Visible);
     }
-    
 }
 //Room --------------------------------------------------------------------------
+
+//Explain UI --------------------------------------------------------------------------
+void AJS_RoomController::ShowExplainUI()
+{
+    if(Ex_UI) Ex_UI->SetVisibility(ESlateVisibility::Visible);
+}
+void AJS_RoomController::HideExplainUI()
+{
+    if (Ex_UI) Ex_UI->SetVisibility(ESlateVisibility::Hidden);
+}
+//Explain UI End --------------------------------------------------------------------------
 
 //myWorld -> MultiWorld:: Make Session
 //void AJS_RoomController::OpenMultiWorld()
@@ -331,19 +405,20 @@ void AJS_RoomController::ShowHeartUITimer()
 //}
 void AJS_RoomController::SetActorLocationAfterLevelLoad()
 {
-    AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
-    if (ListActor)
-    {
-        FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
-        ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
-        UE_LOG(LogTemp, Warning, TEXT("ListActor location set successfully."));
-        SetChangeLevelData();
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("ListActor not found in the new level."));
-    }
+	AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+	if (ListActor)
+	{
+		FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
+		ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
+		UE_LOG(LogTemp, Warning, TEXT("ListActor location set successfully."));
+		SetChangeLevelData();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ListActor not found in the new level."));
+	}
 }
+
 
 void AJS_RoomController::OnClickButtonImage()
 {
@@ -430,19 +505,19 @@ void AJS_RoomController::OnMouseClick()
                 //OpenMultiWorld();
 
             }
-            else if (HitActor->ActorHasTag(TEXT("ChatWidget")))  //  <-- 채팅 위젯 추가
-            {
-                UE_LOG(LogTemp, Warning, TEXT("ChatWidget Hit - Loading Chat Widget"));
-                if (ChatActorFactory)
-                {
-                    // ChatActorFactory가 ACJS_JS_WidgetFunction 타입임을 보장
-                    ACJS_JS_WidgetFunction* ChatFunction = Cast<ACJS_JS_WidgetFunction>(ChatActorFactory);
-                    if (ChatFunction)
-                    {
-                        ChatFunction->ToggleChatUIVisible();
-                    }
-                }
-            }
+            //else if (HitActor->ActorHasTag(TEXT("ChatWidget")))  //  <-- 채팅 위젯 추가
+            //{
+            //    UE_LOG(LogTemp, Warning, TEXT("ChatWidget Hit - Loading Chat Widget"));
+            //    if (ChatActorFactory)
+            //    {
+            //        // ChatActorFactory가 ACJS_JS_WidgetFunction 타입임을 보장
+            //        ACJS_JS_WidgetFunction* ChatFunction = Cast<ACJS_JS_WidgetFunction>(ChatActorFactory);
+            //        if (ChatFunction)
+            //        {
+            //            ChatFunction->ToggleChatUIVisible();
+            //        }
+            //    }
+            //}
 
         }
     }
@@ -557,7 +632,7 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
     FVector CameraLocation;
     FRotator CameraRotation;
 
-    if (LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question")
+    if (LevelName == "Test_Main_Sky" || LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question")
     {
         // �ϴ� ���� ��ġ�� ȸ�� ����
         CameraLocation = FVector(-470047.589317, 643880.89814, 648118.610643);
@@ -565,7 +640,7 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SpawnAndSwitchToCamera() Set Sky Camera Transform"));
         //CameraRotation = FRotator(0, 0, 0);
     }
-    //else if (LevelName == "Main_Room")
+    //else if (LevelName == "Main_Room")C:/Project/MetaSion/Content/Junguk/Maps/Template/LV_Winter.umap
     else if (LevelName.Contains("Main_LV"))
     {
         // �� ���� ��ġ�� ȸ�� ����
@@ -574,10 +649,6 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
         CameraLocation = FVector(-100.266574, 3428.386539, -455.570113);
         CameraRotation = FRotator(2.600000, -90.800001, 0.0);
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SpawnAndSwitchToCamera() Set Main_LV Camera Transform"));
-    }
-    else
-    {
-        return;  // ���ǿ� ���� ������ ��ȯ
     }
 
     // ī�޶� ���͸� ����
@@ -673,6 +744,36 @@ void AJS_RoomController::SetChangeLevelData()
         UE_LOG(LogTemp, Error, TEXT("GameInstance is null!"));
     }
 }
+void AJS_RoomController::SwitchToCamera()
+{
+    // 월드가 유효한지 확인
+    UWorld* World = GetWorld();
+    if (!World)
+    {
+        UE_LOG(LogTemp, Error, TEXT("World is null."));
+        return;
+    }
+
+    // 월드에서 모든 CineCameraActor 검색
+    TArray<AActor*> FoundActors;
+    UGameplayStatics::GetAllActorsOfClass(World, ACineCameraActor::StaticClass(), FoundActors);
+    FString LevelName = TEXT("LV_Winter");
+    for (AActor* Actor : FoundActors)
+    {
+        if (Actor->GetName() == LevelName) // 이름 일치 확인
+        {
+            ACineCameraActor* TargetCamera = Cast<ACineCameraActor>(Actor);
+            if (TargetCamera)
+            {
+                // 뷰를 해당 카메라로 전환
+                SetViewTarget(TargetCamera);
+                UE_LOG(LogTemp, Log, TEXT("View switched to camera: %s"), *LevelName);
+                return;
+            }
+        }
+    }
+    UE_LOG(LogTemp, Warning, TEXT("Camera with name %s not found."), *LevelName);
+}
 //Screen Capture Start ---------------------------------------------------------------------------------------
 void AJS_RoomController::ScreenCapture()
 {
@@ -753,11 +854,72 @@ void AJS_RoomController::InitInnerWorldSetting()
     HttpActor->ApplyMyWorldPointLightColors();
     HttpActor->ApplyMyWorldNiagaraAssets();
 }
+
+/* Inner World UI (After Setting UI Hidden) */
+void AJS_RoomController::ShowInnerWorldUIZero()
+{
+    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowInnerWorldUIZero()"));
+    if (CR_UIFactory)
+    {
+        if (!CR_UI)
+        {
+            UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() not exsited InnerWorldUI"));
+			CR_UI = CreateWidget<UJS_CreateRoomWidget>(GetWorld(), CR_UIFactory);
+			if (CR_UI)
+			{
+				UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() InnerWorldUI assigned"));
+				CR_UI->SetVisibility(ESlateVisibility::Visible);
+                CR_UI->SwitchToWidget(0);
+				UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() InnerWorldUI set Visible"));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() No InnerWorldUI"));
+			}
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() already exsited InnerWorldUI"));
+            CR_UI->SetVisibility(ESlateVisibility::Visible);
+            CR_UI->SwitchToWidget(0);
+            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIZero() InnerWorldUI set Visible"));
+        }
+
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::ShowInnerWorldUIZero() Failed to create CR_UIFactory"));
+    }
+  
+
+}
+void AJS_RoomController::HideInnerWorldUI()
+{
+    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::HideInnerWorldUI()"));
+    if (CR_UI)
+    {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::HideInnerWorldUI() CR_UI exsied"));
+       /* UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::HideInnerWorldUI() InnerWorldUI is existed"));
+        CR_UI->SetVisibility(ESlateVisibility::Hidden);
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::HideInnerWorldUI() InnerWorldUI set Hidden"));*/
+
+        CR_UI->RemoveFromParent();
+        CR_UI = nullptr;
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::HideInnerWorldUI() Inner World UI Remove"));
+    
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::HideInnerWorldUI() No InnerWorldUI"));
+    }
+}
+
 //Initial Inner World Setting End --------------------------------------------------------------------------
 
 //Inner World Setting UI Start -----------------------------------------------------------------------------
 void AJS_RoomController::ShowSettingUI()
 {
+    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowSettingUI()"));
     // SettingUIFactory가 유효하고 SettingUI가 생성되지 않은 경우에만 생성
     if (SettingUIFactory && !SettingUI)
     {
@@ -781,6 +943,7 @@ void AJS_RoomController::ShowSettingUI()
 }
 void AJS_RoomController::HideSettingUI()
 {
+    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::HideSettingUI()"));
     if (SettingUI)
     {
         // SettingUI를 화면에서 제거

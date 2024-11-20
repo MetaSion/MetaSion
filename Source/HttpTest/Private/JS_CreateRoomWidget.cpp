@@ -13,6 +13,11 @@
 #include "JS_WidgetFunction.h"
 #include "Components/MultiLineEditableText.h"
 #include "Components/MultiLineEditableTextBox.h"
+#include "CJS/CJS_ChatWidget.h"
+#include "CJS/CJS_ChatTextWidget.h"
+#include "Components/ScrollBox.h"
+#include "Components/TextBlock.h"
+#include "CJS/CJS_BallPlayer.h"
 
 void UJS_CreateRoomWidget::NativeConstruct()
 {
@@ -35,6 +40,11 @@ void UJS_CreateRoomWidget::NativeConstruct()
 	Btn_MyPage->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClikMypage);
 	Btn_Explanation->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClikExplanation);
 
+	if (ChatUI && ChatUI->Btn_Send)
+	{
+		// Btn_Send í´ë¦­ ì´ë²¤íŠ¸ ë°”ì¸ë”©
+		ChatUI->Btn_Send->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::HandleSendButtonClicked);
+	}
 
 	pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	httpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
@@ -60,20 +70,133 @@ void UJS_CreateRoomWidget::OnClikMypage()
 }
 void UJS_CreateRoomWidget::OnClikExplanation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation()"))
 	SetExplanation(CurrentText);
 }
 void UJS_CreateRoomWidget::SetExplanation(const FString& Text)
-{ 
-	
-	Txt_Explane->SetText(FText::FromString(Text));
-		
-	
+{ 	
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation()"))
+	//Txt_Explane->SetText(FText::FromString(Text));
+
+	if (ChatUI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation() ChatUI exsited"))
+		ChatUI->SetEdit_RoomInfo(Text);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::SetExplanation() ChatUI is null!"));
+	}
 }
+
+// Send ë²„íŠ¼ í´ë¦­ ì‹œ
+void UJS_CreateRoomWidget::HandleSendButtonClicked()
+{
+	if (!ChatUI || !ChatUI->Edit_InputText || !ChatUI->Scroll_MsgList || !ChatTextWidgetFactory)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() ChatUI or required components are not initialized!"));
+		return;
+	}
+
+	// Edit_InputTextì—ì„œ í…ìŠ¤íŠ¸ ê°€ì ¸ì˜¤ê¸°
+	FString InputText = ChatUI->Edit_InputText->GetText().ToString();
+	if (InputText.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Input text is empty, ignoring send."));
+		return;
+	}
+
+	SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+	if (SessionGI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() SessionGI set."));
+		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() SessionGI->bRefRoomUIMultiOn : %d"), SessionGI->GetbRefRoomUIMultiOn());
+		if (!SessionGI->GetbRefRoomUIMultiOn())  // InnerWorld (ì‹±ê¸€ í”Œë ˆì´)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Call AddChatMessage()"));
+			AddChatMessage(InputText);
+		}
+		else  // MultiWorld (ë©€í‹° í”Œë ˆì´)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Call ServerRPC"));
+			APlayerController* OwningPlayer = GetWorld()->GetFirstPlayerController();
+			if (OwningPlayer)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set APlayerController"));
+				ACJS_BallPlayer* player = Cast<ACJS_BallPlayer>(OwningPlayer->GetPawn());
+				if (player)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set ACJS_BallPlayer"));
+					player->ServerRPC_Chat(InputText);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() No BallPlayer"));
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() OwningPlayer is null"));
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() No SessionGI"));
+	}
+
+	// Edit_InputText ì´ˆê¸°í™”
+	ChatUI->Edit_InputText->SetText(FText::GetEmpty());
+}
+
+void UJS_CreateRoomWidget::AddChatMessage(const FString& msg)
+{
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::AddChatMessage()"));
+	// WBP_CJS_ChatTextWidget ìƒì„±
+	if (!ChatTextWidgetFactory)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::AddChatMessage() ChatTextWidgetFactory is null!"));
+		return;
+	}
+
+	// WBP_CJS_ChatTextWidget ìƒì„±
+	UCJS_ChatTextWidget* NewChatText = CreateWidget<UCJS_ChatTextWidget>(this, ChatTextWidgetFactory);
+	if (!NewChatText || !NewChatText->Txt_Msg)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to create ChatTextWidget or Txt_Msg is null!"));
+		return;
+	}
+
+	// Txt_Msgì— í…ìŠ¤íŠ¸ ì„¤ì •
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::AddChatMessage() Setting message: %s"), *msg);
+	NewChatText->Txt_Msg->SetText(FText::FromString(msg));
+
+	// ScrollBoxì— ì¶”ê°€
+	if (!ChatUI || !ChatUI->Scroll_MsgList)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::AddChatMessage() Scroll_MsgList is null!"));
+		return;
+	}
+
+	// ìƒì„±ëœ ChatTextWidgetì„ Scroll_MsgListì— ì¶”ê°€
+	ChatUI->Scroll_MsgList->AddChild(NewChatText);
+	ChatUI->Scroll_MsgList->ScrollToEnd(); // ìŠ¤í¬ë¡¤ ë§¨ ì•„ë˜ë¡œ ì´ë™
+
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::AddChatMessage() Message added successfully"));
+}
+
 //widget Switch
 void UJS_CreateRoomWidget::SwitchToWidget(int32 index)
 {
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SwitchToWidget()"));
 	if (CR_WidgetSwitcher) {
+		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SwitchToWidget() CR_WidgetSwitcher exsied"));
 		CR_WidgetSwitcher->SetActiveWidgetIndex(index);
+		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SwitchToWidget() CR_WidgetSwitcher 3 Set"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::SwitchToWidget() CR_WidgetSwitcher No"));
 	}
 }
 //private, public
@@ -109,9 +232,9 @@ void UJS_CreateRoomWidget::CompleteCreateRoom()
 }
 void UJS_CreateRoomWidget::DelayedSwitchToWidget()
 {
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::DelayedSwitchToWidget()"));
 	SwitchToWidget(3);
 	PlayAnimation(appear);
-
 }
 void UJS_CreateRoomWidget::SetPrivate()
 {
@@ -165,7 +288,7 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 	RoomSendData.RoomInfoData.RoomName = ED_RoomName->GetText().ToString();
 	RoomSendData.RoomInfoData.RoomDescription = ED_MultiText->GetText().ToString();*/
 
-	// ÀÔ·ÂµÈ °ªµéÀ» ¼öÁı
+	// ï¿½Ô·Âµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	FString UserId = "testuser";
 	FString UltraSky_TimeOfDay = "1200";
 	FString UltraWeather_CloudCoverage = "1";
@@ -181,19 +304,19 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 	FString RoomName = ED_RoomName->GetText().ToString();
 	RoomDescription = ED_MultiText->GetText().ToString();
 
-	// Ãß°¡µÈ °ª: bPrivate -> RoomPP º¯È¯
+	// ï¿½ß°ï¿½ï¿½ï¿½ ï¿½ï¿½: bPrivate -> RoomPP ï¿½ï¿½È¯
 	FString RoomPP = FString::FromInt(bPrivate);
 
-	// Ãß°¡µÈ °ª: Quadrant (ÃßÁ¤µÈ °ª, Á÷Á¢ ¼³Á¤ÇØ ÁÖ¼¼¿ä)
-	FString Quadrant = "1";  // ¿¹½Ã °ª, ½ÇÁ¦ °ªÀ» ³Ö¾îÁÖ¼¼¿ä.
+	// ï¿½ß°ï¿½ï¿½ï¿½ ï¿½ï¿½: Quadrant (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼ï¿½ï¿½ï¿½)
+	FString Quadrant = "1";  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½.
 
-	// ¼öµ¿À¸·Î JSON ¹®ÀÚ¿­À» »ı¼º
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ JSON ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	FString json = FString::Printf(TEXT(
 		"{"
 		"\"UserId\": \"%s\","
 		"\"RoomName\": \"%s\","
 		"\"UltraSky_TimeOfDay\": \"%s\","
-		"\"UltraWeather_CloudCoverage\": \"%s\","  // ¿ÀÅ¸ ¼öÁ¤
+		"\"UltraWeather_CloudCoverage\": \"%s\","  // ï¿½ï¿½Å¸ ï¿½ï¿½ï¿½ï¿½
 		"\"UltraWeather_Fog\": \"%s\","
 		"\"UltraWeather_Rain\": \"%s\","
 		"\"UltraWeather_Snow\": \"%s\","
@@ -249,25 +372,25 @@ void UJS_CreateRoomWidget::OnTextChanged_MultiLine(const FText& Text)
 	CurrentText = Text.ToString();
 	int32 CharacterCount = 0;
 
-	// ï¿½Ø½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿?
+	// ï¿½Ø½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½?
 	for (const TCHAR& Char : CurrentText)
 	{
-		CharacterCount += (Char <= 0x007F) ? 1 : 3; // ÇÑ±ÛÀº 3·Î °è»ê
+		CharacterCount += (Char <= 0x007F) ? 1 : 3; // ï¿½Ñ±ï¿½ï¿½ï¿½ 3ï¿½ï¿½ ï¿½ï¿½ï¿½
 		//UE_LOG(LogTemp, Warning, TEXT("%c"), Char);
 
-		CharacterCount += (Char <= 0x007F) ? 1 : 3; // ï¿½Ñ±ï¿½ï¿½ï¿½ 3ï¿½ï¿½ ï¿½ï¿½ï¿?
+		CharacterCount += (Char <= 0x007F) ? 1 : 3; // ï¿½Ñ±ï¿½ï¿½ï¿½ 3ï¿½ï¿½ ï¿½ï¿½ï¿½?
 		UE_LOG(LogTemp, Warning, TEXT("%c"), Char);
 	}
 
-	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿?ï¿½Ş½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½Ş½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
 	if (CharacterCount > MAX_CHARACTER_COUNT)
 	{
-		// ï¿½Î±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿?ï¿½ï¿½ï¿?
+		// ï¿½Î±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½?
 		UE_LOG(LogTemp, Warning, TEXT("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½!"));
 	}
 	else
 	{
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿?ï¿½ï¿½È¿ï¿½ï¿½ ï¿½Ø½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½?ï¿½ï¿½È¿ï¿½ï¿½ ï¿½Ø½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		LastValidText = CurrentText;
 	}
 }
@@ -297,7 +420,7 @@ void UJS_CreateRoomWidget::OnTextCommitted_MultiLine(const FText& Text, ETextCom
 //{
 //	FString CurrentText = Text.ToString();
 //
-//	// ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿?(UTF-16 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+//	// ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½?(UTF-16 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 //	int32 CharacterCount = 0;
 //	for (const TCHAR& Char : CurrentText)
 //	{
