@@ -224,5 +224,6 @@ public:
 	bool bSuccess = false; // 상태 유지 변수
 	bool bNotFirst = false;
 	FString UserId = TEXT("testuser");
+	FString AIResult;
 };
 

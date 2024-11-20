@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "KGW/KGW_RoomlistActor.h"
 #include "../../../../Plugins/FX/Niagara/Source/Niagara/Classes/NiagaraSystem.h"
+#include "Animation/WidgetAnimation.h"
+#include "JS_ShowColorActor.h"
 #include "JS_ExplainWidget.generated.h"
 
 /**
@@ -18,44 +19,70 @@ class HTTPTEST_API UJS_ExplainWidget : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
-
-	UPROPERTY(meta=(BindWidget))
+    virtual void OnAnimationFinished_Implementation(const UWidgetAnimation* Animation) override;
+ 
+    UPROPERTY(meta=(BindWidget))
     class UWidgetSwitcher* Ex_WidgetSwitcher;
 
-	UPROPERTY(EditAnywhere)
-	class AJS_RoomController* pc;
+    UPROPERTY(EditAnywhere)
+    class AJS_RoomController* pc;
 
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	UWidgetAnimation* TextAnimation_1;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	UWidgetAnimation* TextAnimation_2;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	UWidgetAnimation* TextAnimation_3;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	UWidgetAnimation* TextAnimation_4;
+    UPROPERTY(EditAnywhere)
+	class AHttpActor* httpActor;
 
-	// Spawn
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
-	TSubclassOf<class AKGW_RoomlistActor> SpawnBallActorFactory;
+    UPROPERTY(EditAnywhere)
+	class USessionGameInstance* SessionGI;
+    
+    UPROPERTY(meta=(BindWidget))
+    class UTextBlock* txt_AIAnalysis;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
-	TSubclassOf<AActor> ParticleActorFactory;
+    // Animation properties
+    UPROPERTY(Transient, meta = (BindWidgetAnim))
+    UWidgetAnimation* TextAnimation_1;
+    UPROPERTY(Transient, meta = (BindWidgetAnim))
+    UWidgetAnimation* TextAnimation_2;
+    UPROPERTY(Transient, meta = (BindWidgetAnim))
+    UWidgetAnimation* TextAnimation_3;
+    UPROPERTY(Transient, meta = (BindWidgetAnim))
+    UWidgetAnimation* TextAnimation_4;
 
-	TArray<UWidgetAnimation*> Animations;
-	/*UPROPERTY(meta=(BindWidget))
-    class UButton* btn_CreateRoom_Public;*/
-	FTimerHandle UISwitchTimerHandle;
-	int32 Nextindex = 0;
+    // Spawn properties
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
+    TSubclassOf<class AJS_ShowColorActor> SpawnShowColorActorFactory;
 
-	// switchWidgetAnimation
-	void SwitchToWidget();
-	UFUNCTION(BlueprintCallable)
-    void NextSwitchWidget();
+    // 현재 스폰된 액터들을 추적
+    UPROPERTY()
+    AJS_ShowColorActor* CurrentBallActor;
+    UPROPERTY()
+    AActor* CurrentParticleActor;
 
-	// HandleIndex
-	void HandleActionForIndex(int32 index);
-	void SpawnBall();
-	void SpawnParticle();
-	void ShowAIAnalysis();
-	void ShowMyPage();
+    // 액터 수명 타이머
+    FTimerHandle ActorLifetimeTimer;
+    // 액션 타이밍을 위한 타이머 핸들
+    FTimerHandle ActionTimerHandle;
+    // 현재 재생 중인 애니메이션 인덱스를 추적
+    int32 CurrentAnimationIndex;
+
+    // 액션 실행 함수
+    void ExecuteActionWithDelay();
+
+     UPROPERTY(EditAnywhere, Category = "Animation Timing")
+    float ActionDelay = 1.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+    TSubclassOf<AActor> ParticleActorFactory;
+
+    TArray<UWidgetAnimation*> Animations;
+    int32 Nextindex = 0;
+
+    // Action handlers
+    void HandleActionForIndex(int32 index);
+    void SpawnBall();
+    void SpawnParticle();
+    void ShowAIAnalysis();
+    void ShowMyPage();
+    void CleanupCurrentActors();
+
+    //settext
+    void SetAIAnalysis(const FString& Text);
 };

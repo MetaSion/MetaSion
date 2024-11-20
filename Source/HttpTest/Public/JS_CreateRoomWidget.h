@@ -66,7 +66,6 @@ public:
     UPROPERTY(meta=(BindWidget))
     class UMultiLineEditableText* Txt_Explane;
 
-    
     UPROPERTY(EditAnywhere)
 	class AHttpActor* httpActor;
 

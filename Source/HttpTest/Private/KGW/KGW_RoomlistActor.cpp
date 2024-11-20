@@ -3,7 +3,7 @@
 
 #include "KGW/KGW_RoomlistActor.h"
 #include "CJS/SessionGameInstance.h"
-
+#include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BillboardComponent.h"
