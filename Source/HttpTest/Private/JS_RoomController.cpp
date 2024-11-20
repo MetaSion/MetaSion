@@ -30,6 +30,7 @@
 #include "KGW/KGW_RoomList.h"
 #include "CineCameraActor.h"
 #include "JS_ExplainWidget.h"
+#include "CJS/CJS_ChatWidget.h"
 
 AJS_RoomController::AJS_RoomController()
 {
@@ -204,8 +205,6 @@ void AJS_RoomController::SetupInputComponent()
          EnhancedInputComponent->BindAction(IA_LeftMouse, ETriggerEvent::Triggered, this, &AJS_RoomController::OnMouseClick);
          // Inner World Setting UI
          EnhancedInputComponent->BindAction(IA_SettingUI, ETriggerEvent::Started, this, &AJS_RoomController::ShowSettingUI);
-         // Inner World UI
-         EnhancedInputComponent->BindAction(IA_InnerWorldUI, ETriggerEvent::Started, this, &AJS_RoomController::ShowInnerWorldUIThird);
     }
 }
 
@@ -292,6 +291,17 @@ void AJS_RoomController::InitializeUIWidgets()
         {
             Ex_UI->AddToViewport();
             Ex_UI->SetVisibility(ESlateVisibility::Hidden);
+        }
+    }
+    if (ChatUIFactory)
+    {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() ChatUIFactory exsited"));
+        ChatUI = CreateWidget<UCJS_ChatWidget>(this, ChatUIFactory);
+        if (ChatUI)
+        {
+            UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() ChatUI set"));
+            ChatUI->AddToViewport();
+            ChatUI->SetVisibility(ESlateVisibility::Hidden);
         }
     }
 }
@@ -409,6 +419,7 @@ void AJS_RoomController::SetActorLocationAfterLevelLoad()
 	}
 }
 
+
 void AJS_RoomController::OnClickButtonImage()
 {
     HideCreateRoomUI();
@@ -494,19 +505,19 @@ void AJS_RoomController::OnMouseClick()
                 //OpenMultiWorld();
 
             }
-            else if (HitActor->ActorHasTag(TEXT("ChatWidget")))  //  <-- 채팅 위젯 추가
-            {
-                UE_LOG(LogTemp, Warning, TEXT("ChatWidget Hit - Loading Chat Widget"));
-                if (ChatActorFactory)
-                {
-                    // ChatActorFactory가 ACJS_JS_WidgetFunction 타입임을 보장
-                    ACJS_JS_WidgetFunction* ChatFunction = Cast<ACJS_JS_WidgetFunction>(ChatActorFactory);
-                    if (ChatFunction)
-                    {
-                        ChatFunction->ToggleChatUIVisible();
-                    }
-                }
-            }
+            //else if (HitActor->ActorHasTag(TEXT("ChatWidget")))  //  <-- 채팅 위젯 추가
+            //{
+            //    UE_LOG(LogTemp, Warning, TEXT("ChatWidget Hit - Loading Chat Widget"));
+            //    if (ChatActorFactory)
+            //    {
+            //        // ChatActorFactory가 ACJS_JS_WidgetFunction 타입임을 보장
+            //        ACJS_JS_WidgetFunction* ChatFunction = Cast<ACJS_JS_WidgetFunction>(ChatActorFactory);
+            //        if (ChatFunction)
+            //        {
+            //            ChatFunction->ToggleChatUIVisible();
+            //        }
+            //    }
+            //}
 
         }
     }
@@ -881,41 +892,6 @@ void AJS_RoomController::ShowInnerWorldUIZero()
     }
   
 
-}
-void AJS_RoomController::ShowInnerWorldUIThird()
-{
-    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird()"));
-    if (CR_UIFactory)
-    {
-        if (!CR_UI)
-        {
-            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird() not exsited InnerWorldUI"));
-            CR_UI = CreateWidget<UJS_CreateRoomWidget>(GetWorld(), CR_UIFactory);
-            if (CR_UI)
-            {
-                UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird() InnerWorldUI assigned"));
-                CR_UI->SetVisibility(ESlateVisibility::Visible);
-                CR_UI->DelayedSwitchToWidget();
-                UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird() InnerWorldUI set Visible"));
-            }
-            else
-            {
-                UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::ShowInnerWorldUIThird() No InnerWorldUI"));
-            }
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::ShowInnerWorldUIThird() already exsited InnerWorldUI"));
-            CR_UI->SetVisibility(ESlateVisibility::Visible);
-            CR_UI->DelayedSwitchToWidget();
-            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIThird() InnerWorldUI set Visible"));
-        }
-
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::ShowInnerWorldUIThird() Failed to create CR_UIFactory"));
-    }
 }
 void AJS_RoomController::HideInnerWorldUI()
 {

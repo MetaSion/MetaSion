@@ -21,6 +21,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+
     /* Input */
     virtual void SetupInputComponent() override;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
@@ -29,8 +30,6 @@ public:
 	UInputAction* IA_LeftMouse;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* IA_SettingUI;
-     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	UInputAction* IA_InnerWorldUI;
 
 
     /* UI */
@@ -40,15 +39,13 @@ public:
 	TSubclassOf<class UJS_CreateRoomWidget> CR_UIFactory;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UJS_RoomWidget> R_UIFactory;
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UJS_ExplainWidget> Ex_UIFactory;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	class UHttpWidget* LoginUI;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	class UJS_CreateRoomWidget* CR_UI;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	class UJS_RoomWidget* R_UI;
 
     UPROPERTY(EditAnywhere)
@@ -100,7 +97,7 @@ public:
     class USessionGameInstance* SessionGI;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UCJS_InnerWorldSettingWidget> SettingUIFactory;
-    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    UPROPERTY(BlueprintReadWrite)
 	class UCJS_InnerWorldSettingWidget* SettingUI;
 
     void ShowSettingUI();
@@ -131,16 +128,17 @@ public:
 
     /* Inner World UI */
     void ShowInnerWorldUIZero();
-    void ShowInnerWorldUIThird();
     void HideInnerWorldUI();
 
       /* Chat Widget */
-    UPROPERTY(EditDefaultsOnly, Category = "Heart")
-	class ACJS_JS_WidgetFunction* ChatActorFactory;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UCJS_ChatWidget> ChatUIFactory;
+    UPROPERTY(BlueprintReadWrite)
+	class UCJS_ChatWidget* ChatUI;
+
 
 
     //KGW==============================================
-
     void OnClickButtonImage();
 
     //Mouse Interaction
@@ -151,19 +149,15 @@ public:
     void OnMouseHoverEnd(AActor* HoveredActor);
 
 
-    //myWorld -> MultiWorld:: Make Session
-     /*   UPROPERTY()
-	class AHttpActor* HttpActor;*/
-
     //void OpenMultiWorld();
     void SetActorLocationAfterLevelLoad();
     AActor* CurrentHoveredActor = nullptr;
 
 
+
     /* Screen Capture + Wallpaper Python Auto Execute */
     void ScreenCapture();
     void ExecuteWallPaperPython();
-
 
     /* Http Actor */
     class AHttpActor* HttpActor;

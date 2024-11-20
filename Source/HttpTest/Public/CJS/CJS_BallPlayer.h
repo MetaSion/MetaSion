@@ -29,7 +29,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
-
 	// 플레이어 컨트롤러 ======================================================================================
 	UPROPERTY()
 	class APlayerController* PC;
@@ -44,6 +43,7 @@ public:
 	// 머터리얼 ===============================================================================================
 	UPROPERTY()
     UMaterialInstanceDynamic* DynamicMaterialInstance;
+	
 	//	나이아가라 ===============================================================================================
 	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
 	class UNiagaraComponent* NiagraComp;
@@ -65,6 +65,8 @@ public:
 	class UInputAction* IA_AimPoint;
 	UPROPERTY(EditDefaultsOnly, Category = "INPUT")
 	class UInputAction* IA_QuitGame;
+	UPROPERTY(EditDefaultsOnly, Category = "INPUT")
+	class UInputAction* IA_InnerWorldUI;
 	
 // 	void OnMyActionMove(const FInputActionValue& Value);
 // 	void OnMyActionLook(const FInputActionValue& Value);
@@ -73,6 +75,7 @@ public:
 	void OnMyActionClick(const FInputActionValue& Value);
 	void OnMyActionToggleAimPointUI(const FInputActionValue& Value);
 	void OnMyActionQuitGame(const FInputActionValue& Value);
+	void OnMyActionShowInnerWorldUI(const FInputActionValue& Value);
 
 	// 움직임을 위한 힘의 크기
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
@@ -189,5 +192,20 @@ public:
 	// 월페이퍼 파이썬 자동 실행 ========================================================================
 	UFUNCTION(BlueprintCallable, Category = "Python")
 	void ExecuteWallPaperPython();
+
+
+	// 체험방 UI ======================================================================================
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UJS_CreateRoomWidget> CR_UIFactory;
+	UPROPERTY()
+	class UJS_CreateRoomWidget* CR_UI;
+
+	bool bMultiOn = false;
+
+	// 멀티 적용
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_Chat(const FString& msg);
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_Chat(const FString& msg);
 
 };

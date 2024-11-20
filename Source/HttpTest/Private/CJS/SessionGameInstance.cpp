@@ -423,6 +423,16 @@ FString USessionGameInstance::GetNetInfoCharacterTOLobby()
 	return NetInfoCharacterTOLobby;
 }
 
+// 체험방 UI 멀티 적용 여부 확인 변수
+bool USessionGameInstance::GetbRefRoomUIMultiOn()
+{
+	return bRefRoomUIMultiOn;
+}
+void USessionGameInstance::SetbRefRoomUIMultiOn(bool value)
+{
+	bRefRoomUIMultiOn = value;
+}
+
 void USessionGameInstance::ChangePlayerController(UWorld* World, TSubclassOf<APlayerController> NewControllerClass)
 {
 	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::ChangePlayerController()"));
