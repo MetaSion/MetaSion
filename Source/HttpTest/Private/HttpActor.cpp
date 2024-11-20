@@ -472,6 +472,12 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
             WorldSetting.ParticleNum = JsonObject->GetStringField(TEXT("Particle_num"));
             // Parse Result
             WorldSetting.Result = JsonObject->GetStringField(TEXT("result"));
+            if (SessionGI) {
+                SessionGI->AIResult = JsonObject->GetStringField(TEXT("result"));
+            }
+            else {
+                UE_LOG(LogTemp, Warning, TEXT("SessionGI Fail From HttpActorLine : 479 "));
+            }
             // Parse Rooms
             if (JsonObject->HasTypedField<EJson::Array>(TEXT("rooms")))
             {
