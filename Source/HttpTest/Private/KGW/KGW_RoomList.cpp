@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "CJS/CJS_InnerWorldSettingWidget.h"
 #include "Components/WidgetSwitcher.h"
+#include "JS_RoomController.h"
 
 
 void UKGW_RoomList::NativeConstruct()
@@ -23,15 +24,79 @@ void UKGW_RoomList::NativeConstruct()
 	btn_MyRoom_List->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowMyRoomListUI);
 	btn_List_of_all_rooms->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowListOfAllRooms);
     btn_MultiWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickMultiWorld);
+
+    pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+    if (!pc) {
+        UE_LOG(LogTemp, Error, TEXT("PlayerController not found in the level!"));
+        return;
+    }
 }
 
 void UKGW_RoomList::ChangeCanvas(int32 index)
 {
     if (WS_RoomList) {
         WS_RoomList->SetActiveWidgetIndex(index);
+        switch (index)
+        {
+        case 1:
+            //파티클 스폰
+
+            break;
+        case 2:
+            //AI 결과 저장해서 보여주기
+            if(CurrentParticleActor) CleanParticle();
+
+            break;
+        case 3:
+            // 내방목록 데이터 받아서 보여주기
+            if (CurrentParticleActor) CleanParticle();
+
+            break;
+        case 4:
+            // 전체방목록 데이터 받아서 보여주기
+            if (CurrentParticleActor) CleanParticle();
+
+            break;
+        default:
+            break;
+        }
     }
     else {
-        UE_LOG(LogTemp, Warning, TEXT("TxtBox_Report nullptr"));
+        UE_LOG(LogTemp, Warning, TEXT("ChangeCanvas WS_RoomList nullptr"));
+    }
+}
+void UKGW_RoomList::SpawnParticle()
+{
+    if (!ParticleActorFactory)
+    {
+        UE_LOG(LogTemp, Error, TEXT("ParticleActorFactory is not set!"));
+        return;
+    }
+    CleanParticle();
+
+    FVector Location = FVector(-470990.0f, 643490.0f, 648180.0f);
+    FRotator Rotation = FRotator::ZeroRotator;
+
+    CurrentParticleActor = GetWorld()->SpawnActor<AActor>(
+        ParticleActorFactory, Location, Rotation);
+
+    if (CurrentParticleActor)
+    {
+        UE_LOG(LogTemp, Log, TEXT("Successfully spawned particle actor"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to spawn particle actor"));
+    }
+}
+
+void UKGW_RoomList::CleanParticle()
+{
+    // ���� ���� ����
+    if (CurrentParticleActor)
+    {
+        CurrentParticleActor->Destroy();
+        CurrentParticleActor = nullptr;
     }
 }
 

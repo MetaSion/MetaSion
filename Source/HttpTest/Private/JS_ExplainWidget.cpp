@@ -16,9 +16,9 @@ void UJS_ExplainWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    if (!Ex_WidgetSwitcher || Animations.IsEmpty() || !GetWorld())
-    {
-        UE_LOG(LogTemp, Error, TEXT("Widget initialization failed! Check Ex_WidgetSwitcher, Animations, or GetWorld."));
+    pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+    if (!pc) {
+        UE_LOG(LogTemp, Error, TEXT("PlayerController not found in the level!"));
         return;
     }
     httpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
@@ -41,7 +41,11 @@ void UJS_ExplainWidget::NativeConstruct()
         TextAnimation_3,
         TextAnimation_4
     };
-
+    if (!Ex_WidgetSwitcher || Animations.IsEmpty() || !GetWorld())
+    {
+        UE_LOG(LogTemp, Error, TEXT("Widget initialization failed! Check Ex_WidgetSwitcher, Animations, or GetWorld."));
+        return;
+    }
     CurrentBallActor = nullptr;
     CurrentParticleActor = nullptr;
     CurrentAnimationIndex = 0;

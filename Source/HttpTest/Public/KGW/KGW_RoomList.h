@@ -20,6 +20,9 @@ public:
 	// 	class UTextBlock* Text_Finding;
 	virtual void  NativeConstruct() override;
 
+	UPROPERTY(EditAnywhere)
+    class AJS_RoomController* pc;
+
 	UPROPERTY(meta = (BindWidget))
 	class UScrollBox* ScrollBox;
 
@@ -46,10 +49,17 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* btn_MultiWorld;
-
+	//SwitchWidget
 	class UWidgetSwitcher* WS_RoomList;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+    TSubclassOf<AActor> ParticleActorFactory;
 	
-	
+	UPROPERTY()
+    AActor* CurrentParticleActor;
+
+	void CleanParticle();
+
 	void AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos);
 
 	// switcher index마다 다른 canvas보여야함.
@@ -77,6 +87,8 @@ public:
 	{
 		ChangeCanvas(4);
 	}
+
+	void SpawnParticle();
 	// 	void SetRecomendRoomName(const )
 
 	// 	void SetFindActive(bool value);
