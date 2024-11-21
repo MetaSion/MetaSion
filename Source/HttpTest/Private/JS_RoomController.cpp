@@ -166,12 +166,13 @@ void AJS_RoomController::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO LoginActor"));
 		}
     }
-    if (LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question" || LevelName  == "Test_Main_Sky") {
-        GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, false);
-    }
-    else {
-        GetWorldTimerManager().SetTimer(OtherRoomCheckTimerHandle, this, &AJS_RoomController::SwitchToCamera, 0.01f, false);
-    }
+    //11-20
+//     if (LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question" || LevelName  == "Test_Main_Sky") {
+//         GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, false);
+//     }
+//     else {
+//         GetWorldTimerManager().SetTimer(OtherRoomCheckTimerHandle, this, &AJS_RoomController::SwitchToCamera, 0.01f, false);
+//     }
     // ------------------------------------------------------------------------------------------------
 
     //FTimerHandle TimerHandle;
@@ -659,7 +660,7 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
     FVector CameraLocation;
     FRotator CameraRotation;
 
-    if (LevelName == "Test_Main_Sky" || LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question")
+    if (/*LevelName == "Test_Main_Sky" || LevelName == "Main_Sky" ||*/ LevelName == "Main_Login" || LevelName == "Main_Question")
     {
         // �ϴ� ���� ��ġ�� ȸ�� ����
         CameraLocation = FVector(-470047.589317, 643880.89814, 648118.610643);
@@ -686,7 +687,7 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
     //if (LevelName == "Main_Room") {
     if (LevelName.Contains("Main_LV"))
     {
-        TargetCamera->GetCameraComponent()->SetFieldOfView(50);
+        /*TargetCamera->GetCameraComponent()->SetFieldOfView(50);*/
     }
     else if (LevelName == "Main_Login"|| LevelName == "Main_Sky" || LevelName == "Main_Question")
     {
