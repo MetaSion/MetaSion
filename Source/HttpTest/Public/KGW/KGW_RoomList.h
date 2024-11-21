@@ -50,6 +50,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* btn_MultiWorld;
 	//SwitchWidget
+	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* WS_RoomList;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
@@ -67,25 +68,25 @@ public:
 	UFUNCTION()
 	void ShowParticleUI()
 	{
-		ChangeCanvas(1);
+		ChangeCanvas(0);
 	}
 
 	UFUNCTION()
 	void ShowAIAnalysisUI()
 	{
-		ChangeCanvas(2);
+		ChangeCanvas(1);
 	}
 
 	UFUNCTION()
 	void ShowMyRoomListUI()
 	{
-		ChangeCanvas(3);
+		ChangeCanvas(2);
 	}
 
 	UFUNCTION()
 	void ShowListOfAllRooms()
 	{
-		ChangeCanvas(4);
+		ChangeCanvas(3);
 	}
 
 	void SpawnParticle();
