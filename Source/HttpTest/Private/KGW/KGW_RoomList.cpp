@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "KGW/KGW_RoomList.h"
 #include "KGW/KGW_UserRoomName.h"
 #include "Components/ScrollBox.h"
@@ -18,6 +17,7 @@ void UKGW_RoomList::NativeConstruct()
 {
     Super::NativeConstruct();
     
+
     btn_ShowParticle->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowParticleUI);
 	btn_AIAnalysis->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowAIAnalysisUI);
 	btn_MyRoom->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickInnerWorld);
