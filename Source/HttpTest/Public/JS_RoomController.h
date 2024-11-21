@@ -41,15 +41,18 @@ public:
 	TSubclassOf<class UJS_RoomWidget> R_UIFactory;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UJS_ExplainWidget> Ex_UIFactory;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UKGW_RoomList> RL_UIFactory;
 	UPROPERTY()
 	class UHttpWidget* LoginUI;
 	UPROPERTY()
 	class UJS_CreateRoomWidget* CR_UI;
 	UPROPERTY()
 	class UJS_RoomWidget* R_UI;
-
     UPROPERTY(EditAnywhere)
 	class UJS_ExplainWidget* Ex_UI;
+    UPROPERTY(EditAnywhere)
+	class UKGW_RoomList* RL_UI;
 
     FTimerHandle LevelCheckTimerHandle;  // 타이머 핸들러
     FTimerHandle OtherRoomCheckTimerHandle;
@@ -76,6 +79,7 @@ public:
     void ShowRoomUI();
     void HideRoomUI();
     void PlayUIAnimation();
+
     FTimerHandle HeartUITimer;
     void ShowHeartUITimer();
     void SpawnAndSwitchToCamera();
@@ -89,6 +93,10 @@ public:
     UFUNCTION(BlueprintCallable)
     void ShowExplainUI();
     void HideExplainUI();
+
+    //RoomListUI
+    void ShowRoomListUI();
+    void HideRoomListUI();
     //KGW==============================================
 
 

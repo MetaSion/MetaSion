@@ -110,7 +110,7 @@ void AJS_RoomController::BeginPlay()
     }
     else if (LevelName.Contains("Test_Main_Sky"))
     {
-        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky"));
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Test_Main_Sky"));
         PlayUIAnimation();
         ShowExplainUI();
         //if (SessionGI && SessionGI->bSuccess) {
@@ -128,6 +128,10 @@ void AJS_RoomController::BeginPlay()
 		{
 			UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
 		}*/
+    }
+    else if (LevelName.Contains("Main_Sky")) {
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_Sky"));
+        ShowRoomListUI();
     }
   //  else if (LevelName.Contains("Sky"))
   //  {
@@ -304,6 +308,17 @@ void AJS_RoomController::InitializeUIWidgets()
             ChatUI->SetVisibility(ESlateVisibility::Hidden);
         }
     }
+    if (RL_UIFactory)
+    {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() RL_UIFactory exsited"));
+        RL_UI = CreateWidget<UKGW_RoomList>(this, RL_UIFactory);
+        if (RL_UI)
+        {
+            UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() RL_UIFactory set"));
+            RL_UI->AddToViewport();
+            RL_UI->SetVisibility(ESlateVisibility::Hidden);
+        }
+    }
 }
 void AJS_RoomController::ShowLoginUI()
 {
@@ -394,6 +409,14 @@ void AJS_RoomController::ShowExplainUI()
 void AJS_RoomController::HideExplainUI()
 {
     if (Ex_UI) Ex_UI->SetVisibility(ESlateVisibility::Hidden);
+}
+void AJS_RoomController::ShowRoomListUI()
+{
+    if(RL_UI) RL_UI->SetVisibility(ESlateVisibility::Visible);
+}
+void AJS_RoomController::HideRoomListUI()
+{
+    if (RL_UI) RL_UI->SetVisibility(ESlateVisibility::Hidden);
 }
 //Explain UI End --------------------------------------------------------------------------
 
