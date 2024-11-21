@@ -40,7 +40,7 @@ void UKGW_RoomList::ChangeCanvas(int32 index)
         {
         case 1:
             //파티클 스폰
-
+            SpawnParticle();
             break;
         case 2:
             //AI 결과 저장해서 보여주기

@@ -176,10 +176,11 @@ void AJS_RoomController::BeginPlay()
 
     //FTimerHandle TimerHandle;
     //GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AJS_RoomController::SetActorLocationAfterLevelLoad, 1.0f, false);
-    if (LevelName == "Main_Sky") {
-        //다음 틱에 액터 위치 변경 실행
-        GetWorldTimerManager().SetTimerForNextTick(this, &AJS_RoomController::SetActorLocationAfterLevelLoad);
-    }
+    // JS 주석처리
+    //if (LevelName == "Main_Sky") {
+    //    //다음 틱에 액터 위치 변경 실행
+    //    GetWorldTimerManager().SetTimerForNextTick(this, &AJS_RoomController::SetActorLocationAfterLevelLoad);
+    //}
 }
 
 void AJS_RoomController::SetupInputComponent()
