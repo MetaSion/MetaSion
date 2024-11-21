@@ -195,14 +195,15 @@ public:
 
 
 	// 체험방 UI ======================================================================================
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<class UJS_CreateRoomWidget> CR_UIFactory;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	//TSubclassOf<class UJS_CreateRoomWidget> CR_UIFactory;
 	UPROPERTY()
 	class UJS_CreateRoomWidget* CR_UI;
 
-	bool bMultiOn = false;
 
 	// 멀티 적용
+	UPROPERTY()
+	class AJS_RoomController* RoomController;
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_Chat(const FString& msg);
 	UFUNCTION(NetMulticast, Reliable)
