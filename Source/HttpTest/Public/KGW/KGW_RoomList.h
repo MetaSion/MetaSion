@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "CJS/SessionGameInstance.h"
+#include "Components/UniformGridPanel.h"
+#include "Components/Image.h"
+#include "Kismet/GameplayStatics.h"
 #include "KGW_RoomList.generated.h"
 
 /**
@@ -50,48 +53,65 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* btn_MultiWorld;
 	//SwitchWidget
+	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* WS_RoomList;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
     TSubclassOf<AActor> ParticleActorFactory;
+	// MyPage 부분 ------------------------------------
 	
 	UPROPERTY()
     AActor* CurrentParticleActor;
+	
+	//경로 세팅
+	TArray<FString> ImagePath;
+	void SettingPath();
+	FString GetRandomPath();
 
 	void CleanParticle();
-
 	void AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos);
 
 	// switcher index마다 다른 canvas보여야함.
 	void ChangeCanvas(int32 index);
+	// Side Menu
 	UFUNCTION()
-	void ShowParticleUI()
-	{
-		ChangeCanvas(1);
-	}
+	void ShowParticleUI();
 
 	UFUNCTION()
-	void ShowAIAnalysisUI()
-	{
-		ChangeCanvas(2);
-	}
+	void ShowAIAnalysisUI();
 
 	UFUNCTION()
-	void ShowMyRoomListUI()
-	{
-		ChangeCanvas(3);
-	}
+	void ShowMyRoomListUI();
 
 	UFUNCTION()
-	void ShowListOfAllRooms()
-	{
-		ChangeCanvas(4);
-	}
+	void ShowListOfAllRooms();
 
+	//그리드 패널 부분
+    UPROPERTY(meta = (BindWidget))
+    UUniformGridPanel* UGP_RoomList;
+
+    UFUNCTION(BlueprintCallable)
+    void AddImageToGrid(FString TexturePath);
+
+    UFUNCTION()
+	void OnImageHovered();
+
+	UFUNCTION()
+	void OnImageUnhovered();
+
+	UFUNCTION()
+	void OnImageClicked();
+    void ShowCommentUI(UImage* Image);
+    void HideCommentUI();
+	
 	void SpawnParticle();
+
+	// MyPage 부분 End ------------------------------------
+	
 	// 	void SetRecomendRoomName(const )
 
 	// 	void SetFindActive(bool value);
+
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UKGW_UserRoomName> UserRoomNameFactory;
@@ -116,6 +136,4 @@ public:
 	class UCJS_InnerWorldSettingWidget* InnerWorldWidget;
 
 	void StartHttpMultyWorld();
-	
-
 };

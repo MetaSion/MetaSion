@@ -321,6 +321,9 @@ void AJS_RoomController::InitializeUIWidgets()
             RL_UI->SetVisibility(ESlateVisibility::Hidden);
         }
     }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() RL_UIFactory Nullptr"));
+    }
 }
 void AJS_RoomController::ShowLoginUI()
 {
