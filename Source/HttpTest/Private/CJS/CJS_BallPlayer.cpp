@@ -86,7 +86,6 @@ ACJS_BallPlayer::ACJS_BallPlayer() : Super()
 	// 월드에서 MultiRoomActor 클래스의 인스턴스를 찾습니다.
 
 	InitJsonData(Json);  //<-- 테스트 시 (통신 x)
-
 }
 
 
@@ -128,22 +127,23 @@ void ACJS_BallPlayer::BeginPlay()
 				GetMesh()->SetMaterial(0, DynamicMaterialInstance);
 
 				// InitColorValue를 사용하여 TransmitB 파라미터 설정
-				DynamicMaterialInstance->SetVectorParameterValue(FName("TransmitB"), InitColorValue);
-				//UE_LOG(LogTemp, Warning, TEXT("SkeletalMesh Material color set using 'TransmitB' parameter to R: %f, G: %f, B: %f"), InitColorValue.R, InitColorValue.G, InitColorValue.B);
+				//DynamicMaterialInstance->SetVectorParameterValue(FName("TransmitB"), InitColorValue);
+				DynamicMaterialInstance->SetVectorParameterValue(FName("InnerColor"), InitColorValue);
+				UE_LOG(LogTemp, Warning, TEXT("SkeletalMesh Material color set using 'InnerColor' parameter to R: %f, G: %f, B: %f"), InitColorValue.R, InitColorValue.G, InitColorValue.B);
 			}
 			else
 			{
-				//UE_LOG(LogTemp, Error, TEXT("Failed to create Dynamic Material Instance."));
+				UE_LOG(LogTemp, Error, TEXT("Failed to create Dynamic Material Instance."));
 			}
 		}
 		else
 		{
-			//UE_LOG(LogTemp, Error, TEXT("MaterialInterface is null."));
+			UE_LOG(LogTemp, Error, TEXT("MaterialInterface is null."));
 		}
 	}
 	else
 	{
-		//UE_LOG(LogTemp, Error, TEXT("SkeletalMeshComponent (GetMesh()) is null."));
+		UE_LOG(LogTemp, Error, TEXT("SkeletalMeshComponent (GetMesh()) is null."));
 	}
 	// 초기 회전값을 Identity로 설정
 	//MaterialRotationQuat = FQuat::Identity;
@@ -777,7 +777,7 @@ void ACJS_BallPlayer::PlayAnimationByIndex(int32 Index)
 		SetActorRotation(FRotator::ZeroRotator);
 
 		// 메시의 로컬 회전을 (0, 0, 0)으로 설정하여 Actor와 메시 회전을 동기화 (Teleport 플래그 사용)
-		/*keletalMeshComponent가 물리 시뮬레이션을 활성화한 상태에서 회전이나 위치를 강제로 설정하려면, Teleport 플래그를 사용해야 함.
+		/*skeletalMeshComponent가 물리 시뮬레이션을 활성화한 상태에서 회전이나 위치를 강제로 설정하려면, Teleport 플래그를 사용해야 함.
 		  ETeleportType::TeleportPhysics 플래그는 물리 시뮬레이션이 활성화된 메시에도 강제로 회전을 적용하도록 합*/
 		if (GetMesh())
 		{
@@ -980,50 +980,51 @@ void ACJS_BallPlayer::InitializeFromJson(const FString& LocalJsonData)
 
 
 		// 3. SimilarUsers 및 OppositeUsers 배열 추출 및 저장   // <-- 통신 시 주석 해제                         <-------------- 수정 필요 (소유자의 UserId, RoomNum 같이 저장 필요)
-		TArray<TSharedPtr<FJsonValue>> SimilarUsersArray = JsonObject->GetArrayField(TEXT("SimilarUsers"));
-		TArray<TSharedPtr<FJsonValue>> OppositeUsersArray = JsonObject->GetArrayField(TEXT("OppositeUsers"));
+		//TArray<TSharedPtr<FJsonValue>> SimilarUsersArray = JsonObject->GetArrayField(TEXT("SimilarUsers"));
+		//TArray<TSharedPtr<FJsonValue>> OppositeUsersArray = JsonObject->GetArrayField(TEXT("OppositeUsers"));
 
-		//TArray<TSharedPtr<FJsonValue>> AllUsersArray;
-		AllUsersArray.Append(SimilarUsersArray);
-		AllUsersArray.Append(OppositeUsersArray);
+		////TArray<TSharedPtr<FJsonValue>> AllUsersArray;
+		//AllUsersArray.Append(SimilarUsersArray);
+		//AllUsersArray.Append(OppositeUsersArray);
 
 		// 최대 20개의 방 정보를 저장하고, MultiRoomActor에 설정
-		for (int32 i = 0; i < AllUsersArray.Num() && i < MultiRoomActors.Num(); i++)
-		{
-			TSharedPtr<FJsonObject> UserObject = AllUsersArray[i]->AsObject();
-			if (UserObject.IsValid())
-			{
-				// EmotionScore와 RoomName을 가져와 설정
-				FString Message = UserObject->GetStringField(TEXT("Message"));
-				FString RoomName = UserObject->GetStringField(TEXT("RoomName"));
-				FString CurNumPlayer = UserObject->GetStringField(TEXT("playerNum"));  // <-- 자료형 모두 str
-
-				// 현재 사용자 수와 최대 수 설정 (예시)
-				//int32 CurNumPlayer = FMath::RandRange(0, 5); // 예시로 랜덤 설정
-				FString MaxNumPlayer = "5";
-				//float Percent = (Message / 500.0f) * 100.0f; // Percent 계산 (예시로 500.0을 기준으로)
-
-				// 각 MultiRoomActor에 정보 설정
-				SetInitMultiRoomInfo(MultiRoomActors[i], CurNumPlayer, MaxNumPlayer, RoomName, Message);
-			}
-		}
-
-
-		//for (int32 i = 0; i < MultiRoomActors.Num(); i++)  //<--- 테스트 용 (통신 x)
+		//for (int32 i = 0; i < AllUsersArray.Num() && i < MultiRoomActors.Num(); i++)
 		//{
-		//	// Message에 0부터 100까지의 랜덤 값 할당
-		//	FString Message = FString::Printf(TEXT("%d"), FMath::RandRange(0, 100));
-		//	// RoomName에 "user_"와 인덱스 결합하여 할당
-		//	FString RoomName = FString::Printf(TEXT("user_%d"), i);
+		//	TSharedPtr<FJsonObject> UserObject = AllUsersArray[i]->AsObject();
+		//	if (UserObject.IsValid())
+		//	{
+		//		// EmotionScore와 RoomName을 가져와 설정
+		//		FString Message = UserObject->GetStringField(TEXT("EmotionScore"));
+		//		FString RoomName = UserObject->GetStringField(TEXT("RoomName"));
+		//		FString CurNumPlayer = UserObject->GetStringField(TEXT("playerNum"));  // <-- 자료형 모두 str
 
-		//	// 현재 사용자 수와 최대 수 설정 (예시)  <-- API 확정시 추가 수정하기
-		//	int32 CurNumPlayer = FMath::RandRange(0, 5); // 예시로 랜덤 설정
-		//	int32 MaxNumPlayer = 5;
-		//	//float Percent = (Message / 500.0f) * 100.0f; // Percent 계산 (예시로 500.0을 기준으로)
+		//		// 현재 사용자 수와 최대 수 설정 (예시)
+		//		//int32 CurNumPlayer = FMath::RandRange(0, 5); // 예시로 랜덤 설정
+		//		FString MaxNumPlayer = "5";
+		//		//float Percent = (Message / 500.0f) * 100.0f; // Percent 계산 (예시로 500.0을 기준으로)
 
-		//	// 각 MultiRoomActor에 정보 설정
-		//	SetInitMultiRoomInfo(MultiRoomActors[i], CurNumPlayer, MaxNumPlayer, RoomName, Message);
-		//}
+		//		// 각 MultiRoomActor에 정보 설정
+		//		SetInitMultiRoomInfo(MultiRoomActors[i], CurNumPlayer, MaxNumPlayer, RoomName, Message);
+		//	}
+		//} 
+		// -------------------------------------------------------------------------------------------------------
+
+		for (int32 i = 0; i < MultiRoomActors.Num(); i++)  //<--- 테스트 용 (통신 x)
+		{
+			// Message에 0부터 100까지의 랜덤 값 할당
+			FString Message = FString::Printf(TEXT("%d"), FMath::RandRange(0, 100));
+			// RoomName에 "user_"와 인덱스 결합하여 할당
+			FString RoomName = FString::Printf(TEXT("user_%d"), i);
+
+			// 현재 사용자 수와 최대 수 설정 (예시)  <-- API 확정시 추가 수정하기
+			FString CurNumPlayer = FString::FromInt(FMath::RandRange(0, 5));
+			FString MaxNumPlayer = "5";
+			//float Percent = (Message / 500.0f) * 100.0f; // Percent 계산 (예시로 500.0을 기준으로)
+
+			// 각 MultiRoomActor에 정보 설정
+			SetInitMultiRoomInfo(MultiRoomActors[i], CurNumPlayer, MaxNumPlayer, RoomName, Message);
+
+		}
 	}
 	else
 	{
@@ -1069,7 +1070,14 @@ void ACJS_BallPlayer::SetInitMultiRoomInfo(ACJS_MultiRoomActor* MultiRoomActor, 
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::SetInitMultiRoomInfo()"));
 	if (MultiRoomActor)
 	{
-		MultiRoomActor->InitRefRoomInfoWidget(CurNumPlayer, MaxNumPlayer, RoomName, Percent);
+		//MultiRoomActor->InitRefRoomInfoWidget(CurNumPlayer, MaxNumPlayer, RoomName, Percent);
+		
+		// 크기 변경
+		MultiRoomActor->InitRefRoomScale(Percent);
+		// 색깔 변경
+		MultiRoomActor->InitRefRoomColor();
+
+
 		UE_LOG(LogTemp, Warning, TEXT("MultiRoom information initialized for Room: %s, Percent: %s"), *RoomName, *Percent);
 	}
 	else
