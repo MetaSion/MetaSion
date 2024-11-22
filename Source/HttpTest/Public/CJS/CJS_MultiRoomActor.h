@@ -80,8 +80,17 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* Txt_RefPercent;
 
+
+
 	// Function to update the widget text values
 	void InitRefRoomInfoWidget(const FString& CurNumPlayer, const FString& MaxNumPlayer, const FString& RoomName, const FString& Percent);
+
+	// Function to change ref room Scale
+	void InitRefRoomScale(const FString& percent);
+	// Function to change ref room color
+	void InitRefRoomColor();
+
+
 
 	// Update MultiRoom PlayerNum value
 	void UpdateClickedRefRoomPlayerNum(const FString& CurNumPlayer, const FString& MaxNumPlayer);
