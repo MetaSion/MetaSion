@@ -11,12 +11,19 @@
 #include "CJS/CJS_InnerWorldSettingWidget.h"
 #include "Components/WidgetSwitcher.h"
 #include "JS_RoomController.h"
-
+#include "Engine/Texture2D.h"
+#include "Components/Image.h"
+#include "Components/UniformGridPanel.h"
+#include "Engine/LevelStreamingDynamic.h"
+#include "Engine/TextureRenderTarget2D.h"
+#include "Engine/SceneCapture2D.h"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Blueprint/UserWidget.h"
+#include "Components/SizeBox.h"
 
 void UKGW_RoomList::NativeConstruct()
 {
     Super::NativeConstruct();
-    
 
     btn_ShowParticle->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowParticleUI);
 	btn_AIAnalysis->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowAIAnalysisUI);
@@ -29,6 +36,14 @@ void UKGW_RoomList::NativeConstruct()
     if (!pc) {
         UE_LOG(LogTemp, Error, TEXT("PlayerController not found in the level!"));
         return;
+    }
+    //Path Setting
+    SettingPath();
+    //Setting Random Path 
+    for (int32 i = 0; i < 21; i++) {
+        FString RandomPath = GetRandomPath(); // 랜덤 경로 선택
+        AddImageToGrid(RandomPath); // 무작위 경로를 추가
+        UE_LOG(LogTemp, Warning, TEXT("RandomPath : %s"), *RandomPath);
     }
 }
 
@@ -65,6 +80,95 @@ void UKGW_RoomList::ChangeCanvas(int32 index)
         UE_LOG(LogTemp, Warning, TEXT("ChangeCanvas WS_RoomList nullptr"));
     }
 }
+void UKGW_RoomList::ShowParticleUI()
+{
+    ChangeCanvas(0);
+}
+void UKGW_RoomList::ShowAIAnalysisUI()
+{
+    ChangeCanvas(1);
+}
+void UKGW_RoomList::ShowMyRoomListUI()
+{
+    ChangeCanvas(2);
+}
+void UKGW_RoomList::ShowListOfAllRooms()
+{
+    ChangeCanvas(3);
+}
+// GridPanel 부분 -------------------------------------------------------------
+void UKGW_RoomList::AddImageToGrid(FString TexturePath)
+{
+    // 텍스처 경로에서 UTexture2D 로드
+    UTexture2D* ImageTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, *TexturePath));
+
+    // 텍스처가 제대로 로드되었는지 확인
+    if (!ImageTexture)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load texture from path: %s"), *TexturePath);
+        return;
+    }
+
+    // SizeBox 생성 (버튼 크기 설정)
+    USizeBox* SizeBox = NewObject<USizeBox>(this);
+    SizeBox->SetWidthOverride(600.0f);  // 너비 설정
+    SizeBox->SetHeightOverride(500.0f); // 높이 설정
+
+    // 버튼 생성
+    UButton* ImageButton = NewObject<UButton>(this);
+
+    // 이미지 생성 및 설정
+    UImage* NewImage = NewObject<UImage>(this);
+
+    // 로드된 텍스처를 이미지에 적용
+    NewImage->SetBrushFromTexture(ImageTexture, true);
+    NewImage->SetDesiredSizeOverride(FVector2D(600, 500));  // 이미지의 크기도 맞춤
+
+    // 이미지를 버튼의 자식으로 추가
+    ImageButton->AddChild(NewImage);
+
+    // SizeBox에 버튼을 추가
+    SizeBox->AddChild(ImageButton);
+
+    // 버튼 이벤트 바인딩
+    ImageButton->OnHovered.AddDynamic(this, &UKGW_RoomList::OnImageHovered);
+    ImageButton->OnUnhovered.AddDynamic(this, &UKGW_RoomList::OnImageUnhovered);
+    ImageButton->OnClicked.AddDynamic(this, &UKGW_RoomList::OnImageClicked);
+
+    // 그리드에 SizeBox 추가 (여기서 SizeBox가 그리드에 들어감)
+    int32 RowCount = UGP_RoomList->GetChildrenCount() / 3;
+    int32 ColCount = UGP_RoomList->GetChildrenCount() % 3;
+    UGP_RoomList->AddChildToUniformGrid(SizeBox, RowCount, ColCount);
+
+    UE_LOG(LogTemp, Log, TEXT("SizeBox width: %f, height: %f"), SizeBox->GetDesiredSize().X, SizeBox->GetDesiredSize().Y);
+    UE_LOG(LogTemp, Log, TEXT("ImageButton width: %f, height: %f"), ImageButton->GetDesiredSize().X, ImageButton->GetDesiredSize().Y);
+}
+
+void UKGW_RoomList::OnImageHovered()
+{
+    // 호버 시 댓글 UI 표시
+    ShowCommentUI(nullptr);
+}
+void UKGW_RoomList::OnImageUnhovered()
+{
+    // 호버 해제 시 댓글 UI 숨김
+    HideCommentUI();
+}
+void UKGW_RoomList::OnImageClicked()
+{
+    // 특정 레벨로 이동 여기에 루트 정보 해야함.
+    UGameplayStatics::OpenLevel(GetWorld(), FName("Main_LV_Fall"));
+}
+void UKGW_RoomList::ShowCommentUI(UImage* Image)
+{
+    // 이미지에 대한 댓글 UI 생성 및 표시 로직
+}
+void UKGW_RoomList::HideCommentUI()
+{
+    // 댓글 UI 숨기는 로직
+}
+// GridPanel 부분 End -------------------------------------------------------------
+
 void UKGW_RoomList::SpawnParticle()
 {
     if (!ParticleActorFactory)
@@ -90,6 +194,114 @@ void UKGW_RoomList::SpawnParticle()
     }
 }
 
+UTexture2D* UKGW_RoomList::CaptureRoomPreview(FName  LevelName)
+{
+    // 레벨 경로 설정
+    FString LevelPath = FString::Printf(TEXT("/Game/Main/Maps/Template/%s"), *LevelName.ToString());
+
+    // 레벨 로드
+    bool bSuccess = false;
+    ULevelStreamingDynamic* LoadedLevel = ULevelStreamingDynamic::LoadLevelInstance(
+        GetWorld(),
+        LevelPath,
+        FVector::ZeroVector,    // 로드 위치
+        FRotator::ZeroRotator,  // 로드 회전값
+        bSuccess                // 로드 성공 여부
+    );
+
+    if (!LoadedLevel)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load level: %s"), *LevelName.ToString());
+        return nullptr;
+    }
+
+    LoadedLevel->SetShouldBeVisible(false); // 레벨은 렌더링되지 않도록 설정
+
+    // SceneCapture2D 생성
+    UTextureRenderTarget2D* RenderTarget = NewObject<UTextureRenderTarget2D>();
+    RenderTarget->InitAutoFormat(512, 512); // 캡처 텍스처 크기
+
+    ASceneCapture2D* SceneCapture = CreateSceneCapture(FVector(0, 0, 500), FRotator(-90, 0, 0), RenderTarget);
+    if (!SceneCapture)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to create SceneCapture2D for level: %s"), *LevelName.ToString());
+        return nullptr;
+    }
+
+    // 캡처 실행
+    SceneCapture->GetCaptureComponent2D()->CaptureScene();
+
+    // 텍스처로 변환
+    UTexture2D* CapturedTexture = RenderTarget->ConstructTexture2D(
+        GetWorld(),            // 소유자 World
+        TEXT("CapturedImage"), // 텍스처 이름
+        EObjectFlags::RF_Transient
+    );
+    SceneCapture->Destroy();
+
+    return CapturedTexture;
+}
+
+//void UKGW_RoomList::AddRoomPreviewToGrid(FName LevelName, UTexture2D* CapturedTexture)
+//{
+//    if (!UGP_RoomList || !CapturedTexture) return;
+//
+//    // 버튼 생성
+//    UButton* ImageButton = NewObject<UButton>(this);
+//
+//    // 이미지 생성 및 설정
+//    UImage* RoomImage = NewObject<UImage>(this);
+//    RoomImage->SetBrushFromTexture(CapturedTexture);
+//    RoomImage->SetDesiredSizeOverride(FVector2D(200, 200));
+//    ImageButton->AddChild(RoomImage);
+//
+//    // 버튼 이벤트 바인딩
+//    ImageButton->OnClicked.AddDynamic(this, &UKGW_RoomList::OnImageClicked);
+//
+//    // GridPanel에 추가
+//    int32 TotalChildren = UGP_RoomList->GetChildrenCount();
+//    int32 Row = TotalChildren / 3;
+//    int32 Column = TotalChildren % 3;
+//    UGP_RoomList->AddChildToUniformGrid(ImageButton, Row, Column);
+//}
+
+ASceneCapture2D* UKGW_RoomList::CreateSceneCapture(const FVector& Location, const FRotator& Rotation, UTextureRenderTarget2D* RenderTarget)
+{
+    ASceneCapture2D* SceneCapture = GetWorld()->SpawnActor<ASceneCapture2D>();
+    if (!SceneCapture) return nullptr;
+
+    SceneCapture->SetActorLocation(Location);
+    SceneCapture->SetActorRotation(Rotation);
+    SceneCapture->GetCaptureComponent2D()->TextureTarget = RenderTarget;
+
+    return SceneCapture;
+}
+
+void UKGW_RoomList::SettingPath()
+{
+    ImagePath.Empty(); // 기존 배열 초기화
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/Thunder"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/BG"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/cloudy"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/partlysunny"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/Rainy"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/snow"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/storm"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/sunny"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/Thunder"));
+}
+
+FString UKGW_RoomList::GetRandomPath()
+{
+    if (ImagePath.Num() == 0) {
+        UE_LOG(LogTemp, Warning, TEXT("ImagePath array is empty!"));
+        return FString(); // 빈 문자열 반환
+    }
+
+    int32 RandomIndex = FMath::RandRange(0, ImagePath.Num() - 1); // 랜덤 인덱스 선택
+    return ImagePath[RandomIndex];
+}
+
 void UKGW_RoomList::CleanParticle()
 {
     // ���� ���� ����
@@ -108,7 +320,7 @@ void UKGW_RoomList::AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInf
         UE_LOG(LogTemp, Error, TEXT("ScrollBox is null! Make sure it is set correctly in the widget."));
         return;
     }
-//     ScrollBox->ClearChildren();
+    //ScrollBox->ClearChildren();
     for (const FMyWorldRoomInfo& Room : RoomInfos)
     {
         auto* RoomSlot = CreateWidget<UKGW_UserRoomName>(this, UserRoomNameFactory);

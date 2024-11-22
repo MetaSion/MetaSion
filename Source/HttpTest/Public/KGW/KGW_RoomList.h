@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "CJS/SessionGameInstance.h"
+#include "Components/UniformGridPanel.h"
+#include "Components/Image.h"
+#include "Kismet/GameplayStatics.h"
 #include "KGW_RoomList.generated.h"
 
 /**
@@ -55,44 +58,66 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
     TSubclassOf<AActor> ParticleActorFactory;
+	// MyPage 부분 ------------------------------------
 	
 	UPROPERTY()
     AActor* CurrentParticleActor;
+	
+	//경로 세팅
+	TArray<FString> ImagePath;
+	void SettingPath();
+	FString GetRandomPath();
 
 	void CleanParticle();
-
 	void AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos);
 
 	// switcher index마다 다른 canvas보여야함.
 	void ChangeCanvas(int32 index);
+	// Side Menu
 	UFUNCTION()
-	void ShowParticleUI()
-	{
-		ChangeCanvas(0);
-	}
+	void ShowParticleUI();
 
 	UFUNCTION()
-	void ShowAIAnalysisUI()
-	{
-		ChangeCanvas(1);
-	}
+	void ShowAIAnalysisUI();
 
 	UFUNCTION()
-	void ShowMyRoomListUI()
-	{
-		ChangeCanvas(2);
-	}
+	void ShowMyRoomListUI();
 
 	UFUNCTION()
-	void ShowListOfAllRooms()
-	{
-		ChangeCanvas(3);
-	}
+	void ShowListOfAllRooms();
 
+	//그리드 패널 부분
+    UPROPERTY(meta = (BindWidget))
+    UUniformGridPanel* UGP_RoomList;
+
+    UFUNCTION(BlueprintCallable)
+    void AddImageToGrid(FString TexturePath);
+
+    UFUNCTION()
+	void OnImageHovered();
+
+	UFUNCTION()
+	void OnImageUnhovered();
+
+	UFUNCTION()
+	void OnImageClicked();
+    void ShowCommentUI(UImage* Image);
+    void HideCommentUI();
+	
 	void SpawnParticle();
+
+	// 레벨 미리보기를 캡처하는 함수
+	UTexture2D* CaptureRoomPreview(FName LevelName);
+	// UniformGridPanel에 버튼 및 미리보기 추가
+	/*void AddRoomPreviewToGrid(FName LevelName, UTexture2D* CapturedTexture);*/
+	// SceneCapture2D 설정용 헬퍼 함수
+	ASceneCapture2D* CreateSceneCapture(const FVector& Location, const FRotator& Rotation, UTextureRenderTarget2D* RenderTarget);
+	// MyPage 부분 End ------------------------------------
+	
 	// 	void SetRecomendRoomName(const )
 
 	// 	void SetFindActive(bool value);
+
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UKGW_UserRoomName> UserRoomNameFactory;
@@ -117,6 +142,4 @@ public:
 	class UCJS_InnerWorldSettingWidget* InnerWorldWidget;
 
 	void StartHttpMultyWorld();
-	
-
 };
