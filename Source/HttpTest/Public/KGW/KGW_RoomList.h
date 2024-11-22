@@ -106,12 +106,6 @@ public:
 	
 	void SpawnParticle();
 
-	// 레벨 미리보기를 캡처하는 함수
-	UTexture2D* CaptureRoomPreview(FName LevelName);
-	// UniformGridPanel에 버튼 및 미리보기 추가
-	/*void AddRoomPreviewToGrid(FName LevelName, UTexture2D* CapturedTexture);*/
-	// SceneCapture2D 설정용 헬퍼 함수
-	ASceneCapture2D* CreateSceneCapture(const FVector& Location, const FRotator& Rotation, UTextureRenderTarget2D* RenderTarget);
 	// MyPage 부분 End ------------------------------------
 	
 	// 	void SetRecomendRoomName(const )
