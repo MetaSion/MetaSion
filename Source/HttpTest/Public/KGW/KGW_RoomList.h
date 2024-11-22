@@ -33,7 +33,7 @@ public:
 	class UTextBlock* Text_RecomendRoom;
 
 	UPROPERTY(meta = (BindWidget))
-	class UMultiLineEditableTextBox* TxtBox_Report;
+	class UTextBlock* TxtBox_Report;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* btn_ShowParticle;
