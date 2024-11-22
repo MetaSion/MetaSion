@@ -24,8 +24,9 @@ void UKGW_WIdget_ScreenshotBTN::OnClickCaptureImage()
 void UKGW_WIdget_ScreenshotBTN::OnClikMypage()
 {
     UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
-    Controller-> SetActorLocationAfterLevelLoad();
+//     Controller-> SetActorLocationAfterLevelLoad();
 
+    Controller->SetChangeLevelData();
 
    
 }

@@ -106,12 +106,27 @@ public:
 	class UButton* Btn_Explanation;
     UPROPERTY(meta = (BindWidgetAnim),BlueprintReadWrite, Transient)
     class UWidgetAnimation* appear;   
+
+        UPROPERTY(meta=(BindWidget))
+    class UButton* btn_Good;
+
+        UPROPERTY(meta=(BindWidget))
+    class UButton* btn_Bad;
+
     UFUNCTION(BlueprintCallable)
     void OnClickCaptureImage();
     UFUNCTION(BlueprintCallable)
     void OnClikMypage();
     UFUNCTION(BlueprintCallable)
     void OnClikExplanation();
+
+        UFUNCTION(BlueprintCallable)
+    void OnClickGood();
+
+        UFUNCTION(BlueprintCallable)
+    void OnClikBad();
+
+
     UFUNCTION(BlueprintCallable)
     void SetExplanation(const FString& Text);
 

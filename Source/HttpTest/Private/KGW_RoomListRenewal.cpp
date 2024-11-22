@@ -5,8 +5,28 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/Button.h"
+#include "CJS/SessionGameInstance.h"
 
 
+
+void UKGW_RoomListRenewal::NativeConstruct()
+{
+
+	Super::NativeConstruct();
+
+	btn_AIAnalysis->OnClicked.AddDynamic(this, &UKGW_RoomListRenewal::ShowAIAnalysisUI);
+
+
+	// GameInstance 가져오기
+	GameInstance = Cast<USessionGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (!GameInstance)
+	{
+		UE_LOG(LogTemp, Error, TEXT("GameInstance is null in UKGW_RoomListRenewal"));
+	}
+// 	btn_Test->OnClicked.AddDynamic(this, &UKGW_RoomListRenewal::OnclickTest);
+	
+}
 
 //FAirjetTotalMissionData 구조체를 전달받아 TextBlock에 SetText하는 함수
 void UKGW_RoomListRenewal::SetMissionText(FString Aanalyze)
@@ -49,3 +69,18 @@ void UKGW_RoomListRenewal::UpdateDisplayedText()
 		UE_LOG(LogTemp, Warning, TEXT("Finished text display animation."));
 	}
 }
+void UKGW_RoomListRenewal::ShowAIAnalysisUI()
+{
+	ChangeCanvas(1);
+// 	SetMissionText(GameInstance->WorldSetting.Result);
+	 	FString explain = TEXT("he beauty of programming lies in its infinite possibilities. Just as an artist wields a brush to create a masterpiece, a developer writes lines of code to bring ideas to life. Whether it's designing a game, building a website, or automating a process, every keystroke ");
+		SetMissionText(explain);
+
+}
+
+
+// void UKGW_RoomListRenewal::OnclickTest()
+// {
+// 	FString explain = TEXT("he beauty of programming lies in its infinite possibilities. Just as an artist wields a brush to create a masterpiece, a developer writes lines of code to bring ideas to life. Whether it's designing a game, building a website, or automating a process, every keystroke ");
+// 	SetMissionText(explain);
+// }
