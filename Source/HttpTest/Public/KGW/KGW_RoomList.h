@@ -59,7 +59,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
     TSubclassOf<AActor> ParticleActorFactory;
 	// MyPage 부분 ------------------------------------
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Factory")
+	TSubclassOf<class UJS_OnClickRoomUI> OnClickRoomUIFactory;
+	UPROPERTY(EditAnywhere)
+    class UJS_OnClickRoomUI* OnClickRoomUI;
+
 	UPROPERTY()
     AActor* CurrentParticleActor;
 	
@@ -67,6 +71,10 @@ public:
 	TArray<FString> ImagePath;
 	void SettingPath();
 	FString GetRandomPath();
+
+	void InitializeOnClickRoomUI();
+	void ShowOnClickRoomUI();
+	void HideOnClickRoomUI();
 
 	void CleanParticle();
 	void AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos);
@@ -89,6 +97,11 @@ public:
 	//그리드 패널 부분
     UPROPERTY(meta = (BindWidget))
     UUniformGridPanel* UGP_RoomList;
+	UPROPERTY(meta = (BindWidget))
+	UUniformGridPanel* UGP_Multi_RoomList;
+
+	bool bRoomList = false;
+	bool bMultiRoomList = false;
 
     UFUNCTION(BlueprintCallable)
     void AddImageToGrid(FString TexturePath);
