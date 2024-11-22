@@ -26,7 +26,6 @@ void UKGW_RoomList::NativeConstruct()
     Super::NativeConstruct();
 
     btn_ShowParticle->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowParticleUI);
-	btn_AIAnalysis->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowAIAnalysisUI);
 	btn_MyRoom->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickInnerWorld);
 	btn_MyRoom_List->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowMyRoomListUI);
 	btn_List_of_all_rooms->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowListOfAllRooms);
@@ -83,10 +82,6 @@ void UKGW_RoomList::ChangeCanvas(int32 index)
 void UKGW_RoomList::ShowParticleUI()
 {
     ChangeCanvas(0);
-}
-void UKGW_RoomList::ShowAIAnalysisUI()
-{
-    ChangeCanvas(1);
 }
 void UKGW_RoomList::ShowMyRoomListUI()
 {

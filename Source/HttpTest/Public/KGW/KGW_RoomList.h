@@ -23,6 +23,10 @@ public:
 	// 	class UTextBlock* Text_Finding;
 	virtual void  NativeConstruct() override;
 
+		UPROPERTY(EditAnywhere)
+	class USessionGameInstance* GameInstance;
+
+
 	UPROPERTY(EditAnywhere)
     class AJS_RoomController* pc;
 
@@ -37,9 +41,6 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* btn_ShowParticle;
-
-	UPROPERTY(meta = (BindWidget))
-	class UButton* btn_AIAnalysis;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* btn_MyRoom;
@@ -77,8 +78,6 @@ public:
 	UFUNCTION()
 	void ShowParticleUI();
 
-	UFUNCTION()
-	void ShowAIAnalysisUI();
 
 	UFUNCTION()
 	void ShowMyRoomListUI();
