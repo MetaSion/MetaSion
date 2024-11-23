@@ -78,7 +78,7 @@ void UJS_ExplainWidget::NativeConstruct()
         UE_LOG(LogTemp, Error, TEXT("Failed to find AHttpActor in the level!"));
         return;
     }
-    httpActor->ReqPostChoice(httpActor->EnteryLobbyURL, JsonString);
+    //httpActor->ReqPostChoice(httpActor->EnteryLobbyURL, JsonString);
 
     SessionGI = Cast<USessionGameInstance>(GetGameInstance());
     if (!SessionGI)

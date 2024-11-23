@@ -121,9 +121,9 @@ void ACJS_InnerWorldParticleActor::UpdateInnerWorldNiagaraAsset(int32 NiagaraAss
         {
             UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_Sky"));
             // Construct the asset path based on NiagaraAssetIndex
-            AssetPath = FString::Printf(TEXT("/Content/Main/Assets/NoSound/Particle_Num%d.Particle_Num%d"), NiagaraAssetIndex, NiagaraAssetIndex);
+            //AssetPath = FString::Printf(TEXT("/Content/Main/Assets/NoSound/Particle_Num%d.Particle_Num%d"), NiagaraAssetIndex, NiagaraAssetIndex);
+            AssetPath = FString::Printf(TEXT("/Game/Main/Assets/NoSound/Particle_num%d.Particle_num%d"), NiagaraAssetIndex, NiagaraAssetIndex);
         }
-
         // Load the Niagara System dynamically from the constructed path
         UNiagaraSystem* SelectedNiagaraSystem = Cast<UNiagaraSystem>(StaticLoadObject(UNiagaraSystem::StaticClass(), nullptr, *AssetPath));
 

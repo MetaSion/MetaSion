@@ -24,9 +24,13 @@ public:
 	// 	class UTextBlock* Text_Finding;
 	virtual void  NativeConstruct() override;
 
-		UPROPERTY(EditAnywhere)
-	class USessionGameInstance* GameInstance;
+	UPROPERTY()
+	class USessionGameInstance* SGI;
+	UPROPERTY()
+	class AHttpActor* HttpActor;
 
+	UPROPERTY(EditAnywhere)
+	class USessionGameInstance* GameInstance;
 
 	UPROPERTY(EditAnywhere)
     class AJS_RoomController* pc;
@@ -118,6 +122,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UUniformGridPanel* UGP_Multi_RoomList;
 
+	//이미지 추가 됐는지 확인
+	bool bIsListMyRooms = false;
+	bool bIsListAllRooms = false;
 	bool bRoomList = false;
 	bool bMultiRoomList = false;
 

@@ -55,6 +55,7 @@ public:
 	class UKGW_RoomList* RL_UI;
 
     //ShowRoomList TimerHandler
+    FTimerHandle TimingTimerHandle;
     FTimerHandle ShowRoomListTimerHandle;
     FTimerHandle LevelCheckTimerHandle;  // 타이머 핸들러
     FTimerHandle OtherRoomCheckTimerHandle;
