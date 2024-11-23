@@ -61,6 +61,24 @@ struct FMyWorldRoomInfo
     UPROPERTY(BlueprintReadWrite)
     FString MyRoomName;
 };
+// Suggest_List 수신된 정보 저장용
+USTRUCT(BlueprintType)
+struct FMySuggest_List
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+    FString percent_message;
+	UPROPERTY(BlueprintReadWrite)
+    FString reason_message;
+	UPROPERTY(BlueprintReadWrite)
+    FString room_id;
+	UPROPERTY(BlueprintReadWrite)
+    FString room_num;
+	UPROPERTY(BlueprintReadWrite)
+    FString room_name;
+    
+};
 USTRUCT(BlueprintType)
 struct FMyRGBColor
 {
@@ -112,8 +130,14 @@ struct FMyWorldSetting
     FString ParticleNum;
     UPROPERTY(BlueprintReadWrite)
     FString Result;
+	UPROPERTY(BlueprintReadWrite)
+    FString Result2; // 파티클 설명
+	UPROPERTY(BlueprintReadWrite)
+    FString Result3; // 캐릭터 색 설명
     UPROPERTY(BlueprintReadWrite)
     TArray<FMyWorldRoomInfo> MyRooms;
+	UPROPERTY(BlueprintReadWrite)
+    TArray<FMySuggest_List> suggest_list;
 };
 
 

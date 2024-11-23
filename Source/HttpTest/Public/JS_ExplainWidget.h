@@ -62,6 +62,8 @@ public:
     FTimerHandle ActionTimerHandle;
     // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     int32 CurrentAnimationIndex;
+    // ·¹º§ ³Ñ¾î°¥ ¶§ ±â´Ù¸®´Â Å¸ÀÌ¸Ó ÇÚµé
+    FTimerHandle LevelTimerHandle;
 
     // ï¿½×¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
     void ExecuteActionWithDelay();

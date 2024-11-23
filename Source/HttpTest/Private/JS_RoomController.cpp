@@ -31,6 +31,7 @@
 #include "CineCameraActor.h"
 #include "JS_ExplainWidget.h"
 #include "CJS/CJS_ChatWidget.h"
+#include <KGW_RoomListRenewal.h>
 
 AJS_RoomController::AJS_RoomController()
 {
@@ -131,7 +132,7 @@ void AJS_RoomController::BeginPlay()
     }
     else if (LevelName.Contains("Main_Sky")) {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_Sky"));
-        ShowRoomListUI();
+        GetWorld()->GetTimerManager().SetTimer(ShowRoomListTimerHandle, this, &AJS_RoomController::ShowRoomListUI, 3.2f, false);
     }
   //  else if (LevelName.Contains("Sky"))
   //  {
@@ -439,7 +440,7 @@ void AJS_RoomController::SetActorLocationAfterLevelLoad()
 		FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
 		ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
 		UE_LOG(LogTemp, Warning, TEXT("ListActor location set successfully."));
-		SetChangeLevelData();
+// 		SetChangeLevelData();
 	}
 	else
 	{
@@ -714,6 +715,8 @@ void AJS_RoomController::SetChangeLevelData()
    AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
    UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
    UKGW_RoomList* Showlist = Cast<UKGW_RoomList>(WidgetComp->GetUserWidgetObject());
+   UKGW_RoomListRenewal* AnalyzeText = Cast<UKGW_RoomListRenewal>(WidgetComp->GetUserWidgetObject());
+
 
     // 2.추천 음악을 튼다
     HttpActor->SetBackgroundSound();
@@ -736,36 +739,34 @@ void AJS_RoomController::SetChangeLevelData()
         TArray<FMyWorldRoomInfo> Result;
         Result = SessionGI->GettRoomNameNum(); // 데이터가 제대로 저장되었는지 로그로 확인
         UE_LOG(LogTemp, Warning, TEXT("GameInstance->GEtRoomInfoList size: %d"), Result.Num());
-        if (ListActor)
+
+        FString Example = TEXT("오늘을 날씨가 참 좋아요 당신의 기분도 참 좋아 보이네요 좋은하루 보내세요");
+        if (Showlist)
         {
-            if (WidgetComp)
-            {
-                if (Showlist)
-                {
-                    // RoomInfoList 데이터를 위젯에 추가
-                    Showlist->AddSessionSlotWidget(Result);
-                    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() Showlist updated successfully."));
+            // RoomInfoList 데이터를 위젯에 추가
+            Showlist->AddSessionSlotWidget(Result);
+            UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() Showlist updated successfully."));
 
-                    // 6.AI 분석 결과를 UI에 넣는다.
-                    Showlist->SetTextLog(SessionGI->WorldSetting.Result);
-                    // move to sugested tmeplate room 방이동
-                    Showlist->SetWheaterNumb(SessionGI->WorldSetting.Quadrant);
+            // move to sugested tmeplate room 방이동
+            Showlist->SetWheaterNumb(SessionGI->WorldSetting.Quadrant);
 
-                }
-                else
-                {
-                    UE_LOG(LogTemp, Error, TEXT("Showlist is null! Make sure the widget is correctly set in BP_ListActor."));
-                }
-            }
-            else
-            {
-                UE_LOG(LogTemp, Error, TEXT("WidgetComponent not found on BP_ListActor."));
-            }
         }
         else
         {
-            UE_LOG(LogTemp, Error, TEXT("No BP_ListActor."));
+            UE_LOG(LogTemp, Error, TEXT("Showlist is null! Make sure the widget is correctly set in BP_ListActor."));
         }
+        if (AnalyzeText)
+        {
+
+            // 6.AI 분석 결과를 UI에 넣는다.
+            AnalyzeText->SetMissionText(SessionGI->WorldSetting.Result);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("AnalyzeText is null! Make sure the widget is correctly set in BP_ListActor."));
+        }
+
+
     }
     else
     {

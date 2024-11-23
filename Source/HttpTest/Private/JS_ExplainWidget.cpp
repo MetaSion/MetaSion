@@ -153,7 +153,7 @@ void UJS_ExplainWidget::HandleActionForIndex(int32 index)
         ShowAIAnalysis();
         break;
     case 3:
-        ShowMyPage();
+        GetWorld()->GetTimerManager().SetTimer(LevelTimerHandle, this, &UJS_ExplainWidget::ShowMyPage, 1.0f, false);
         break;
     default:
         break;
@@ -179,8 +179,7 @@ void UJS_ExplainWidget::SpawnBall()
     FVector Location = FVector(-470270, 643800, 648140);
     FRotator Rotation = FRotator::ZeroRotator;
 
-    CurrentBallActor = GetWorld()->SpawnActor<AJS_ShowColorActor>(
-        SpawnShowColorActorFactory, Location, Rotation);
+    CurrentBallActor = GetWorld()->SpawnActor<AJS_ShowColorActor>(SpawnShowColorActorFactory, Location, Rotation);
 
     if (CurrentBallActor)
     {

@@ -40,6 +40,10 @@ void UJS_CreateRoomWidget::NativeConstruct()
 	Btn_MyPage->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClikMypage);
 	Btn_Explanation->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClikExplanation);
 
+	btn_Good->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClickGood);
+	btn_Bad->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClikBad);
+
+
 	if (ChatUI && ChatUI->Btn_Send)
 	{
 		// Btn_Send 클릭 이벤트 바인딩
@@ -65,13 +69,25 @@ void UJS_CreateRoomWidget::OnClickCaptureImage()
 }
 void UJS_CreateRoomWidget::OnClikMypage()
 {
-	SendCompleteRoomData();
-	UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+	SwitchToWidget(4);
+
 }
 void UJS_CreateRoomWidget::OnClikExplanation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation()"));
 	SetExplanation(CurrentText);
+}
+void UJS_CreateRoomWidget::OnClickGood()
+{
+	SendCompleteRoomData();
+	UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+
+}
+void UJS_CreateRoomWidget::OnClikBad()
+{
+	SendCompleteRoomData();
+	UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+
 }
 void UJS_CreateRoomWidget::SetExplanation(const FString& Text)
 { 	
