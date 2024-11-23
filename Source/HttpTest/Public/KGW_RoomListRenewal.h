@@ -19,6 +19,9 @@ class HTTPTEST_API UKGW_RoomListRenewal : public UKGW_RoomList
 
 public:
 
+
+	virtual void  NativeConstruct() override;
+
 	FString DisplayedText; //현재까지 표시된 텍스트들
 	FString FullText; //파싱한 전체 텍스트
 	int32 CurrentCharIndex; //표시텍스트 인덱스
@@ -26,8 +29,25 @@ public:
 	FTimerHandle InvisibleTimerHandle; //UI Invisible 핸들
 
 	//FAirjetTotalMissionData 구조체를 전달받아 TextBlock에 SetText하는 함수
+	UFUNCTION()
 	void SetMissionText(FString Aanalyze);
 	//ActingText 애니메이션 함수
 	void UpdateDisplayedText();
-	
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* btn_AIAnalysis;
+
+	UFUNCTION()
+	void ShowAIAnalysisUI();
+
+
+
+
+// 	UPROPERTY(meta = (BindWidget))
+// 	class UButton* btn_Test;
+// 
+// 
+// 		UFUNCTION()
+// 	void OnclickTest();
+// 
 };
