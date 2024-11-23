@@ -312,6 +312,38 @@ void USessionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetDriver
 	}
 }
 
+
+// 세션 파괴
+void USessionGameInstance::ExitSession()
+{
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::ExitSession"));
+	//ServerRPC_ExitSession();
+}
+
+void USessionGameInstance::ServerRPC_ExitSession_Implementation()
+{
+	//MulticastRPC_ExitSession();
+}
+
+void USessionGameInstance::MulticastRPC_ExitSession_Implementation()
+{
+	// 방퇴장 요청
+	//SessionInterface->DestroySession(FName(MySessionName));
+}
+
+
+void USessionGameInstance::OnMyDestroySessionComplete(FName SessionName, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		// 클라이언트가 로비로 여행을 가고싶다.
+		auto* pc = GetWorld()->GetFirstPlayerController();
+		pc->ClientTravel(TEXT("/Game/NetTPS/Maps/LobbyMap"), ETravelType::TRAVEL_Absolute);
+	}
+}
+
+
+
 void USessionGameInstance::AssignSessionNameFromPlayerState()
 {
 	PRINTLOG(TEXT("USessionGameInstance::AssignSessionNameFromPlayerState()"));

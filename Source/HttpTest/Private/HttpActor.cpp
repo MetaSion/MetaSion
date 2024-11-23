@@ -517,7 +517,7 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                         SuggestList.room_id = SuggestObject->GetStringField(TEXT("room_id"));
                         SuggestList.room_num = SuggestObject->GetStringField(TEXT("room_num"));
                         SuggestList.room_name = SuggestObject->GetStringField(TEXT("room_name"));
-                        SessionGameInstance->WorldSetting.suggest_list.Add(SuggestList);
+                        WorldSetting.suggest_list.Add(SuggestList);
                     }
                 }
             }

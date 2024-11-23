@@ -217,6 +217,17 @@ void UCJS_LobbyWidget::SetRecList()
 
 void UCJS_LobbyWidget::OnClickMyWorld()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::OnClickMyWorld"));
+	UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::OnClickMyWorld()"));
+	USessionGameInstance* SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+	if (SessionGI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::OnClickMyWorld() SessionGI set"));
+		SessionGI->ExitSession();  // <------ 수정 예정
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UCJS_LobbyWidget::OnClickMyWorld() SessionGI is null!"));
+	}
+
 }
 // List Panel End --------------------------------------------------------------------------------------------------------
