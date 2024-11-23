@@ -43,7 +43,7 @@ void AHttpActor::BeginPlay()
 	Super::BeginPlay();
 
     pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-    if (pc) 
+    if (pc)
     {
         UE_LOG(LogTemp, Error, TEXT("AHttpActor::BeginPlay():: PC exsited"));
     }
@@ -478,6 +478,8 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
             WorldSetting.ParticleNum = JsonObject->GetStringField(TEXT("Particle_num"));
             // Parse Result
             WorldSetting.Result = JsonObject->GetStringField(TEXT("result"));
+            WorldSetting.Result2 = JsonObject->GetStringField(TEXT("result2"));
+            WorldSetting.Result3 = JsonObject->GetStringField(TEXT("result3"));
             if (SessionGI) {
                 SessionGI->AIResult = JsonObject->GetStringField(TEXT("result"));
             }

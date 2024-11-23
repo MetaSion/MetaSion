@@ -58,8 +58,15 @@ public:
     UPROPERTY(meta=(BindWidget))
     class UMultiLineEditableText* Txt_Explane;
 
-    UPROPERTY(EditAnywhere)
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     FString RoomDescription;
+        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    FString RoomName;
+            UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    FString RoomPP;
+
+    
+    
     UPROPERTY(EditAnywhere)
     FString CurrentText;
     UPROPERTY(BlueprintReadWrite)
@@ -70,6 +77,9 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void SwitchToWidget(int32 index);  
+        UFUNCTION(BlueprintCallable)
+    void SetRoomInfo();  
+
     UFUNCTION(BlueprintCallable)
     void SwitchToWidget_PP(int32 index);
     UFUNCTION()
@@ -86,7 +96,7 @@ public:
     UFUNCTION()
     void HideUI();
     //Send CompleteRoom
-    UFUNCTION()
+    UFUNCTION(BlueprintCallable)
 	void SendCompleteRoomData();
     UFUNCTION()
     void OnTextChanged_SingleLine(const FText& Text);
