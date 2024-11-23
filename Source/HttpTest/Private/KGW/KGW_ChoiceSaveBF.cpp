@@ -111,6 +111,48 @@ void UKGW_ChoiceSaveBF::SaveChoicesToJsonFile(UObject* WorldContextObject)
 //      WorldContextObject�� ���� ���� �ν��Ͻ��� ������
 }
 
+void UKGW_ChoiceSaveBF::RoomDataSend(UObject* WorldContextObject)
+{
+    if (!WorldContextObject)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Invalid WorldContextObject: null object passed."));
+        return;  // null�̸� �Լ� ����
+    }
+
+    TMap<FString, FString> RoomData;
+
+    for (const TPair<FString, FString>& Pair : WheaterChoices)
+        //for (const TPair<FString, FString>& Pair : SelectedChoices)
+    {
+        RoomData.Add(Pair.Key, FString::FString(Pair.Value));  // int32 ���� FString���� ��ȯ
+        //ChoiceMap.Add(Pair.Key, FString::FString(Pair.Value));  // int32 ���� FString���� ��ȯ
+    }
+
+    FString JsonString = UJsonParseLib::MakeJson(RoomData);
+
+    UE_LOG(LogTemp, Warning, TEXT("Generated JSON: %s"), *JsonString);
+
+
+
+
+    FString ServerURL = FString::Printf(TEXT("mirrora.duckdns.org:3326/api/auth/saveRoomData"));
+
+    UE_LOG(LogTemp, Warning, TEXT("Generated Server URL: %s"), *ServerURL);
+
+    AHttpActor* isData = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(WorldContextObject->GetWorld(), AHttpActor::StaticClass()));
+    if (isData)
+    {
+        isData->RoomSendDataReqPost(ServerURL, JsonString);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Failed to find AHttpActor instance."));
+    }
+
+    //      WorldContextObject�� ���� ���� �ν��Ͻ��� ������
+
+}
+
 
 
 void UKGW_ChoiceSaveBF::AddChoice(const FChoiceData& ChoiceData)
