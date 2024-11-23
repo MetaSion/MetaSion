@@ -215,6 +215,16 @@ void UJS_CreateRoomWidget::SwitchToWidget(int32 index)
 		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::SwitchToWidget() CR_WidgetSwitcher No"));
 	}
 }
+void UJS_CreateRoomWidget::SetRoomInfo()
+{
+
+	RoomName = ED_RoomName->GetText().ToString();
+	RoomDescription = ED_MultiText->GetText().ToString();
+
+	// �߰��� ��: bPrivate -> RoomPP ��ȯ
+	RoomPP = FString::FromInt(bPrivate);
+
+}
 //private, public
 void UJS_CreateRoomWidget::SwitchToWidget_PP(int32 index)
 {
@@ -317,11 +327,11 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 	FString SubObject = "1";
 	FString Background = "1";
 	FString WeatherParticle = "particle_maple";
-	FString RoomName = ED_RoomName->GetText().ToString();
-	RoomDescription = ED_MultiText->GetText().ToString();
-
-	// �߰��� ��: bPrivate -> RoomPP ��ȯ
-	FString RoomPP = FString::FromInt(bPrivate);
+// 	RoomName = ED_RoomName->GetText().ToString();
+// 	RoomDescription = ED_MultiText->GetText().ToString();
+// 
+// 	// �߰��� ��: bPrivate -> RoomPP ��ȯ
+// 	RoomPP = FString::FromInt(bPrivate);
 
 	// �߰��� ��: Quadrant (������ ��, ���� ������ �ּ���)
 	FString Quadrant = "1";  // ���� ��, ���� ���� �־��ּ���.
