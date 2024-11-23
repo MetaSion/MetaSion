@@ -50,20 +50,20 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
     TSubclassOf<class AJS_ShowColorActor> SpawnShowColorActorFactory;
 
-    // ÇöÀç ½ºÆùµÈ ¾×ÅÍµéÀ» ÃßÀû
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Íµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     UPROPERTY()
     AJS_ShowColorActor* CurrentBallActor;
     UPROPERTY()
     AActor* CurrentParticleActor;
 
-    // ¾×ÅÍ ¼ö¸í Å¸ÀÌ¸Ó
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½Ì¸ï¿½
     FTimerHandle ActorLifetimeTimer;
-    // ¾×¼Ç Å¸ÀÌ¹ÖÀ» À§ÇÑ Å¸ÀÌ¸Ó ÇÚµé
+    // ï¿½×¼ï¿½ Å¸ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½Ì¸ï¿½ ï¿½Úµï¿½
     FTimerHandle ActionTimerHandle;
-    // ÇöÀç Àç»ý ÁßÀÎ ¾Ö´Ï¸ÞÀÌ¼Ç ÀÎµ¦½º¸¦ ÃßÀû
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     int32 CurrentAnimationIndex;
 
-    // ¾×¼Ç ½ÇÇà ÇÔ¼ö
+    // ï¿½×¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
     void ExecuteActionWithDelay();
 
      UPROPERTY(EditAnywhere, Category = "Animation Timing")

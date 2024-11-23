@@ -199,7 +199,7 @@ public:
 	//TSubclassOf<class UJS_CreateRoomWidget> CR_UIFactory;
 	UPROPERTY()
 	class UJS_CreateRoomWidget* CR_UI;
-
+	//class UCJS_LobbyWidget* LobbyUI;
 
 	// 멀티 적용
 	UPROPERTY()

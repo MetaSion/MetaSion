@@ -70,17 +70,17 @@ void UJS_CreateRoomWidget::OnClikMypage()
 }
 void UJS_CreateRoomWidget::OnClikExplanation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation()"))
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation()"));
 	SetExplanation(CurrentText);
 }
 void UJS_CreateRoomWidget::SetExplanation(const FString& Text)
 { 	
-	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation()"))
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation()"));
 	//Txt_Explane->SetText(FText::FromString(Text));
 
 	if (ChatUI)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation() ChatUI exsited"))
+		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation() ChatUI exsited"));
 		ChatUI->SetEdit_RoomInfo(Text);
 	}
 	else
