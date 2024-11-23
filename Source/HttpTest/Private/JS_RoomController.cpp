@@ -131,7 +131,7 @@ void AJS_RoomController::BeginPlay()
     }
     else if (LevelName.Contains("Main_Sky")) {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_Sky"));
-        ShowRoomListUI();
+        GetWorld()->GetTimerManager().SetTimer(ShowRoomListTimerHandle, this, &AJS_RoomController::ShowRoomListUI, 3.2f, false);
     }
   //  else if (LevelName.Contains("Sky"))
   //  {

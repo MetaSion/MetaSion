@@ -21,6 +21,8 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/SizeBox.h"
 #include "JS_OnClickRoomUI.h"
+#include "CJS/CJS_InnerWorldParticleActor.h"
+#include "JS_ShowColorActor.h"
 
 void UKGW_RoomList::NativeConstruct()
 {
@@ -40,8 +42,36 @@ void UKGW_RoomList::NativeConstruct()
     }
 
     InitializeOnClickRoomUI();
+    GetWorld()->GetTimerManager().SetTimer(SpawnBallTimerHandle, this, &UKGW_RoomList::SpawnBall, 3.2f, false);
 }
+void UKGW_RoomList::SpawnBall()
+{
+    if (!SpawnShowColorActorFactory)
+    {
+        UE_LOG(LogTemp, Error, TEXT("SpawnShowColorActorFactory is not set!"));
+        return;
+    }
 
+    // ���� ���� ����
+    if (CurrentBallActor)
+    {
+        CurrentBallActor->Destroy();
+        CurrentBallActor = nullptr;
+    }
+    FVector Location = FVector(-470356, 643870, 648165);
+    FRotator Rotation = FRotator::ZeroRotator;
+
+    CurrentBallActor = GetWorld()->SpawnActor<AJS_ShowColorActor>(SpawnShowColorActorFactory, Location, Rotation);
+
+    if (CurrentBallActor)
+    {
+        UE_LOG(LogTemp, Log, TEXT("Successfully spawned ball at Location: %s"), *Location.ToString());
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to spawn ball!"));
+    }
+}
 void UKGW_RoomList::ChangeCanvas(int32 index)
 {
     if (WS_RoomList) {
@@ -50,17 +80,21 @@ void UKGW_RoomList::ChangeCanvas(int32 index)
         switch (index)
         {
         case 1:
+            //처음 아무것도 없는 화면 세팅
+            HideOnClickRoomUI();
+            ShowMenuUI();
+        case 2:
             //파티클 스폰
             HideOnClickRoomUI();
             SpawnParticle();
             break;
-        case 2:
+        case 3:
             //AI 결과 저장해서 보여주기
             HideOnClickRoomUI();
-            if(CurrentParticleActor) CleanParticle();
+            if (CurrentParticleActor) CleanParticle();
 
             break;
-        case 3:
+        case 4:
             // 내방목록 데이터 받아서 보여주기
             HideOnClickRoomUI();
             if (CurrentParticleActor) CleanParticle();
@@ -73,7 +107,7 @@ void UKGW_RoomList::ChangeCanvas(int32 index)
                 UE_LOG(LogTemp, Warning, TEXT("RandomPath : %s"), *RandomPath);
             }
             break;
-        case 4:
+        case 5:
             HideOnClickRoomUI();
             // 전체방목록 데이터 받아서 보여주기
             if (CurrentParticleActor) CleanParticle();
@@ -95,25 +129,29 @@ void UKGW_RoomList::ChangeCanvas(int32 index)
         UE_LOG(LogTemp, Warning, TEXT("ChangeCanvas WS_RoomList nullptr"));
     }
 }
-void UKGW_RoomList::ShowParticleUI()
+void UKGW_RoomList::ShowMenuUI()
 {
     ChangeCanvas(1);
 }
-void UKGW_RoomList::ShowAIAnalysisUI()
+void UKGW_RoomList::ShowParticleUI()
 {
     ChangeCanvas(2);
+}
+void UKGW_RoomList::ShowAIAnalysisUI()
+{
+    ChangeCanvas(3);
 }
 void UKGW_RoomList::ShowMyRoomListUI()
 {
     bRoomList = true;
     bMultiRoomList = false;
-    ChangeCanvas(3);
+    ChangeCanvas(4);
 }
 void UKGW_RoomList::ShowListOfAllRooms()
 {
     bRoomList = false;
     bMultiRoomList = true;
-    ChangeCanvas(4);
+    ChangeCanvas(5);
 }
 // GridPanel 부분 -------------------------------------------------------------
 void UKGW_RoomList::AddImageToGrid(FString TexturePath)
@@ -168,6 +206,7 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
     }
     
 }
+
 void UKGW_RoomList::SettingPath()
 {
     ImagePath.Empty(); // 기존 배열 초기화
@@ -258,10 +297,10 @@ void UKGW_RoomList::SpawnParticle()
     }
     CleanParticle();
 
-    FVector Location = FVector(-470990.0f, 643490.0f, 648180.0f);
+    FVector Location = FVector(-470990.0f, 643286.0f, 648362.0f);
     FRotator Rotation = FRotator::ZeroRotator;
 
-    CurrentParticleActor = GetWorld()->SpawnActor<AActor>(
+    CurrentParticleActor = GetWorld()->SpawnActor<ACJS_InnerWorldParticleActor>(
         ParticleActorFactory, Location, Rotation);
 
     if (CurrentParticleActor)

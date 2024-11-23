@@ -532,6 +532,26 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                 }
             }
             UE_LOG(LogTemp, Warning, TEXT("Successfully parsed and stored WorldSetting"));
+
+            //Suggest_List JS 추가 추천 방 리스트 파싱
+            if (JsonObject->HasTypedField<EJson::Array>(TEXT("suggest_list")))
+            {
+                TArray<TSharedPtr<FJsonValue>> SuggestListArray = JsonObject->GetArrayField(TEXT("suggest_list"));
+                for (const TSharedPtr<FJsonValue>& SuggestValue : SuggestListArray)
+                {
+                    TSharedPtr<FJsonObject> SuggestObject = SuggestValue->AsObject();
+                    if (SuggestObject.IsValid())
+                    {
+                        FMySuggest_List SuggestList;
+                        SuggestList.percent_message = SuggestObject->GetStringField(TEXT("percent_message"));
+                        SuggestList.reason_message = SuggestObject->GetStringField(TEXT("reason_message"));
+                        SuggestList.room_id = SuggestObject->GetStringField(TEXT("room_id"));
+                        SuggestList.room_num = SuggestObject->GetStringField(TEXT("room_num"));
+                        SuggestList.room_name = SuggestObject->GetStringField(TEXT("room_name"));
+                        WorldSetting.suggest_list.Add(SuggestList);
+                    }
+                }
+            }
         }
         else
         {

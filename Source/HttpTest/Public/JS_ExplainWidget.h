@@ -62,6 +62,8 @@ public:
     FTimerHandle ActionTimerHandle;
     // 현재 재생 중인 애니메이션 인덱스를 추적
     int32 CurrentAnimationIndex;
+    // 레벨 넘어갈 때 기다리는 타이머 핸들
+    FTimerHandle LevelTimerHandle;
 
     // 액션 실행 함수
     void ExecuteActionWithDelay();

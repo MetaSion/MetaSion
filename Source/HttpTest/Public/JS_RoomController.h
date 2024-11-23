@@ -54,6 +54,8 @@ public:
     UPROPERTY(EditAnywhere)
 	class UKGW_RoomList* RL_UI;
 
+    //ShowRoomList TimerHandler
+    FTimerHandle ShowRoomListTimerHandle;
     FTimerHandle LevelCheckTimerHandle;  // 타이머 핸들러
     FTimerHandle OtherRoomCheckTimerHandle;
     FDateTime LastCheckDate; // 마지막으로 확인한 날짜 (00:00 기준)

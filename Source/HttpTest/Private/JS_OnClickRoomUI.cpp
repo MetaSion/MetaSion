@@ -16,6 +16,7 @@
 void UJS_OnClickRoomUI::NativeConstruct()
 {
 	Super::NativeConstruct();
+
 	SettingImagePath();
 
 	pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
