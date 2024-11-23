@@ -101,7 +101,7 @@ public:
 	void CleanParticle();
 	void AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos);
 
-	// switcher index¸¶´Ù ´Ù¸¥ canvasº¸¿©¾ßÇÔ.
+	// switcher indexï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ canvasï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 	void ChangeCanvas(int32 index);
 	// Side Menu
 	UFUNCTION()

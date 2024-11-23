@@ -141,7 +141,7 @@ public:
     void ShowInnerWorldUIZero();
     void HideInnerWorldUI();
 
-      /* Chat Widget */
+    /* Chat Widget */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UCJS_ChatWidget> ChatUIFactory;
     UPROPERTY(BlueprintReadWrite)

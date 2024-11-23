@@ -74,7 +74,7 @@ void UJS_CreateRoomWidget::OnClikMypage()
 }
 void UJS_CreateRoomWidget::OnClikExplanation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation()"))
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation()"));
 	SetExplanation(CurrentText);
 }
 void UJS_CreateRoomWidget::OnClickGood()
@@ -91,12 +91,12 @@ void UJS_CreateRoomWidget::OnClikBad()
 }
 void UJS_CreateRoomWidget::SetExplanation(const FString& Text)
 { 	
-	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation()"))
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation()"));
 	//Txt_Explane->SetText(FText::FromString(Text));
 
 	if (ChatUI)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation() ChatUI exsited"))
+		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation() ChatUI exsited"));
 		ChatUI->SetEdit_RoomInfo(Text);
 	}
 	else
@@ -215,6 +215,16 @@ void UJS_CreateRoomWidget::SwitchToWidget(int32 index)
 		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::SwitchToWidget() CR_WidgetSwitcher No"));
 	}
 }
+void UJS_CreateRoomWidget::SetRoomInfo()
+{
+
+	RoomName = ED_RoomName->GetText().ToString();
+	RoomDescription = ED_MultiText->GetText().ToString();
+
+	// �߰��� ��: bPrivate -> RoomPP ��ȯ
+	RoomPP = FString::FromInt(bPrivate);
+
+}
 //private, public
 void UJS_CreateRoomWidget::SwitchToWidget_PP(int32 index)
 {
@@ -317,11 +327,11 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 	FString SubObject = "1";
 	FString Background = "1";
 	FString WeatherParticle = "particle_maple";
-	FString RoomName = ED_RoomName->GetText().ToString();
-	RoomDescription = ED_MultiText->GetText().ToString();
-
-	// �߰��� ��: bPrivate -> RoomPP ��ȯ
-	FString RoomPP = FString::FromInt(bPrivate);
+// 	RoomName = ED_RoomName->GetText().ToString();
+// 	RoomDescription = ED_MultiText->GetText().ToString();
+// 
+// 	// �߰��� ��: bPrivate -> RoomPP ��ȯ
+// 	RoomPP = FString::FromInt(bPrivate);
 
 	// �߰��� ��: Quadrant (������ ��, ���� ������ �ּ���)
 	FString Quadrant = "1";  // ���� ��, ���� ���� �־��ּ���.

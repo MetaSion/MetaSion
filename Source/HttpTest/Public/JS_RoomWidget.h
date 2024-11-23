@@ -23,7 +23,7 @@ public:
     UPROPERTY(Meta=(BindWidget))
     class UTextBlock* txt_absindex;
 
-	 // ºí·çÇÁ¸°Æ®¿¡¼­ ¼³Á¤ÇÒ ¾Ö´Ï¸ÞÀÌ¼Ç º¯¼ö
+	 // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½
     UPROPERTY(Transient, meta = (BindWidgetAnim))
     UWidgetAnimation* CameraSutterEffect;
 
