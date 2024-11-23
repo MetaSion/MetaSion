@@ -423,7 +423,13 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
         // JSON 문자열을 JSON 객체로 파싱
         TSharedPtr<FJsonObject> JsonObject;
         TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(StoredJsonResponse);
+
         USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
+        if (!SessionGameInstance)
+        {
+            UE_LOG(LogTemp, Error, TEXT("AHttpActor::OnResPostChoice() SessionGameInstance is null! Failed to store data."));
+            return;
+        }
 		/*AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
 		UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
 		UKGW_RoomList* Showlist = Cast<UKGW_RoomList>(WidgetComp->GetUserWidgetObject());*/
@@ -494,6 +500,26 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                     }
                 }
             }
+            //Suggest_List JS 추가 추천 방 리스트 파싱
+            if (JsonObject->HasTypedField<EJson::Array>(TEXT("suggest_list")))
+            {
+                TArray<TSharedPtr<FJsonValue>> SuggestListArray = JsonObject->GetArrayField(TEXT("suggest_list"));
+                for (const TSharedPtr<FJsonValue>& SuggestValue : SuggestListArray)
+                {
+                    TSharedPtr<FJsonObject> SuggestObject = SuggestValue->AsObject();
+                    if (SuggestObject.IsValid())
+                    {
+                        FMySuggest_List SuggestList;
+                        SuggestList.percent_message = SuggestObject->GetStringField(TEXT("percent_message"));
+                        SuggestList.reason_message = SuggestObject->GetStringField(TEXT("reason_message"));
+                        SuggestList.room_id = SuggestObject->GetStringField(TEXT("room_id"));
+                        SuggestList.room_num = SuggestObject->GetStringField(TEXT("room_num"));
+                        SuggestList.room_name = SuggestObject->GetStringField(TEXT("room_name"));
+                        SessionGameInstance->WorldSetting.suggest_list.Add(SuggestList);
+                    }
+                }
+            }
+            
             // Store the parsed data in GameInstance or other persistent storage
             if (UGameInstance* GameInstance = GetGameInstance())
             {
@@ -531,27 +557,19 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                     }
                 }
             }
-            UE_LOG(LogTemp, Warning, TEXT("Successfully parsed and stored WorldSetting"));
-
-            //Suggest_List JS 추가 추천 방 리스트 파싱
-            if (JsonObject->HasTypedField<EJson::Array>(TEXT("suggest_list")))
+            // 전체 리스트 크기 확인 및 각 항목 출력
+            UE_LOG(LogTemp, Warning, TEXT("Total Suggest Lists Added: %d"), WorldSetting.suggest_list.Num());
+            for (int32 Index = 0; Index < WorldSetting.suggest_list.Num(); ++Index)
             {
-                TArray<TSharedPtr<FJsonValue>> SuggestListArray = JsonObject->GetArrayField(TEXT("suggest_list"));
-                for (const TSharedPtr<FJsonValue>& SuggestValue : SuggestListArray)
-                {
-                    TSharedPtr<FJsonObject> SuggestObject = SuggestValue->AsObject();
-                    if (SuggestObject.IsValid())
-                    {
-                        FMySuggest_List SuggestList;
-                        SuggestList.percent_message = SuggestObject->GetStringField(TEXT("percent_message"));
-                        SuggestList.reason_message = SuggestObject->GetStringField(TEXT("reason_message"));
-                        SuggestList.room_id = SuggestObject->GetStringField(TEXT("room_id"));
-                        SuggestList.room_num = SuggestObject->GetStringField(TEXT("room_num"));
-                        SuggestList.room_name = SuggestObject->GetStringField(TEXT("room_name"));
-                        WorldSetting.suggest_list.Add(SuggestList);
-                    }
-                }
+                const FMySuggest_List& SuggestList = WorldSetting.suggest_list[Index];
+                UE_LOG(LogTemp, Log, TEXT("Index %d:"), Index);
+                UE_LOG(LogTemp, Log, TEXT("  Percent Message: %s"), *SuggestList.percent_message);
+                UE_LOG(LogTemp, Log, TEXT("  Reason Message: %s"), *SuggestList.reason_message);
+                UE_LOG(LogTemp, Log, TEXT("  Room ID: %s"), *SuggestList.room_id);
+                UE_LOG(LogTemp, Log, TEXT("  Room Num: %s"), *SuggestList.room_num);
+                UE_LOG(LogTemp, Log, TEXT("  Room Name: %s"), *SuggestList.room_name);
             }
+            UE_LOG(LogTemp, Warning, TEXT("Successfully parsed and stored WorldSetting"));
         }
         else
         {

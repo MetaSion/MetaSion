@@ -67,6 +67,8 @@ public:
 	class UInputAction* IA_QuitGame;
 	UPROPERTY(EditDefaultsOnly, Category = "INPUT")
 	class UInputAction* IA_InnerWorldUI;
+	UPROPERTY(EditDefaultsOnly, Category = "INPUT")
+	class UInputAction* IA_LobbyUI;
 	
 // 	void OnMyActionMove(const FInputActionValue& Value);
 // 	void OnMyActionLook(const FInputActionValue& Value);
@@ -76,6 +78,8 @@ public:
 	void OnMyActionToggleAimPointUI(const FInputActionValue& Value);
 	void OnMyActionQuitGame(const FInputActionValue& Value);
 	void OnMyActionShowInnerWorldUI(const FInputActionValue& Value);
+	void OnMyActionLobbyUI(const FInputActionValue& Value);
+	
 
 	// 움직임을 위한 힘의 크기
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
@@ -199,7 +203,6 @@ public:
 	//TSubclassOf<class UJS_CreateRoomWidget> CR_UIFactory;
 	UPROPERTY()
 	class UJS_CreateRoomWidget* CR_UI;
-	//class UCJS_LobbyWidget* LobbyUI;
 
 	// 멀티 적용
 	UPROPERTY()
@@ -208,5 +211,15 @@ public:
 	void ServerRPC_Chat(const FString& msg);
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastRPC_Chat(const FString& msg);
+
+
+	// 로비 UI =======================================================================================
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UCJS_LobbyWidget> LobbyUIFactory;
+	UPROPERTY()
+	class UCJS_LobbyWidget* LobbyUI;
+
+	bool bShowLobbyUI = false;
+
 
 };

@@ -20,6 +20,8 @@ void USessionGameInstance::Init()	// 게임 인스턴스 초기화 함수로, �
 {
 	Super::Init();
 	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::Init()"));
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance Initialized at %p"), this);
+	UE_LOG(LogTemp, Warning, TEXT("Initial WorldSetting Suggest List Count: %d"), WorldSetting.suggest_list.Num());
 
 	IOnlineSubsystem* subSystem = IOnlineSubsystem::Get();
 
@@ -109,7 +111,11 @@ void USessionGameInstance::OnCreateSessionComplete(FName sessionName, bool bWasS
 	{
 		PRINTLOG(TEXT("OnCreateSessionComplete is Successes"));
 		PRINTLOG(TEXT("Session created successfully with name: %s"), *sessionName.ToString());
-		GetWorld()->ServerTravel(TEXT("/Game/Junguk/Maps/Lobby"));
+
+		UE_LOG(LogTemp, Warning, TEXT("Before Level Travel: WorldSetting Suggest List Count: %d"), WorldSetting.suggest_list.Num());
+		GetWorld()->ServerTravel(TEXT("/Game/Junguk/Maps/Lobby?listen"));
+		UE_LOG(LogTemp, Warning, TEXT("After Level Travel: WorldSetting Suggest List Count: %d"), WorldSetting.suggest_list.Num());
+		
 	}
 	else
 	{

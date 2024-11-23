@@ -21,6 +21,7 @@ public:
 	UPROPERTY()
 	class AJS_RoomController* pc;
 
+
 	// Widget Switcher -----------------------------------------------------
 	UPROPERTY(meta=(BindWidget))
     class UWidgetSwitcher* Lobby_WidgetSwitcher;
@@ -41,16 +42,21 @@ public:
     class UTextBlock* Txt_Description;
 	UPROPERTY(meta=(BindWidget))
     class UMultiLineEditableTextBox* Txt_Recommand;
-	UPROPERTY(meta = (BindWidgetAnim),BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
     class UWidgetAnimation* SlideLeft;   
-	UPROPERTY(meta = (BindWidgetAnim),BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
     class UWidgetAnimation* SlideRight;
 
-	//UFUNCTION()
+	FTimerHandle HideRefWorldInfoHandler;
+
+	UFUNCTION()
 	void SetRefWorldInfo();
-	//void ShowRefWorldInfo();
-	//UFUNCTION()
-	//void HideRefWorldInfo();
+	UFUNCTION()
+	void ShowLobbyUIZeroOrder();
+	UFUNCTION()
+	void HideLobbyUIZeroOrder();
+
+	
 
 	// --------------------------------------------------------------------------
 
@@ -62,57 +68,36 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_RecList;
 	UPROPERTY(meta = (BindWidget))
-	class UButton* Btn_MyPage;
+	class UButton* Btn_MyWorld;
+	UPROPERTY(meta = (BindWidget))
+	class UVerticalBox* Box_List;
     
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UCJS_ChatTextWidget> TextWidgetFactory;
 
-	UPROPERTY(meta = (BindWidgetAnim),BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
     class UWidgetAnimation* BtnSlide;
-	UPROPERTY(meta = (BindWidgetAnim),BlueprintReadWrite, Transient)
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
     class UWidgetAnimation* ListUp;
 
-	//UFUNCTION()
-	//void AddRefWolrdList();
+	bool SetListUp = false;
 
-	//UFUNCTION()
-    void OnClickMypage();
-    //UFUNCTION()
+	UFUNCTION()
+	void ShowLobbyUIFirstOrder();
+	UFUNCTION()
+	void HideLobbyUIFirstOrder();
+
+	UFUNCTION()
+    void OnClickMyWorld();
+    UFUNCTION()
     void OnClickRecList();
+
+	UFUNCTION()
+    void SetRecList();
+
+
 	
 	// ---------------------------------------------------------------------------
 
 
-
-	// World Panel ---------------------------------------------------------------
-	 UPROPERTY(meta = (BindWidget))
-	class UButton* Btn_Info;
-	UPROPERTY(meta = (BindWidget))
-	class UButton* Btn_WallPaper;
-    UPROPERTY(meta = (BindWidget))
-	class UButton* Btn_Lobby;
-
-	UPROPERTY()
-    class USessionGameInstance* SessionGI;
-    UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	class UCJS_ChatWidget* ChatUI;
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<class UCJS_ChatTextWidget> ChatTextWidgetFactory;
-
-
-	//UFUNCTION()
-    void OnClickInfo();
-    //UFUNCTION()
-    void OnClickWallPaper();
-    //UFUNCTION()
-    void OnClickLobby();
-    UFUNCTION()
-    void SetInfomation(const FString& Text);
-
-    //UFUNCTION()
-    void HandleSendButtonClicked();
-    UFUNCTION()
-    void AddChatMessage(const FString& msg);
-	
-	// ---------------------------------------------------------------------------
 };

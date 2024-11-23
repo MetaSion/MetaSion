@@ -32,6 +32,7 @@
 #include "JS_ExplainWidget.h"
 #include "CJS/CJS_ChatWidget.h"
 #include <KGW_RoomListRenewal.h>
+#include "CJS/CJS_LobbyWidget.h"
 
 AJS_RoomController::AJS_RoomController()
 {
@@ -311,6 +312,17 @@ void AJS_RoomController::InitializeUIWidgets()
             ChatUI->SetVisibility(ESlateVisibility::Hidden);
         }
     }
+    //if (LobbyUIFactory)
+    //{
+    //    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() LobbyUIFactory exsited"));
+    //    LobbyUI = CreateWidget<UCJS_LobbyWidget>(this, LobbyUIFactory);
+    //    if (LobbyUI)
+    //    {
+    //        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() LobbyUI set"));
+    //        LobbyUI->AddToViewport();
+    //        LobbyUI->SetVisibility(ESlateVisibility::Hidden);
+    //    }
+    //}
     if (RL_UIFactory)
     {
         UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() RL_UIFactory exsited"));

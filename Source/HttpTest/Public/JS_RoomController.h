@@ -146,6 +146,11 @@ public:
     UPROPERTY(BlueprintReadWrite)
 	class UCJS_ChatWidget* ChatUI;
 
+    /* Lobby Widget */
+    /*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UCJS_LobbyWidget> LobbyUIFactory;
+    UPROPERTY(BlueprintReadWrite)
+	class UCJS_LobbyWidget* LobbyUI;*/
 
 
     //KGW==============================================
