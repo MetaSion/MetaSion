@@ -36,10 +36,29 @@ void UKGW_RoomList::NativeConstruct()
 
     pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
     if (!pc) {
-        UE_LOG(LogTemp, Error, TEXT("PlayerController not found in the level!"));
+        UE_LOG(LogTemp, Error, TEXT("KGW_RoomList PlayerController not found in the level!"));
         return;
     }
-
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("KGW_RoomList::BeginPlay() No pc"));
+    }
+    HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
+    if (HttpActor){
+        UE_LOG(LogTemp, Warning, TEXT("KGW_RoomList::BeginPlay() Set HttpActor"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("KGW_RoomList::BeginPlay() No HttpActor"));
+    }
+    SGI = Cast<USessionGameInstance>(GetGameInstance());
+    if (SGI) {
+        UE_LOG(LogTemp, Warning, TEXT("KGW_RoomList::BeginPlay() Set SessionGI"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("KGW_RoomList::BeginPlay() No SessionGI"));
+    }
     InitializeOnClickRoomUI();
     GetWorld()->GetTimerManager().SetTimer(SpawnBallTimerHandle, this, &UKGW_RoomList::SpawnBall, 3.2f, false);
 }
@@ -61,7 +80,6 @@ void UKGW_RoomList::SpawnBall()
     FRotator Rotation = FRotator::ZeroRotator;
 
     CurrentBallActor = GetWorld()->SpawnActor<AJS_ShowColorActor>(SpawnShowColorActorFactory, Location, Rotation);
-
     if (CurrentBallActor)
     {
         UE_LOG(LogTemp, Log, TEXT("Successfully spawned ball at Location: %s"), *Location.ToString());
@@ -91,36 +109,21 @@ void UKGW_RoomList::ChangeCanvas(int32 index)
             //AI 결과 저장해서 보여주기
             HideOnClickRoomUI();
             if (CurrentParticleActor) CleanParticle();
-
             break;
         case 4:
-            // 내방목록 데이터 받아서 보여주기
             HideOnClickRoomUI();
+            // 전체방목록 데이터 받아서 보여주기
             if (CurrentParticleActor) CleanParticle();
-            //Path Setting
-            SettingPath();
-            //Setting Random Path 
-            for (int32 i = 0; i < 21; i++) {
-                FString RandomPath = GetRandomPath(); // 랜덤 경로 선택
-                AddImageToGrid(RandomPath); // 무작위 경로를 추가
-                UE_LOG(LogTemp, Warning, TEXT("RandomPath : %s"), *RandomPath);
-            }
+            // 내방목록 데이터 받아서 보여주기
             break;
         case 5:
             HideOnClickRoomUI();
             // 전체방목록 데이터 받아서 보여주기
             if (CurrentParticleActor) CleanParticle();
-            //Path Setting
-            SettingPath();
-            //Setting Random Path
-            for (int32 i = 0; i < 21; i++) {
-                FString RandomPath = GetRandomPath(); // 랜덤 경로 선택
-                AddImageToGrid(RandomPath); // 무작위 경로를 추가
-                UE_LOG(LogTemp, Warning, TEXT("RandomPath : %s"), *RandomPath);
-            }
             break;
         default:
             HideOnClickRoomUI();
+            if (CurrentParticleActor) CleanParticle();
             break;
         }
     }
@@ -142,43 +145,70 @@ void UKGW_RoomList::ShowParticleUI()
 //}
 void UKGW_RoomList::ShowMyRoomListUI()  
 {
-    bRoomList = true;
-    bMultiRoomList = false;
+    if (!bIsListMyRooms) {
+        bIsListMyRooms = true;
+        bRoomList = true;
+        bMultiRoomList = false;
+        SettingPath();
+        for (int32 i = 0; i < 21; i++) {
+            FString RandomPath = GetRandomPath();
+            AddImageToGrid(RandomPath);
+        }
+    }
     ChangeCanvas(4);
 }
 void UKGW_RoomList::ShowListOfAllRooms()
 {
-    bRoomList = false;
-    bMultiRoomList = true;
+    if (!bIsListAllRooms) {
+        bIsListAllRooms = true;
+        bRoomList = false;
+        bMultiRoomList = true;
+        SettingPath();
+        for (int32 i = 0; i < 21; i++) {
+            FString RandomPath = GetRandomPath();
+            AddImageToGrid(RandomPath);
+        }
+    }
     ChangeCanvas(5);
 }
 // GridPanel 부분 -------------------------------------------------------------
 void UKGW_RoomList::AddImageToGrid(FString TexturePath)
 {
-    // 텍스처 경로에서 UTexture2D 로드
+    // 텍스처 로드
     UTexture2D* ImageTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, *TexturePath));
 
-    // 텍스처가 제대로 로드되었는지 확인
     if (!ImageTexture)
     {
         UE_LOG(LogTemp, Error, TEXT("Failed to load texture from path: %s"), *TexturePath);
         return;
     }
 
-    // SizeBox 생성 (버튼 크기 설정)
+    // SizeBox 생성
     USizeBox* SizeBox = NewObject<USizeBox>(this);
-    SizeBox->SetWidthOverride(600.0f);  // 너비 설정
-    SizeBox->SetHeightOverride(500.0f); // 높이 설정
+    SizeBox->SetWidthOverride(600.0f);
+    SizeBox->SetHeightOverride(500.0f);
 
     // 버튼 생성
     UButton* ImageButton = NewObject<UButton>(this);
 
+    // 버튼의 배경 스타일 설정
+    FButtonStyle ButtonStyle;
+    FSlateBrush NormalBrush;
+    NormalBrush.TintColor = FLinearColor(0.0f, 0.0f, 0.0f, 0.0f); // RGBA where A=0 means fully transparent
+    ButtonStyle.SetNormal(NormalBrush);
+    ButtonStyle.SetHovered(NormalBrush);
+    ButtonStyle.SetPressed(NormalBrush);
+    ImageButton->SetStyle(ButtonStyle);
+
     // 이미지 생성 및 설정
     UImage* NewImage = NewObject<UImage>(this);
-
-    // 로드된 텍스처를 이미지에 적용
     NewImage->SetBrushFromTexture(ImageTexture, true);
-    NewImage->SetDesiredSizeOverride(FVector2D(600, 500));  // 이미지의 크기도 맞춤
+    NewImage->SetDesiredSizeOverride(FVector2D(600, 500));
+
+    // 이미지의 배경 브러시 설정
+    FSlateBrush ImageBrush = NewImage->Brush;
+    ImageBrush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // 이미지 자체는 완전 불투명
+    NewImage->SetBrush(ImageBrush);
 
     // 이미지를 버튼의 자식으로 추가
     ImageButton->AddChild(NewImage);
@@ -192,18 +222,15 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
     ImageButton->OnClicked.AddDynamic(this, &UKGW_RoomList::OnImageClicked);
 
     if (bRoomList) {
-        // 그리드에 SizeBox 추가 (여기서 SizeBox가 그리드에 들어감)
         int32 RowCount = UGP_RoomList->GetChildrenCount() / 3;
         int32 ColCount = UGP_RoomList->GetChildrenCount() % 3;
         UGP_RoomList->AddChildToUniformGrid(SizeBox, RowCount, ColCount);
     }
     if (bMultiRoomList) {
-        // 그리드에 SizeBox 추가 (여기서 SizeBox가 그리드에 들어감)
         int32 RowCount = UGP_Multi_RoomList->GetChildrenCount() / 3;
         int32 ColCount = UGP_Multi_RoomList->GetChildrenCount() % 3;
         UGP_Multi_RoomList->AddChildToUniformGrid(SizeBox, RowCount, ColCount);
     }
-    
 }
 
 void UKGW_RoomList::SettingPath()
@@ -295,12 +322,24 @@ void UKGW_RoomList::SpawnParticle()
         return;
     }
     CleanParticle();
-
+    
     FVector Location = FVector(-470990.0f, 643286.0f, 648362.0f);
     FRotator Rotation = FRotator::ZeroRotator;
 
     CurrentParticleActor = GetWorld()->SpawnActor<ACJS_InnerWorldParticleActor>(
         ParticleActorFactory, Location, Rotation);
+
+    // 4.파티클 색을 변경한다 +  감정 파티클을 변경한다.
+    if (HttpActor) {
+        HttpActor->ApplyMyWorldPointLightColors();
+        HttpActor->ApplyMyWorldNiagaraAssets();
+    }
+    else {
+        UE_LOG(LogTemp, Error, TEXT("740 : Setting HttpActor Fail..."));
+    }
+    //파티클 설명 업데이트 부분
+    FMyWorldSetting WorldSetting = SGI->WorldSetting;
+    SetTextLog(WorldSetting.Result2);
 
     if (CurrentParticleActor)
     {
@@ -351,6 +390,12 @@ void UKGW_RoomList::SetTextLog(FString explain)
     }
     else {
         UE_LOG(LogTemp, Warning, TEXT("TxtBox_Report nullptr"));
+    }
+    if (txt_SG_ParticleReason) {
+        txt_SG_ParticleReason->SetText(FText::FromString(explain));
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("txt_SG_ParticleReason nullptr"));
     }
 }
 void UKGW_RoomList::SetWheaterNumb(FString TempNUmb)

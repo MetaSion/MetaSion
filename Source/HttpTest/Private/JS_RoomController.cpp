@@ -32,6 +32,7 @@
 #include "JS_ExplainWidget.h"
 #include "CJS/CJS_ChatWidget.h"
 #include <KGW_RoomListRenewal.h>
+#include "JS_ShowColorActor.h"
 
 AJS_RoomController::AJS_RoomController()
 {
@@ -114,25 +115,17 @@ void AJS_RoomController::BeginPlay()
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Test_Main_Sky"));
         PlayUIAnimation();
         ShowExplainUI();
-        //if (SessionGI && SessionGI->bSuccess) {
-        //    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky-> SessionGI exsited"));
-        //    //if (HttpActor) {
-        //    //    //HttpActor->ShowQuestionUI();
-        //    //}
-        //    else
-        //    {
-        //        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() No HttpActor"));
-        //    }
-        //    SessionGI->bSuccess = false; // 사용 후 상태 초기화
-        //}
-		/*else
-		{
-			UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
-		}*/
     }
     else if (LevelName.Contains("Main_Sky")) {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_Sky"));
         GetWorld()->GetTimerManager().SetTimer(ShowRoomListTimerHandle, this, &AJS_RoomController::ShowRoomListUI, 3.2f, false);
+        GetWorld()->GetTimerManager().SetTimer(
+            TimingTimerHandle,
+            this,
+            &AJS_RoomController::SetChangeLevelData,
+            3.20001f,
+            false
+        );
     }
   //  else if (LevelName.Contains("Sky"))
   //  {
@@ -709,8 +702,8 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
 }
 void AJS_RoomController::SetChangeLevelData()
 {
-    AKGW_RoomlistActor* MyWorldPlayer = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
-   SessionGI->WorldSetting;
+   AJS_ShowColorActor* MyWorldPlayer = Cast<AJS_ShowColorActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AJS_ShowColorActor::StaticClass()));
+    /*SessionGI->WorldSetting;*/
 
    AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
    UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
@@ -728,9 +721,9 @@ void AJS_RoomController::SetChangeLevelData()
         UE_LOG(LogTemp, Warning, TEXT("Setting Material Color: R=%f, G=%f, B=%f"), ColorToSet.R, ColorToSet.G, ColorToSet.B);
         MyWorldPlayer->SetMaterialColor(ColorToSet);
     }
-    // 4.파티클 색을 변경한다 +  감정 파티클을 변경한다.
-    HttpActor->ApplyMyWorldPointLightColors();
-    HttpActor->ApplyMyWorldNiagaraAssets();
+    else {
+        UE_LOG(LogTemp, Error, TEXT("Setting Material Color Fail..."));
+    }
     // 5.방 목록의 제목을 UI에 넣는다.
     if (SessionGI)
     {
@@ -879,9 +872,10 @@ void AJS_RoomController::InitInnerWorldSetting()
     {
         UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::InitInnerWorldSetting() No SettingUI"));
     }
+    //JS 주석처리 이유 : UI를 눌러야 파티클이 스폰하기 때문에 사용하지 않을 거 같아서
     //2. 파티클 색 + 감정 파티클 적용
-    HttpActor->ApplyMyWorldPointLightColors();
-    HttpActor->ApplyMyWorldNiagaraAssets();
+    /*HttpActor->ApplyMyWorldPointLightColors();
+    HttpActor->ApplyMyWorldNiagaraAssets();*/
 }
 
 /* Inner World UI (After Setting UI Hidden) */

@@ -71,11 +71,13 @@ void UKGW_RoomListRenewal::UpdateDisplayedText()
 }
 void UKGW_RoomListRenewal::ShowAIAnalysisUI()
 {
-	ChangeCanvas(1);
+	ChangeCanvas(3);
 // 	SetMissionText(GameInstance->WorldSetting.Result);
-	 	FString explain = TEXT("he beauty of programming lies in its infinite possibilities. Just as an artist wields a brush to create a masterpiece, a developer writes lines of code to bring ideas to life. Whether it's designing a game, building a website, or automating a process, every keystroke ");
-		SetMissionText(explain);
+	 	/*FString explain = TEXT("he beauty of programming lies in its infinite possibilities. Just as an artist wields a brush to create a masterpiece, a developer writes lines of code to bring ideas to life. Whether it's designing a game, building a website, or automating a process, every keystroke ");*/
+		FMyWorldSetting worldSet = GameInstance->WorldSetting;
 
+		FString explain = worldSet.Result;
+		SetMissionText(explain);
 }
 
 
