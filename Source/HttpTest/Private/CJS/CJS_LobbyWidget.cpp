@@ -3,6 +3,11 @@
 
 #include "CJS/CJS_LobbyWidget.h"
 
+void UCJS_LobbyWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+}
+
 void UCJS_LobbyWidget::HandleSendButtonClicked()
 {
 
