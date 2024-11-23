@@ -33,11 +33,11 @@ public:
 	void SetMissionText(FString Aanalyze);
 	//ActingText 애니메이션 함수
 	void UpdateDisplayedText();
-	
-		UPROPERTY(meta = (BindWidget))
+
+	UPROPERTY(meta = (BindWidget))
 	class UButton* btn_AIAnalysis;
 
-		UFUNCTION()
+	UFUNCTION()
 	void ShowAIAnalysisUI();
 
 
@@ -51,6 +51,3 @@ public:
 // 	void OnclickTest();
 // 
 };
-
-	
-

@@ -8,6 +8,7 @@
 #include "Components/UniformGridPanel.h"
 #include "Components/Image.h"
 #include "Kismet/GameplayStatics.h"
+#include "CJS/CJS_InnerWorldParticleActor.h"
 #include "KGW_RoomList.generated.h"
 
 /**
@@ -53,18 +54,34 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* btn_MultiWorld;
+
+	//Reasons for recommending particles
+	UPROPERTY(meta = (BindWidget))
+	class UMultiLineEditableTextBox* txt_SG_ParticleReason;
+
 	//SwitchWidget
 	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* WS_RoomList;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
-    TSubclassOf<AActor> ParticleActorFactory;
+    TSubclassOf<ACJS_InnerWorldParticleActor> ParticleActorFactory;
 	// MyPage 부분 ------------------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Factory")
 	TSubclassOf<class UJS_OnClickRoomUI> OnClickRoomUIFactory;
 	UPROPERTY(EditAnywhere)
     class UJS_OnClickRoomUI* OnClickRoomUI;
 
+	// SpawnBall 부분 ----------------------------------------------
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
+    TSubclassOf<class AJS_ShowColorActor> SpawnShowColorActorFactory;
+    UPROPERTY()
+    AJS_ShowColorActor* CurrentBallActor;// 현재 스폰된 Ball 추적
+
+	FTimerHandle SpawnBallTimerHandle;
+
+	void SpawnBall();
+	// SpawnBall 부분 ----------------------------------------------
 	UPROPERTY()
     AActor* CurrentParticleActor;
 	
@@ -84,9 +101,11 @@ public:
 	void ChangeCanvas(int32 index);
 	// Side Menu
 	UFUNCTION()
+	void ShowMenuUI();
+	UFUNCTION()
 	void ShowParticleUI();
-
-
+	/*UFUNCTION()
+	void ShowAIAnalysisUI();*/
 	UFUNCTION()
 	void ShowMyRoomListUI();
 
