@@ -104,8 +104,8 @@ public:
 	void ShowMenuUI();
 	UFUNCTION()
 	void ShowParticleUI();
-
-
+	/*UFUNCTION()
+	void ShowAIAnalysisUI();*/
 	UFUNCTION()
 	void ShowMyRoomListUI();
 

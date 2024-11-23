@@ -136,10 +136,10 @@ void UKGW_RoomList::ShowParticleUI()
 {
     ChangeCanvas(2);
 }
-void UKGW_RoomList::ShowAIAnalysisUI()
-{
-    ChangeCanvas(3);
-}
+//void UKGW_RoomList::ShowAIAnalysisUI()
+//{
+//    ChangeCanvas(3);
+//}
 void UKGW_RoomList::ShowMyRoomListUI()  
 {
     bRoomList = true;
