@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "JS_RoomButton.h"
 #include "JS_OnClickRoomUI.generated.h"
 
 /**
@@ -37,7 +38,7 @@ public:
 	FString ImagePath = "";
 	//경로 세팅
 	void SettingImagePath();
-	void SettingData(FString TexturePath);
+	void SettingData(FString TexturePath, UJS_RoomButton* Button);
 	UFUNCTION()
 	void OnImageClicked();
 };
