@@ -1087,7 +1087,22 @@ void AHttpActor::SetBackgroundSound()
         UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SetBackgroundSound() SessionGI && SoundActor OK"));
         // Get UserMusic from WorldSetting and play it
         FString UserMusic = SessionGI->WorldSetting.UserMusic;
-        SoundActor->SetBackgroundSoundByFileName(UserMusic);
+        FString AssetPath = FString::Printf(TEXT("/Game/Main/Sound/%s.%s"), *UserMusic, *UserMusic);
+
+        // ���� ������ �������� �ε�
+        USoundBase* NewSound = Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, *AssetPath));
+
+        if (NewSound)
+        {   
+            SessionGI-> PlayMusic(NewSound);
+            UE_LOG(LogTemp, Warning, TEXT("Background sound changed and started playing: %s"), *UserMusic);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("Failed to load sound: %s"), *AssetPath);
+        }
+
+//         SoundActor->SetBackgroundSoundByFileName(UserMusic);
     }
     else
     {

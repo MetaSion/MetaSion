@@ -115,7 +115,7 @@ void UJS_CreateRoomWidget::SetParticle()
 	}
 // 	CleanParticle();
 // 	(X = 102.397720, Y = 303.903661, Z = -316.892022)
-	FVector Location = FVector(102.397720f, 303.903661f, 316.892022f);
+	FVector Location = FVector(102.397720f, 303.903661f, -316.892022f);
 	FRotator Rotation = FRotator::ZeroRotator;
 
 	auto* CurrentParticleActor = GetWorld()->SpawnActor<ACJS_InnerWorldParticleActor>(
@@ -284,6 +284,7 @@ void UJS_CreateRoomWidget::CompleteCreateRoom()
 	}
 
 	SetParticle();
+	httpActor -> SetBackgroundSound();
 }
 void UJS_CreateRoomWidget::DelayedSwitchToWidget()
 {

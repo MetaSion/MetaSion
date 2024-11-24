@@ -13,6 +13,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "string"
 #include "CJS/CJS_BallPlayer.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundBase.h"
 
 
 
@@ -518,4 +520,28 @@ void USessionGameInstance::HandleMapChange(UWorld* World)
 	{
 		ChangePlayerController(World, RoomControllerClass);
 	}
+}
+
+void USessionGameInstance::PlayMusic(USoundBase* Music)
+{
+	if (!Music)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Music is null. Cannot play music."));
+		return;
+	}
+
+	// 사운드 재생
+	UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(
+		this,                    // 월드 컨텍스트
+		Music,                   // 사운드
+		1.0f,                    // 볼륨 배수
+		1.0f,                    // 피치 배수
+		0.0f,                    // 시작 시간
+		nullptr,                 // 동시성 설정
+		true,                    // 레벨 전환 간 지속 여부
+		true                     // 자동 파괴
+	);
+
+	// AudioComponent를 MusicSound 변수에 저장
+	MusicSound = AudioComponent;
 }

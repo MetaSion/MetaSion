@@ -263,5 +263,12 @@ public:
 	bool bNotFirst = false;
 	FString UserId = TEXT("testuser");
 	FString AIResult;
+
+	//playMusic
+		UFUNCTION(BlueprintCallable)
+
+	void PlayMusic(USoundBase* Music);
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* MusicSound;
 };
 
