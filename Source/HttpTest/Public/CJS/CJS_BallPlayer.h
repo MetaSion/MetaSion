@@ -218,8 +218,22 @@ public:
 	TSubclassOf<class UCJS_LobbyWidget> LobbyUIFactory;
 	UPROPERTY()
 	class UCJS_LobbyWidget* LobbyUI;
-
 	bool bShowLobbyUI = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UCJS_RefRoomInfoWidget> RefRoomUIFactory;
+	UPROPERTY()
+	class UCJS_RefRoomInfoWidget* RefRoomUI;
+	bool bShowRefRoomInfoUI = false;
+
+	UPROPERTY()
+	ACJS_MultiRoomActor* ClosestRoom; // 가장 가까운 방
+	UPROPERTY(EditAnywhere, Category = "UI")
+	float ActivationDistance = 1500.0f; // UI가 활성화되는 거리 (50 유닛)
+
+
+	UFUNCTION()
+	void SetRefRoomInfo(ACJS_MultiRoomActor* roomActor);
 
 
 };

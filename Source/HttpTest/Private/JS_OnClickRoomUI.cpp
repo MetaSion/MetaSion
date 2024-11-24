@@ -75,7 +75,67 @@ void UJS_OnClickRoomUI::SettingData(FString TexturePath, UJS_RoomButton* Button)
 		UE_LOG(LogTemp, Warning, TEXT("Suggest list is empty"));
 		return;
 	}
+	//RoomName Setting
+	//SG_RoomName->SetText(FText::FromString(TEXT("MyRoomName")));
+	////RoomOwner Setting
+	//SG_RoomOwner->SetText(FText::FromString(TEXT("OwnerName")));
+	////Similarity Setting
+	//SG_Similarity->SetText(FText::FromString(TEXT("MySimilarity : 80%")));
+	////ReasonForRecommendation Setting
+	//SG_ReasonForRecommendation->SetText(FText::FromString(TEXT("Why was this world suggested for you? Because you and the owner of this world are closely similar")));
+	////RoomComent Setting
+	//SG_RoomComment->SetText(FText::FromString(TEXT("Oh So Beautiful this world..!!")));
 
+	// RoomName Setting   
+	//if (pc && pc->SessionGI)
+	//{
+	//	// SessionGI에서 suggest_list 가져오기
+	//	const TArray<FMySuggest_List>& SuggestList = pc->SessionGI->WorldSetting.suggest_list;
+
+	//	// suggest_list가 비어 있는지 확인
+	//	if (SuggestList.Num() > 0)
+	//	{
+	//		// suggest_list 크기 출력
+	//		UE_LOG(LogTemp, Warning, TEXT("UJS_OnClickRoomUI::SettingData() Suggest list contains %d items."), SuggestList.Num());
+	//		// 모든 항목 출력
+	//		for (int32 Index = 0; Index < SuggestList.Num(); ++Index)
+	//		{
+	//			const FMySuggest_List& Suggest = SuggestList[Index];
+	//			UE_LOG(LogTemp, Warning, TEXT("Index %d:"), Index);
+	//			UE_LOG(LogTemp, Warning, TEXT("  Room Name: %s"), *Suggest.room_name);
+	//			UE_LOG(LogTemp, Warning, TEXT("  Room ID: %s"), *Suggest.room_id);
+	//			UE_LOG(LogTemp, Warning, TEXT("  Room Num: %s"), *Suggest.room_num);
+	//			UE_LOG(LogTemp, Warning, TEXT("  Percent Message: %s"), *Suggest.percent_message);
+	//			UE_LOG(LogTemp, Warning, TEXT("  Reason Message: %s"), *Suggest.reason_message);
+	//			UE_LOG(LogTemp, Log, TEXT("  Room Description: %s"), *Suggest.roomdescription);   // <-- 솔아 이거 추가해~~
+	//		}
+	//		
+	//		// 첫 번째 추천방 정보 가져오기
+	//		const FMySuggest_List& FirstSuggestion = SuggestList[0];
+
+	//		// RoomName Setting
+	//		SG_RoomName->SetText(FText::FromString(FirstSuggestion.room_name));
+
+	//		// RoomOwner Setting (owner 정보를 구조체에 추가했다면 사용)
+	//		FString OwnerName = FirstSuggestion.room_id; // 예: room_id를 owner로 사용한다고 가정
+	//		SG_RoomOwner->SetText(FText::FromString(OwnerName));
+
+	//		// Similarity Setting
+	//		FString Similarity = FirstSuggestion.percent_message; // percent_message가 유사도를 나타낸다고 가정
+	//		SG_Similarity->SetText(FText::FromString(FString::Printf(TEXT("Similarity: %s%%"), *Similarity)));
+
+	//		// ReasonForRecommendation Setting
+	//		SG_ReasonForRecommendation->SetText(FText::FromString(FirstSuggestion.reason_message));
+
+	//		// RoomComment Setting (임의 코멘트를 사용하거나 구조체에 추가적으로 정의)
+	//		FString Recommand = FirstSuggestion.reason_message;
+	//		SG_RoomComment->SetText(FText::FromString(Recommand));
+	//	}
+	//	else
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("UJS_OnClickRoomUI::SettingData() Suggest list is empty in SessionGI."));
+	//	}
+	
 	// 버튼 인덱스 처리
 	int32 ButtonIndex = FCString::Atoi(*Button->GetIndex());
 	if (ButtonIndex < 0 || ButtonIndex >= SuggestList.Num())

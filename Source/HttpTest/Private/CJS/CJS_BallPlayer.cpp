@@ -9,10 +9,13 @@
 #include "CJS/CJS_HttpActor.h"
 #include "CJS/SessionGameInstance.h"
 #include "CJS/CJS_UltraDynamicSkyActor.h"
+#include "CJS/CJS_LobbyWidget.h"
+#include "CJS/CJS_RefRoomInfoWidget.h"
 
 #include "HttpActor.h"
 #include "JsonParseLib.h"
 #include "JS_CreateRoomWidget.h"
+#include "JS_RoomController.h"
 
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -38,8 +41,8 @@
 #include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraFunctionLibrary.h"
 #include "GameFramework/Actor.h"
 #include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraComponent.h"
-#include "JS_RoomController.h"
-#include "CJS/CJS_LobbyWidget.h"
+
+
 
 
 
@@ -252,7 +255,38 @@ void ACJS_BallPlayer::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::BeginPlay()::LobbyUI is not assigned! Please assign it in the Blueprint."));
 	}
+	// WBP_LobbyWidget 생성
+	if (RefRoomUIFactory)  
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::BeginPlay() RefRoomUIFactory exsited"));
+		RefRoomUI = CreateWidget<UCJS_RefRoomInfoWidget>(GetWorld(), RefRoomUIFactory);
+		if (RefRoomUI)
+		{
+			RefRoomUI->AddToViewport();
+			RefRoomUI->SetVisibility(ESlateVisibility::Hidden);
+			//RefRoomUI->SetVisibility(ESlateVisibility::Visible);
+			UE_LOG(LogTemp, Log, TEXT("RefRoomUI Visibility: %d"), (int32)RefRoomUI->GetVisibility());
+			RefRoomUI->AddToViewport(999);
+			//UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::BeginPlay() RefRoomUI successfully created and added to viewport & Hidden right now"));
+			
+			// FWidgetTransform에서 Translation 값 추출
+			FVector2D Translation = RefRoomUI->RenderTransform.Translation;
+			FVector2D Scale = RefRoomUI->RenderTransform.Scale;
 
+			// 디버깅 로그 추가
+			UE_LOG(LogTemp, Log, TEXT("Translation: %s"), *Translation.ToString());
+			UE_LOG(LogTemp, Log, TEXT("Scale: %s"), *Scale.ToString());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to create RefRoomUI Widget"));
+		}
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::BeginPlay()::RefRoomUI is assigned!"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::BeginPlay()::RefRoomUIFactory is not assigned! Please assign it in the Blueprint."));
+	}
 
 	// HttpActor 초기화 시도
 	HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
@@ -309,7 +343,6 @@ void ACJS_BallPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
 	// 	// 카메라 Yaw를 따라 캐릭터 Yaw 회전을 업데이트
 	// 	if (Controller)
 	// 	{
@@ -331,6 +364,49 @@ void ACJS_BallPlayer::Tick(float DeltaTime)
 	// 		// 방향을 리셋
 	// 		Direction = FVector::ZeroVector;
 		//}
+
+	if (!bShowRefRoomInfoUI)
+	{
+		// MultiRoomActors 배열을 사용해 가장 가까운 방을 찾음
+		ACJS_MultiRoomActor* NearestRoom = nullptr;
+		float NearestDistance = FLT_MAX;
+		for (ACJS_MultiRoomActor* RoomActor : MultiRoomActors)
+		{
+			if (RoomActor)
+			{
+				float Distance = FVector::Dist(this->GetActorLocation(), RoomActor->GetActorLocation());
+				UE_LOG(LogTemp, Log, TEXT("ACJS_BallPlayer::Tick() Distance to %s: %f"), *RoomActor->GetName(), Distance);
+
+				if (Distance < NearestDistance)
+				{
+					NearestDistance = Distance;
+					NearestRoom = RoomActor;
+				}
+			}
+		}
+		// 가까운 방이 ActivationDistance 내에 있으면 UI를 보여줌
+		if (NearestRoom && NearestDistance <= ActivationDistance)
+		{
+			UE_LOG(LogTemp, Log, TEXT("Nearest room is within activation distance (%f <= %f)."), NearestDistance, ActivationDistance);
+
+			if (ClosestRoom != NearestRoom) // 가장 가까운 방이 바뀌었을 때만 처리
+			{
+				UE_LOG(LogTemp, Log, TEXT("ACJS_BallPlayer::Tick() ClosestRoom changed to: %s"), *NearestRoom->GetName());
+				ClosestRoom = NearestRoom;
+				SetRefRoomInfo(ClosestRoom); // 방 정보를 UI에 반영
+			}
+		}
+		else
+		{
+			if (ClosestRoom) // 멀어졌다면 UI를 비활성화
+			{
+				UE_LOG(LogTemp, Log, TEXT("ACJS_BallPlayer::Tick() Player is out of activation distance. Clearing ClosestRoom."));
+				ClosestRoom = nullptr;
+				// HideRoomUI();
+			}
+		}
+	}
+	
 }
 
 
@@ -694,13 +770,13 @@ void ACJS_BallPlayer::OnMyActionLobbyUI(const FInputActionValue& Value)
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionLobbyUI()"));
 	if (!bShowLobbyUI)
 	{
-		LobbyUI->SetVisibility(ESlateVisibility::Visible);
+		//LobbyUI->SetVisibility(ESlateVisibility::Visible);
 		LobbyUI->ShowLobbyUIFirstOrder();
 		bShowLobbyUI = true;
 	}
 	else
 	{
-		LobbyUI->SetVisibility(ESlateVisibility::Hidden);
+		//LobbyUI->SetVisibility(ESlateVisibility::Hidden);
 		LobbyUI->HideLobbyUIFirstOrder();
 		bShowLobbyUI = false;
 	}
@@ -773,6 +849,54 @@ void ACJS_BallPlayer::MulticastRPC_Chat_Implementation(const FString& msg)
 	}
 }
 
+
+//void ACJS_BallPlayer::SetMultiRoomInfo(int32 roomIndex)
+void ACJS_BallPlayer::SetRefRoomInfo(ACJS_MultiRoomActor* roomActor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::SetMultiRoomInfo()"));
+	if (!bShowRefRoomInfoUI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::SetMultiRoomInfo() !bShowRefRoomInfoUI %d"), bShowRefRoomInfoUI);
+		bShowRefRoomInfoUI = true;
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::SetMultiRoomInfo() set bShowRefRoomInfoUI %d"), bShowRefRoomInfoUI);
+		//if (MultiRoomActors.IsValidIndex(roomIndex))
+		if (roomActor)
+		{
+			//ACJS_MultiRoomActor* RoomActor = MultiRoomActors[roomIndex];
+			FString name = roomActor->RoomInfo.room_name;
+			FString owner = roomActor->RoomInfo.room_id;
+			FString description = roomActor->RoomInfo.roomdescription;
+			FString percent = roomActor->RoomInfo.percent_message;
+			FString reason = roomActor->RoomInfo.reason_message;
+			UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::SetMultiRoomInfo() RoomActor name : %s, owner : %s, description : %s, percent : %s, reason : %s"), *name, *owner, *description, *percent, *reason);
+			
+			/*FString name = "hhhhh";  // 테스트용
+			FString owner = "oooooo";
+			FString description = "ppppppp";
+			FString percent = "87.00 %";
+			FString reason = "oooooooo";*/
+
+			if (RefRoomUI)
+			{
+				//LobbyUI->SetVisibility(ESlateVisibility::Visible);
+				RefRoomUI->SetRefWorldInfo(name, owner, description, percent, reason);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("RefRoomUI is null. Cannot update world info."));
+			}
+		}
+		else
+		{
+			//UE_LOG(LogTemp, Error, TEXT("Invalid roomIndex: %d. MultiRoomActors array does not contain this index."), roomIndex);
+			UE_LOG(LogTemp, Error, TEXT("No roomActor"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::SetMultiRoomInfo() bShowRefRoomInfoUI = true"));
+	}
+}
 
 void ACJS_BallPlayer::OnNumberKeyPressed(const FInputActionValue& Value, int32 KeyIndex)
 {
@@ -955,7 +1079,7 @@ void ACJS_BallPlayer::ServerRPC_RequestMoveMultiRoom_Implementation(APlayerContr
 		if (ControlledPawn)
 		{
 			// 클릭한 클라이언트의 캐릭터만 이동합니다.
-			FVector NewLocation(9950.0f, 0.0f, 0.0f); // 이동하고 싶은 위치 지정
+			FVector NewLocation(9950.0f, 0.0f, 0.0f); // 이동하고 싶은 위치 지정  <------ 여기!!! 위치 넣으면 돼!!  3번 위치
 			ControlledPawn->SetActorLocation(NewLocation);
 		}
 		else
@@ -990,14 +1114,46 @@ void ACJS_BallPlayer::InitializeFromJson(const FString& LocalJsonData)
 		TArray<AActor*> FoundActors;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACJS_MultiRoomActor::StaticClass(), FoundActors);
 
+		// GameInstance에서 suggest_list 가져오기
+		if (SessionGI)
+		{
+			if (!SessionGI || SessionGI->WorldSetting.suggest_list.Num() == 0)
+			{
+				UE_LOG(LogTemp, Error, TEXT("SessionGI or suggest_list is invalid!"));
+				return;
+			}
+		}
+		const TArray<FMySuggest_List>& SuggestList = SessionGI->WorldSetting.suggest_list;
+
 		// 최대 20개만 저장
-		for (int32 i = 0; i < FoundActors.Num() && i < 20; i++)
+		//for (int32 i = 0; i < FoundActors.Num() && i < 20; i++)  // <--- 테스트용
+		//{
+		//	ACJS_MultiRoomActor* MultiRoomActor = Cast<ACJS_MultiRoomActor>(FoundActors[i]);
+		//	if (MultiRoomActor)
+		//	{
+		//		MultiRoomActors.Add(MultiRoomActor);
+		//		// 인덱스 설정
+		//		MultiRoomActor->ActorIndex = i;
+		//		UE_LOG(LogTemp, Warning, TEXT("Found MultiRoomActor %d at location: %s"), i, *MultiRoomActor->GetActorLocation().ToString());
+		//	}
+		//}
+		for (int32 i = 0; i < FoundActors.Num() && i < SuggestList.Num(); ++i)
 		{
 			ACJS_MultiRoomActor* MultiRoomActor = Cast<ACJS_MultiRoomActor>(FoundActors[i]);
 			if (MultiRoomActor)
 			{
 				MultiRoomActors.Add(MultiRoomActor);
-				UE_LOG(LogTemp, Warning, TEXT("Found MultiRoomActor %d at location: %s"), i, *MultiRoomActor->GetActorLocation().ToString());
+				MultiRoomActor->ActorIndex = i; // 인덱스 설정
+				MultiRoomActor->RoomInfo = SuggestList[i]; // suggest_list 데이터 저장
+
+				// 로그 출력
+				UE_LOG(LogTemp, Warning, TEXT("Assigned Room Info to MultiRoomActor %d"), i);
+				UE_LOG(LogTemp, Warning, TEXT("  Room Name: %s"), *SuggestList[i].room_name);
+				UE_LOG(LogTemp, Warning, TEXT("  Room ID: %s"), *SuggestList[i].room_id);
+				UE_LOG(LogTemp, Warning, TEXT("  Room Num: %s"), *SuggestList[i].room_num);
+				UE_LOG(LogTemp, Warning, TEXT("  Percent Message: %s"), *SuggestList[i].percent_message);
+				UE_LOG(LogTemp, Warning, TEXT("  Reason Message: %s"), *SuggestList[i].reason_message);
+				UE_LOG(LogTemp, Warning, TEXT("  Room Description: %s"), *SuggestList[i].roomdescription);
 			}
 		}
 		// 저장된 MultiRoomActor의 개수 출력
@@ -1034,21 +1190,33 @@ void ACJS_BallPlayer::InitializeFromJson(const FString& LocalJsonData)
 		//} 
 		// -------------------------------------------------------------------------------------------------------
 
-		for (int32 i = 0; i < MultiRoomActors.Num(); i++)  //<--- 테스트 용 (통신 x)
-		{
-			// Message에 0부터 100까지의 랜덤 값 할당
-			FString Message = FString::Printf(TEXT("%d"), FMath::RandRange(0, 100));
-			// RoomName에 "user_"와 인덱스 결합하여 할당
-			FString RoomName = FString::Printf(TEXT("user_%d"), i);
+		//for (int32 i = 0; i < MultiRoomActors.Num(); i++)  //<--- 테스트 용 (통신 x)
+		//{
+		//	// Message에 0부터 100까지의 랜덤 값 할당
+		//	FString Message = FString::Printf(TEXT("%d"), FMath::RandRange(0, 100));
+		//	// RoomName에 "user_"와 인덱스 결합하여 할당
+		//	FString RoomName = FString::Printf(TEXT("user_%d"), i);
 
-			// 현재 사용자 수와 최대 수 설정 (예시)  <-- API 확정시 추가 수정하기
+		//	// 현재 사용자 수와 최대 수 설정 (예시)  <-- API 확정시 추가 수정하기
+		//	FString CurNumPlayer = FString::FromInt(FMath::RandRange(0, 5));
+		//	FString MaxNumPlayer = "5";
+		//	//float Percent = (Message / 500.0f) * 100.0f; // Percent 계산 (예시로 500.0을 기준으로)
+
+		//	// 각 MultiRoomActor에 정보 설정
+		//	SetInitMultiRoomInfo(MultiRoomActors[i], CurNumPlayer, MaxNumPlayer, RoomName, Message);
+		//}
+
+
+		// 각 MultiRoomActor에 정보 설정
+		for (int32 i = 0; i < MultiRoomActors.Num(); i++)
+		{
+			FString Percent = MultiRoomActors[i]->RoomInfo.percent_message;
+			FString RoomName = MultiRoomActors[i]->RoomInfo.room_name;
+
+			// 현재 사용자 수와 최대 수 설정 (예시) 
 			FString CurNumPlayer = FString::FromInt(FMath::RandRange(0, 5));
 			FString MaxNumPlayer = "5";
-			//float Percent = (Message / 500.0f) * 100.0f; // Percent 계산 (예시로 500.0을 기준으로)
-
-			// 각 MultiRoomActor에 정보 설정
-			SetInitMultiRoomInfo(MultiRoomActors[i], CurNumPlayer, MaxNumPlayer, RoomName, Message);
-
+			SetInitMultiRoomInfo(MultiRoomActors[i], CurNumPlayer, MaxNumPlayer, RoomName, Percent);
 		}
 	}
 	else
@@ -1101,8 +1269,6 @@ void ACJS_BallPlayer::SetInitMultiRoomInfo(ACJS_MultiRoomActor* MultiRoomActor, 
 		MultiRoomActor->InitRefRoomScale(Percent);
 		// 색깔 변경
 		MultiRoomActor->InitRefRoomColor();
-
-
 		UE_LOG(LogTemp, Warning, TEXT("MultiRoom information initialized for Room: %s, Percent: %s"), *RoomName, *Percent);
 	}
 	else

@@ -18,6 +18,7 @@
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include "CJS/CJS_BallPlayer.h"
+#include "CJS/CJS_InnerWorldParticleActor.h"
 
 void UJS_CreateRoomWidget::NativeConstruct()
 {
@@ -79,13 +80,13 @@ void UJS_CreateRoomWidget::OnClikExplanation()
 }
 void UJS_CreateRoomWidget::OnClickGood()
 {
-	SendCompleteRoomData();
+// 	SendCompleteRoomData();
 	UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
 
 }
 void UJS_CreateRoomWidget::OnClikBad()
 {
-	SendCompleteRoomData();
+// 	SendCompleteRoomData();
 	UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
 
 }
@@ -104,6 +105,32 @@ void UJS_CreateRoomWidget::SetExplanation(const FString& Text)
 		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::SetExplanation() ChatUI is null!"));
 	}
 }
+
+void UJS_CreateRoomWidget::SetParticle()
+{
+	if (!ParticleFactory)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ParticleFactory is not set!"));
+		return;
+	}
+// 	CleanParticle();
+// 	(X = 102.397720, Y = 303.903661, Z = -316.892022)
+	FVector Location = FVector(102.397720f, 303.903661f, -316.892022f);
+	FRotator Rotation = FRotator::ZeroRotator;
+
+	auto* CurrentParticleActor = GetWorld()->SpawnActor<ACJS_InnerWorldParticleActor>(
+		ParticleFactory, Location, Rotation);
+
+	// 4.파티클 색을 변경한다 +  감정 파티클을 변경한다.
+	if (httpActor) {
+		httpActor->ApplyMyWorldPointLightColors();
+		httpActor->ApplyMyWorldNiagaraAssets();
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("740 : Setting HttpActor Fail..."));
+	}
+}
+
 
 // Send 버튼 클릭 시
 void UJS_CreateRoomWidget::HandleSendButtonClicked()
@@ -255,6 +282,9 @@ void UJS_CreateRoomWidget::CompleteCreateRoom()
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UJS_CreateRoomWidget::DelayedSwitchToWidget, 0.7f, false);
 // 		SwitchToWidget(3);
 	}
+
+	SetParticle();
+	httpActor -> SetBackgroundSound();
 }
 void UJS_CreateRoomWidget::DelayedSwitchToWidget()
 {
