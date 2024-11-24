@@ -108,6 +108,13 @@ public:
 	//마이월드 인입 시 셋팅
 	class AJS_SoundActor* SoundActor;
 	void SetBackgroundSound();
+	void SetNewBackGroundSound();
+	//  노래 설정
+
+
+    UPROPERTY()
+    class USoundBase* NewSound;
+
 
 	class AKGW_RoomlistActor* MyWorldPlayer;
 	void ApplyMyWorldPointLightColors();

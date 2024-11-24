@@ -28,6 +28,7 @@
 #include "CJS/CJS_SubObjectActor.h"
 #include "KGW/KGW_WBP_Question.h"
 #include "KGW/KGW_ChoiceSaveBF.h"
+#include "Components/AudioComponent.h"
 
 
 // Sets default values
@@ -1084,16 +1085,16 @@ void AHttpActor::CallStartMakeSession(FString result)
 void AHttpActor::SetBackgroundSound()
 {
     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SetBackgroundSound()"));
-    if (SessionGI && SoundActor)
+    if (SessionGI/* && SoundActor*/)
     {
-        UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SetBackgroundSound() SessionGI && SoundActor OK"));
+        UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SetBackgroundSound() SessionGI  OK"));
         // Get UserMusic from WorldSetting and play it
         FString UserMusic = SessionGI->WorldSetting.UserMusic;
         FString AssetPath = FString::Printf(TEXT("/Game/Main/Sound/%s.%s"), *UserMusic, *UserMusic);
 
         // ���� ������ �������� �ε�
-        USoundBase* NewSound = Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, *AssetPath));
-
+        NewSound = Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, *AssetPath));
+        
         if (NewSound)
         {   
             SessionGI-> PlayMusic(NewSound);
@@ -1110,6 +1111,37 @@ void AHttpActor::SetBackgroundSound()
     {
         UE_LOG(LogTemp, Error, TEXT("AHttpActor::SetBackgroundSound() SessionGI && SoundActor NO"));
     }
+}
+
+void AHttpActor::SetNewBackGroundSound()
+{
+    if (SessionGI/* && SoundActor*/)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SetNewBackGroundSound() SessionGI  OK"));
+        // Get UserMusic from WorldSetting and play it
+        FString UserMusic = SessionGI->WorldSetting.UserMusic;
+        FString AssetPath = FString::Printf(TEXT("/Game/Main/Sound/%s.%s"), *UserMusic, *UserMusic);
+
+        // ���� ������ �������� �ε�
+        NewSound = Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, *AssetPath));
+
+        if (NewSound)
+        {
+            SessionGI->FadeOutAndPlayNewMusic(NewSound);
+            UE_LOG(LogTemp, Warning, TEXT("NewBackground sound changed and started playing: %s"), *UserMusic);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("Failed to load sound: %s"), *AssetPath);
+        }
+
+        //         SoundActor->SetBackgroundSoundByFileName(UserMusic);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::SetNewBackGroundSound() SessionGI && SoundActor NO"));
+    }
+
 }
 
 void AHttpActor::ApplyMyWorldPointLightColors()
