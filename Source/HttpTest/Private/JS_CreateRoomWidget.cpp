@@ -284,7 +284,7 @@ void UJS_CreateRoomWidget::CompleteCreateRoom()
 	}
 
 	SetParticle();
-	httpActor -> SetBackgroundSound();
+	httpActor->SetNewBackGroundSound();
 }
 void UJS_CreateRoomWidget::DelayedSwitchToWidget()
 {
