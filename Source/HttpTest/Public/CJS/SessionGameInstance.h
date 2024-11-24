@@ -76,8 +76,7 @@ struct FMySuggest_List
 	UPROPERTY(BlueprintReadWrite)
     FString room_num;
 	UPROPERTY(BlueprintReadWrite)
-    FString room_name;
-    
+    FString room_name;  
 };
 USTRUCT(BlueprintType)
 struct FMyRGBColor
@@ -192,6 +191,15 @@ public:
 	void OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString);
 
 	
+	// 방 파괴 요청
+	void ExitSession();
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_ExitSession();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_ExitSession();
+	void OnMyDestroySessionComplete(FName SessionName, bool bWasSuccessful);
+
+
 
 	/* --------------------------------------------------------------------------------------------------------------------------- */
 	// UserId 할당

@@ -39,6 +39,7 @@
 #include "GameFramework/Actor.h"
 #include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraComponent.h"
 #include "JS_RoomController.h"
+#include "CJS/CJS_LobbyWidget.h"
 
 
 
@@ -221,15 +222,36 @@ void ACJS_BallPlayer::BeginPlay()
 		{
 			//UE_LOG(LogTemp, Error, TEXT("Failed to create AimPointUI Widget"));
 		}
-		//UE_LOG(LogTemp, Warning, TEXT("ACJS_UserCharacter::BeginPlay()::WBP_AimPoint is assigned!"));
+		//UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::BeginPlay()::WBP_AimPoint is assigned!"));
 	}
 	else
 	{
-		//UE_LOG(LogTemp, Error, TEXT("ACJS_UserCharacter::BeginPlay()::WBP_AimPoint is not assigned! Please assign it in the Blueprint."));
+		//UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::BeginPlay()::WBP_AimPoint is not assigned! Please assign it in the Blueprint."));
 	}
 
 	bAimPointUIShowing = false;
 
+	// WBP_LobbyWidget 생성
+	if (LobbyUIFactory)  // 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::BeginPlay() LobbyUIFactory exsited"));
+		LobbyUI = CreateWidget<UCJS_LobbyWidget>(GetWorld(), LobbyUIFactory);
+		if (LobbyUI)
+		{
+			LobbyUI->AddToViewport();
+			LobbyUI->SetVisibility(ESlateVisibility::Hidden);
+			UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::BeginPlay() LobbyUI successfully created and added to viewport & Hidden right now"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to create LobbyUI Widget"));
+		}
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::BeginPlay()::LobbyUI is assigned!"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::BeginPlay()::LobbyUI is not assigned! Please assign it in the Blueprint."));
+	}
 
 
 	// HttpActor 초기화 시도
@@ -346,6 +368,8 @@ void ACJS_BallPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		input->BindAction(IA_QuitGame, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionQuitGame);
 		// 체험 UI
 		input->BindAction(IA_InnerWorldUI, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionShowInnerWorldUI);
+		// 로비 UI
+		input->BindAction(IA_LobbyUI, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionLobbyUI);
 		// 숫자키 애니메이션 (인덱스 사용해 바인딩)
 		for (int32 i = 0; i < 8; i++)
 		{
@@ -642,23 +666,6 @@ void ACJS_BallPlayer::OnMyActionShowInnerWorldUI(const FInputActionValue& Value)
 						CR_UI->DelayedSwitchToWidget();
 						UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() CR_UI assigned from RoomController"));
 					}
-					/*else
-					{
-						UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() Failed to assign CR_UI from RoomController"));
-						myPC->CR_UI = CreateWidget<UJS_CreateRoomWidget>(GetWorld(), myPC->CR_UIFactory);
-						if (myPC->CR_UI)
-						{
-							UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() InnerWorldUI assigned"));
-							myPC->CR_UI->AddToViewport();
-							myPC->CR_UI->SetVisibility(ESlateVisibility::Visible);
-							myPC->CR_UI->DelayedSwitchToWidget();
-							UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() InnerWorldUI set Visible"));
-						}
-						else
-						{
-							UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() No InnerWorldUI"));
-						}
-					}*/
 				}
 				else
 				{
@@ -681,6 +688,24 @@ void ACJS_BallPlayer::OnMyActionShowInnerWorldUI(const FInputActionValue& Value)
 		}
 	}
 }
+
+void ACJS_BallPlayer::OnMyActionLobbyUI(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionLobbyUI()"));
+	if (!bShowLobbyUI)
+	{
+		LobbyUI->SetVisibility(ESlateVisibility::Visible);
+		LobbyUI->ShowLobbyUIFirstOrder();
+		bShowLobbyUI = true;
+	}
+	else
+	{
+		LobbyUI->SetVisibility(ESlateVisibility::Hidden);
+		LobbyUI->HideLobbyUIFirstOrder();
+		bShowLobbyUI = false;
+	}
+}
+
 // 체험방 UI 멀티플레이 적용 시
 void ACJS_BallPlayer::ServerRPC_Chat_Implementation(const FString& msg)
 {

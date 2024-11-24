@@ -20,6 +20,8 @@ void USessionGameInstance::Init()	// 게임 인스턴스 초기화 함수로, �
 {
 	Super::Init();
 	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::Init()"));
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance Initialized at %p"), this);
+	UE_LOG(LogTemp, Warning, TEXT("Initial WorldSetting Suggest List Count: %d"), WorldSetting.suggest_list.Num());
 
 	IOnlineSubsystem* subSystem = IOnlineSubsystem::Get();
 
@@ -109,7 +111,11 @@ void USessionGameInstance::OnCreateSessionComplete(FName sessionName, bool bWasS
 	{
 		PRINTLOG(TEXT("OnCreateSessionComplete is Successes"));
 		PRINTLOG(TEXT("Session created successfully with name: %s"), *sessionName.ToString());
-		GetWorld()->ServerTravel(TEXT("/Game/Junguk/Maps/Lobby"));
+
+		UE_LOG(LogTemp, Warning, TEXT("Before Level Travel: WorldSetting Suggest List Count: %d"), WorldSetting.suggest_list.Num());
+		GetWorld()->ServerTravel(TEXT("/Game/Junguk/Maps/Lobby?listen"));
+		UE_LOG(LogTemp, Warning, TEXT("After Level Travel: WorldSetting Suggest List Count: %d"), WorldSetting.suggest_list.Num());
+		
 	}
 	else
 	{
@@ -305,6 +311,38 @@ void USessionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetDriver
 		//UGameplayStatics::OpenLevel(this, FName("/Game/ArtProject/LHM/Maps/LHM_Exit"));
 	}
 }
+
+
+// 세션 파괴
+void USessionGameInstance::ExitSession()
+{
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::ExitSession"));
+	//ServerRPC_ExitSession();
+}
+
+void USessionGameInstance::ServerRPC_ExitSession_Implementation()
+{
+	//MulticastRPC_ExitSession();
+}
+
+void USessionGameInstance::MulticastRPC_ExitSession_Implementation()
+{
+	// 방퇴장 요청
+	//SessionInterface->DestroySession(FName(MySessionName));
+}
+
+
+void USessionGameInstance::OnMyDestroySessionComplete(FName SessionName, bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		// 클라이언트가 로비로 여행을 가고싶다.
+		auto* pc = GetWorld()->GetFirstPlayerController();
+		pc->ClientTravel(TEXT("/Game/NetTPS/Maps/LobbyMap"), ETravelType::TRAVEL_Absolute);
+	}
+}
+
+
 
 void USessionGameInstance::AssignSessionNameFromPlayerState()
 {

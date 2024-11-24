@@ -55,6 +55,7 @@ public:
 	class UKGW_RoomList* RL_UI;
 
     //ShowRoomList TimerHandler
+    FTimerHandle TimingTimerHandle;
     FTimerHandle ShowRoomListTimerHandle;
     FTimerHandle LevelCheckTimerHandle;  // 타이머 핸들러
     FTimerHandle OtherRoomCheckTimerHandle;
@@ -146,6 +147,11 @@ public:
     UPROPERTY(BlueprintReadWrite)
 	class UCJS_ChatWidget* ChatUI;
 
+    /* Lobby Widget */
+    /*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UCJS_LobbyWidget> LobbyUIFactory;
+    UPROPERTY(BlueprintReadWrite)
+	class UCJS_LobbyWidget* LobbyUI;*/
 
 
     //KGW==============================================

@@ -54,8 +54,7 @@ void AJS_ShowColorActor::SetMaterialColor(FLinearColor newColor)
     UMaterialInstanceDynamic* DynamicMaterial = meshComp->CreateAndSetMaterialInstanceDynamicFromMaterial(0, meshComp->GetMaterial(0));
     if (DynamicMaterial)
     {
-        //DynamicMaterial->SetVectorParameterValue(FName("TransmitB"), newColor); // "BaseColor"는 실제 파라미터 이름으로 교체해야 합니다
-        DynamicMaterial->SetVectorParameterValue(FName("InnerColor"), newColor); // "BaseColor"는 실제 파라미터 이름으로 교체해야 합니다
+        DynamicMaterial->SetVectorParameterValue(FName("InnerColor"), newColor);
         UE_LOG(LogTemp, Warning, TEXT("Material color set to R: %f, G: %f, B: %f"), newColor.R, newColor.G, newColor.B);
     }
     else
