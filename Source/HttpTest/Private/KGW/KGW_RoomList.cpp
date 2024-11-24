@@ -430,7 +430,7 @@ void UKGW_RoomList::OnClickInnerWorld()
 // 		}
 //     }
 
-    UGameplayStatics::OpenLevel(this, FName("Main_LV_Winter"));
+    UGameplayStatics::OpenLevel(this, FName("Room_2"));
 
 }
 
