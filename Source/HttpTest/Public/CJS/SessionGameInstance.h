@@ -76,7 +76,9 @@ struct FMySuggest_List
 	UPROPERTY(BlueprintReadWrite)
     FString room_num;
 	UPROPERTY(BlueprintReadWrite)
-    FString room_name;  
+    FString room_name;
+	UPROPERTY(BlueprintReadWrite)
+    FString roomdescription;
 };
 USTRUCT(BlueprintType)
 struct FMyRGBColor

@@ -71,7 +71,7 @@ void UJS_OnClickRoomUI::SettingData(FString TexturePath)
 	////RoomComent Setting
 	//SG_RoomComment->SetText(FText::FromString(TEXT("Oh So Beautiful this world..!!")));
 
-	// RoomName Setting   <-------------------------- 솔아!! 여기 이미지 인덱스마다, 다른 방 정보가 나오도록 수정해주면 돼. 현재는 모두 0번인덱스 정보만 나오도록 되어 있어. 
+	// RoomName Setting   
 	if (pc && pc->SessionGI)
 	{
 		// SessionGI에서 suggest_list 가져오기
@@ -92,8 +92,9 @@ void UJS_OnClickRoomUI::SettingData(FString TexturePath)
 				UE_LOG(LogTemp, Warning, TEXT("  Room Num: %s"), *Suggest.room_num);
 				UE_LOG(LogTemp, Warning, TEXT("  Percent Message: %s"), *Suggest.percent_message);
 				UE_LOG(LogTemp, Warning, TEXT("  Reason Message: %s"), *Suggest.reason_message);
+				UE_LOG(LogTemp, Log, TEXT("  Room Description: %s"), *Suggest.roomdescription);   // <-- 솔아 이거 추가해~~
 			}
-
+			
 			// 첫 번째 추천방 정보 가져오기
 			const FMySuggest_List& FirstSuggestion = SuggestList[0];
 
