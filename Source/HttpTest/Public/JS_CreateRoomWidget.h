@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/EditableText.h"
+#include "CJS/CJS_InnerWorldParticleActor.h"
 #include "JS_CreateRoomWidget.generated.h"
 /**
  * 
@@ -140,6 +141,13 @@ public:
     UFUNCTION(BlueprintCallable)
     void SetExplanation(const FString& Text);
 
+    void SetParticle();
+
+
+    //KGW------ CreateCparticle---------
+
+   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+    TSubclassOf<ACJS_InnerWorldParticleActor> ParticleFactory;
 
 
 
