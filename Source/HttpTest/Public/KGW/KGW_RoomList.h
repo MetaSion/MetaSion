@@ -137,8 +137,10 @@ public:
 	UFUNCTION()
 	void OnImageUnhovered();
 
+	UPROPERTY(EditAnywhere)
+	class UJS_RoomButton* ImageButtonTemp;
 	UFUNCTION()
-	void OnImageClicked();
+	void OnClickedImageRoomList();
     void ShowCommentUI(UImage* Image);
     void HideCommentUI();
 	
@@ -174,4 +176,6 @@ public:
 	class UCJS_InnerWorldSettingWidget* InnerWorldWidget;
 
 	void StartHttpMultyWorld();
+
+	FString RoomNumber = "";
 };

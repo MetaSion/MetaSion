@@ -23,6 +23,7 @@
 #include "JS_OnClickRoomUI.h"
 #include "CJS/CJS_InnerWorldParticleActor.h"
 #include "JS_ShowColorActor.h"
+#include "JS_RoomButton.h"
 
 void UKGW_RoomList::NativeConstruct()
 {
@@ -60,7 +61,10 @@ void UKGW_RoomList::NativeConstruct()
         UE_LOG(LogTemp, Error, TEXT("KGW_RoomList::BeginPlay() No SessionGI"));
     }
     InitializeOnClickRoomUI();
-    GetWorld()->GetTimerManager().SetTimer(SpawnBallTimerHandle, this, &UKGW_RoomList::SpawnBall, 3.2f, false);
+    FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+    if (LevelName == "Main_Sky") {
+        GetWorld()->GetTimerManager().SetTimer(SpawnBallTimerHandle, this, &UKGW_RoomList::SpawnBall, 3.2f, false);
+    }
 }
 void UKGW_RoomList::SpawnBall()
 {
@@ -166,6 +170,7 @@ void UKGW_RoomList::ShowListOfAllRooms()
         SettingPath();
         for (int32 i = 0; i < 21; i++) {
             FString RandomPath = GetRandomPath();
+            RoomNumber = FString::FromInt(i);
             AddImageToGrid(RandomPath);
         }
     }
@@ -189,7 +194,11 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
     SizeBox->SetHeightOverride(500.0f);
 
     // 버튼 생성
-    UButton* ImageButton = NewObject<UButton>(this);
+    UJS_RoomButton* ImageButton = NewObject<UJS_RoomButton>(this);
+
+    //버튼의 인덱스 할당
+    ImageButton->SetIndex(RoomNumber);
+    ImageButtonTemp = ImageButton;
 
     // 버튼의 배경 스타일 설정
     FButtonStyle ButtonStyle;
@@ -219,7 +228,7 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
     // 버튼 이벤트 바인딩
     ImageButton->OnHovered.AddDynamic(this, &UKGW_RoomList::OnImageHovered);
     ImageButton->OnUnhovered.AddDynamic(this, &UKGW_RoomList::OnImageUnhovered);
-    ImageButton->OnClicked.AddDynamic(this, &UKGW_RoomList::OnImageClicked);
+    ImageButton->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickedImageRoomList);
 
     if (bRoomList) {
         int32 RowCount = UGP_RoomList->GetChildrenCount() / 3;
@@ -289,7 +298,7 @@ void UKGW_RoomList::OnImageUnhovered()
     // 호버 해제 시 댓글 UI 숨김
     HideCommentUI();
 }
-void UKGW_RoomList::OnImageClicked()
+void UKGW_RoomList::OnClickedImageRoomList()
 {
     // 특정 레벨로 이동 여기에 루트 정보 해야함.
     if (bRoomList) {
@@ -300,7 +309,7 @@ void UKGW_RoomList::OnImageClicked()
         ShowOnClickRoomUI();
         pc->HideRoomListUI();
         if (OnClickRoomUI) {
-            OnClickRoomUI->SettingData(OnClickRoomUI->ImagePath);
+            OnClickRoomUI->SettingData(OnClickRoomUI->ImagePath, ImageButtonTemp);
         }
     }
 }
