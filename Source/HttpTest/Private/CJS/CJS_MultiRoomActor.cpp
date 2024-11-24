@@ -2,10 +2,18 @@
 
 
 #include "CJS/CJS_MultiRoomActor.h"
+#include "CJS/CJS_BallPlayer.h"
+#include "CJS/CJS_LobbyWidget.h"
+
+
 #include "Components/WidgetComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/TextBlock.h"
 #include "Engine/Font.h"
+#include "Components/BoxComponent.h"
+
+
+
 
 // Sets default values
 ACJS_MultiRoomActor::ACJS_MultiRoomActor()
@@ -20,6 +28,17 @@ ACJS_MultiRoomActor::ACJS_MultiRoomActor()
 	// Create the sphere mesh component and attach it to the collision
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 	SphereCollision->SetupAttachment(SphereMesh);
+
+	// Collision Handling
+	/*BoxCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Box_Potal"));
+	BoxCollider->SetupAttachment(RootComponent);
+	BoxCollider->SetBoxExtent(FVector(32.0f)); 
+	BoxCollider->SetRelativeScale3D(FVector(4.0f, 4.0f, 2.0f));
+	BoxCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	BoxCollider->SetCollisionResponseToAllChannels(ECR_Overlap);
+	BoxCollider->OnComponentBeginOverlap.AddDynamic(this, &ACJS_MultiRoomActor::OnOverlapBegin);
+	BoxCollider->OnComponentEndOverlap.AddDynamic(this, &ACJS_MultiRoomActor::OnOverlapEnd);*/
+
 
 	//RefRoomInfoWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("RefRoomInfoWidget"));
 	//RefRoomInfoWidgetComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
@@ -57,6 +76,34 @@ void ACJS_MultiRoomActor::Tick(float DeltaTime)
 	//FRotator rot = dir.ToOrientationRotator();
 	//RefRoomInfoWidgetComp->SetWorldRotation(rot);
 }
+
+
+//void ACJS_MultiRoomActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//{
+//	UE_LOG(LogTemp, Warning, TEXT("ACJS_MultiRoomActor::OnOverlapBegin()"));
+//	if (!OtherActor)
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("OtherActor is null."));
+//		return;
+//	}
+//
+//	ACJS_BallPlayer* BallPlayer = Cast<ACJS_BallPlayer>(OtherActor);
+//	if (BallPlayer)
+//	{
+//		UE_LOG(LogTemp, Log, TEXT("This MultiRoomActor has index %d"), ActorIndex);
+//		//BallPlayer->SetMultiRoomInfo(ActorIndex);
+//	}
+//	else
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("OtherActor is not a BallPlayer."));
+//	}
+//}
+//void ACJS_MultiRoomActor::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+//{
+//	UE_LOG(LogTemp, Warning, TEXT("ACJS_MultiRoomActor::OnOverlapEnd()"));
+//
+//}
+
 
 void ACJS_MultiRoomActor::InitRefRoomInfoWidget(const FString& CurNumPlayer, const FString& MaxNumPlayer, const FString& RoomName, const FString& Percent)
 {

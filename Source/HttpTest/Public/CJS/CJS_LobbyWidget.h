@@ -50,14 +50,11 @@ public:
 	FTimerHandle HideRefWorldInfoHandler;
 
 	UFUNCTION()
-	void SetRefWorldInfo();
+	void SetRefWorldInfo(const FString& name, const FString& owner, const FString& description, const FString& percent, const FString& reason);
 	UFUNCTION()
 	void ShowLobbyUIZeroOrder();
 	UFUNCTION()
 	void HideLobbyUIZeroOrder();
-
-	
-
 	// --------------------------------------------------------------------------
 
 
@@ -94,9 +91,6 @@ public:
 
 	UFUNCTION()
     void SetRecList();
-
-
-	
 	// ---------------------------------------------------------------------------
 
 

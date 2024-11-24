@@ -517,6 +517,7 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                         SuggestList.room_id = SuggestObject->GetStringField(TEXT("room_id"));
                         SuggestList.room_num = SuggestObject->GetStringField(TEXT("room_num"));
                         SuggestList.room_name = SuggestObject->GetStringField(TEXT("room_name"));
+                        SuggestList.roomdescription = SuggestObject->GetStringField(TEXT("roomdescription"));
                         WorldSetting.suggest_list.Add(SuggestList);
                     }
                 }
@@ -570,6 +571,7 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
                 UE_LOG(LogTemp, Log, TEXT("  Room ID: %s"), *SuggestList.room_id);
                 UE_LOG(LogTemp, Log, TEXT("  Room Num: %s"), *SuggestList.room_num);
                 UE_LOG(LogTemp, Log, TEXT("  Room Name: %s"), *SuggestList.room_name);
+                UE_LOG(LogTemp, Log, TEXT("  Room Description: %s"), *SuggestList.roomdescription);
             }
             UE_LOG(LogTemp, Warning, TEXT("Successfully parsed and stored WorldSetting"));
         }
