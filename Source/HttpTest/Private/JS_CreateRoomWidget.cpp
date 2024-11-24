@@ -70,8 +70,8 @@ void UJS_CreateRoomWidget::OnClickCaptureImage()
 }
 void UJS_CreateRoomWidget::OnClikMypage()
 {
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikMypage()"));
 	SwitchToWidget(4);
-
 }
 void UJS_CreateRoomWidget::OnClikExplanation()
 {
@@ -81,14 +81,87 @@ void UJS_CreateRoomWidget::OnClikExplanation()
 void UJS_CreateRoomWidget::OnClickGood()
 {
 // 	SendCompleteRoomData();
-	UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
-
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClickGood()"));
+	SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+	if (SessionGI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() SessionGI exised"));
+		if (SessionGI->GetbRefRoomUIMultiOn())
+		{
+			UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() SessionGI->GetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
+			APlayerController* OwningPlayer = GetWorld()->GetFirstPlayerController();
+			if (OwningPlayer)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set APlayerController"));
+				ACJS_BallPlayer* player = Cast<ACJS_BallPlayer>(OwningPlayer->GetPawn());
+				if (player)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set ACJS_BallPlayer"));
+					player->RequestMoveLobby(OwningPlayer);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() No BallPlayer"));
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() OwningPlayer is null"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClickGood() Move From InnerWorld to Main_Sky"));
+			UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() SessionGI is null"));
+	}
 }
 void UJS_CreateRoomWidget::OnClikBad()
 {
 // 	SendCompleteRoomData();
-	UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikBad()"));
 
+	SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+	if (SessionGI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() SessionGI exised"));
+		if (SessionGI->GetbRefRoomUIMultiOn())
+		{
+			UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() SessionGI->GetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
+			APlayerController* OwningPlayer = GetWorld()->GetFirstPlayerController();
+			if (OwningPlayer)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set APlayerController"));
+				ACJS_BallPlayer* player = Cast<ACJS_BallPlayer>(OwningPlayer->GetPawn());
+				if (player)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set ACJS_BallPlayer"));
+					player->RequestMoveLobby(OwningPlayer);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() No BallPlayer"));
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() OwningPlayer is null"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClickGood() Move From InnerWorld to Main_Sky"));
+			UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() SessionGI is null"));
+	}
 }
 void UJS_CreateRoomWidget::SetExplanation(const FString& Text)
 { 	

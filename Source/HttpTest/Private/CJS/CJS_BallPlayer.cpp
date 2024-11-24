@@ -89,7 +89,7 @@ ACJS_BallPlayer::ACJS_BallPlayer() : Super()
 	//SetInitMultiRoomInfo(1, 5, "빛나는 호수", 87);
 	// 월드에서 MultiRoomActor 클래스의 인스턴스를 찾습니다.
 
-	InitJsonData(Json);  //<-- 테스트 시 (통신 x)
+	//InitJsonData(Json);  //<-- 테스트 시 (통신 x)
 }
 
 
@@ -446,6 +446,8 @@ void ACJS_BallPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		input->BindAction(IA_InnerWorldUI, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionShowInnerWorldUI);
 		// 로비 UI
 		input->BindAction(IA_LobbyUI, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionLobbyUI);
+		// 체험방 이동
+		input->BindAction(IA_MoveRefWorld, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionMoveRefWorld);
 		// 숫자키 애니메이션 (인덱스 사용해 바인딩)
 		for (int32 i = 0; i < 8; i++)
 		{
@@ -707,61 +709,74 @@ void ACJS_BallPlayer::OnMyActionShowInnerWorldUI(const FInputActionValue& Value)
 {
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI()"));
 
-	if (!SessionGI)
+	if (!bMultiInnerWorldUIOn)
 	{
-		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() SessionGI is null"));
-		return;
-	}
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() !bMultiInnerWorldUIOn : %d"), bMultiInnerWorldUIOn);
+		if (!SessionGI)
+		{
+			UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() SessionGI is null"));
+			return;
+		}
 
-	if (SessionGI->GetbRefRoomUIMultiOn())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() SessionGI->GetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
-		return;
-	}
-	else
-	{
-		SessionGI->SetbRefRoomUIMultiOn(true);
 		if (SessionGI->GetbRefRoomUIMultiOn())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() After SessionGI->SetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
-			auto* myPC = Cast<AJS_RoomController>(Controller);
-			if (myPC && myPC->CR_UIFactory)
+			UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() SessionGI->GetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
+			return;
+		}
+		else
+		{
+			SessionGI->SetbRefRoomUIMultiOn(true);
+			if (SessionGI->GetbRefRoomUIMultiOn())
 			{
-				UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() CR_UIFactory exsited"));
-				if (!myPC->CR_UI)
+				UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() After SessionGI->SetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
+				auto* myPC = Cast<AJS_RoomController>(Controller);
+				if (myPC && myPC->CR_UIFactory)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() not exsited InnerWorldUI"));
-
-					//auto* myPC = Cast<AJS_RoomController>(Controller);
-					myPC->CR_UI = CreateWidget<UJS_CreateRoomWidget>(myPC, myPC->CR_UIFactory);
-					if (myPC && myPC->CR_UI)
+					UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() CR_UIFactory exsited"));
+					if (!myPC->CR_UI)
 					{
-						UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() AJS_RoomController Set"));
+						UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() not exsited InnerWorldUI"));
+
+						//auto* myPC = Cast<AJS_RoomController>(Controller);
+						myPC->CR_UI = CreateWidget<UJS_CreateRoomWidget>(myPC, myPC->CR_UIFactory);
+						if (myPC && myPC->CR_UI)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() AJS_RoomController Set"));
+							CR_UI = myPC->CR_UI;
+							CR_UI->SetVisibility(ESlateVisibility::Visible);
+							CR_UI->DelayedSwitchToWidget();
+							UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() CR_UI assigned from RoomController"));
+						}
+					}
+					else
+					{
+						UE_LOG(LogTemp, Error, TEXT(" ACJS_BallPlayer::OnMyActionShowInnerWorldUI() already exsited InnerWorldUI"));
 						CR_UI = myPC->CR_UI;
 						CR_UI->SetVisibility(ESlateVisibility::Visible);
 						CR_UI->DelayedSwitchToWidget();
-						UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() CR_UI assigned from RoomController"));
+						UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() InnerWorldUI set Visible"));
 					}
+
+					bMultiInnerWorldUIOn = true;
+					UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() Set bMultiInnerWorldUIOn : %d"), bMultiInnerWorldUIOn);
 				}
 				else
 				{
-					UE_LOG(LogTemp, Error, TEXT(" ACJS_BallPlayer::OnMyActionShowInnerWorldUI() already exsited InnerWorldUI"));
-					CR_UI = myPC->CR_UI;
-					CR_UI->SetVisibility(ESlateVisibility::Visible);
-					CR_UI->DelayedSwitchToWidget();
-					UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() InnerWorldUI set Visible"));
+					UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() MyPC No CR_UIFactory"));
+					return;
 				}
 			}
 			else
 			{
-				UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() MyPC No CR_UIFactory"));
-				return;
+				UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI()SessionGI->GetbRefRoomUIMultiOn() true!! "));
 			}
 		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI()SessionGI->GetbRefRoomUIMultiOn() true!! "));
-		}
+	}
+	else
+	{
+		CR_UI->SetVisibility(ESlateVisibility::Hidden);
+		bMultiInnerWorldUIOn = false;
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() Set bMultiInnerWorldUIOn : %d"), bMultiInnerWorldUIOn);
 	}
 }
 
@@ -779,6 +794,36 @@ void ACJS_BallPlayer::OnMyActionLobbyUI(const FInputActionValue& Value)
 		//LobbyUI->SetVisibility(ESlateVisibility::Hidden);
 		LobbyUI->HideLobbyUIFirstOrder();
 		bShowLobbyUI = false;
+	}
+}
+
+// 체험방 이동
+void ACJS_BallPlayer::OnMyActionMoveRefWorld(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionMoveRefWorld()"));
+	FTimerHandle MoveRefWorldHandler;
+	if (GetWorld()) 
+	{
+		if (PC)
+		{
+			FTimerDelegate TimerDel;
+			TimerDel.BindUObject(this, &ACJS_BallPlayer::RequestMoveMultiRoom, PC); // PC를 인수로 바인딩
+
+			GetWorld()->GetTimerManager().SetTimer(
+				MoveRefWorldHandler,
+				TimerDel,                         // 바인딩된 델리게이트
+				1.0f,                             // 대기 시간
+				false                             // 반복 여부
+			);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("PC is null!"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("GetWorld() returned NULL!"));
 	}
 }
 
@@ -1050,46 +1095,149 @@ void ACJS_BallPlayer::MulticastRPC_ThrowHeart_Implementation()
 	{
 		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::Multicast_ThrowHeart() - HeartItemFactory is null"));
 	}
-
 }
 
 
-// 멀티방 이동
+// 로비 -> 체험방 이동 ======================================================================================================================
 void ACJS_BallPlayer::RequestMoveMultiRoom(APlayerController* RequestingPC)
 {
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::RequestMoveMultiRoom()"));
 
-	if (PC && !HasAuthority())  // 클라이언트만 요청
+	if (!RequestingPC)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Requesting Server to move to MultiRoom"));
-		ServerRPC_RequestMoveMultiRoom(PC);
+		UE_LOG(LogTemp, Error, TEXT("RequestMoveMultiRoom():: RequestingPC is null!"));
+		return;
+	}
+
+	// 클라이언트에서 서버로 요청
+	if (!HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Requesting Server to move to MultiRoom from Client"));
+		ServerRPC_RequestMoveMultiRoom(RequestingPC); // 서버로 요청
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Authority or PC is not valid"));
+		UE_LOG(LogTemp, Warning, TEXT("Handling move to MultiRoom on Server"));
+		MoveToMultiRoom(RequestingPC); // 서버에서 직접 처리
 	}
 }
 void ACJS_BallPlayer::ServerRPC_RequestMoveMultiRoom_Implementation(APlayerController* RequestingPC)
 {
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::ServerRPC_RequestMoveMultiRoom_Implementation()"));
 
-	if (RequestingPC)
+	if (!RequestingPC)
 	{
-		APawn* ControlledPawn = RequestingPC->GetPawn();
-		if (ControlledPawn)
-		{
-			// 클릭한 클라이언트의 캐릭터만 이동합니다.
-			FVector NewLocation(9950.0f, 0.0f, 0.0f); // 이동하고 싶은 위치 지정  <------ 여기!!! 위치 넣으면 돼!!  3번 위치
-			ControlledPawn->SetActorLocation(NewLocation);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("ControlledPawn is nullptr"));
-		}
+		UE_LOG(LogTemp, Error, TEXT("ServerRPC_RequestMoveMultiRoom():: RequestingPC is null!"));
+		return;
+	}
+
+	// 서버에서 클라이언트 요청 처리
+	MoveToMultiRoom(RequestingPC);
+}
+void ACJS_BallPlayer::MoveToMultiRoom(APlayerController* RequestingPC)
+{
+	if (!RequestingPC)
+	{
+		UE_LOG(LogTemp, Error, TEXT("MoveToMultiRoom():: RequestingPC is null!"));
+		return;
+	}
+
+	APawn* ControlledPawn = RequestingPC->GetPawn();
+	if (ControlledPawn)
+	{
+		// 체험방 위치 정의 (Room3 및 Room4)
+		FVector Room3Location(308907.221385f, 923351.405033f, -3730.988342f);
+		FVector Room4Location(1895545.290658f, 1285152.582352f, 520820.178077f);
+
+		// 랜덤으로 위치 선택
+		FVector NewLocation = FMath::RandBool() ? Room3Location : Room4Location;
+
+		// 선택된 위치로 이동
+		ControlledPawn->SetActorLocation(NewLocation);
+		UE_LOG(LogTemp, Log, TEXT("MoveToMultiRoom():: ControlledPawn moved to location: %s"), *NewLocation.ToString());
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::ServerRPC_RequestMoveMultiRoom_Implementation():: NO RequestingPC"));
+		UE_LOG(LogTemp, Error, TEXT("MoveToMultiRoom():: ControlledPawn is null!"));
+	}
+}
+
+// 체험방 -> 로비 이동 =========================================================================================================
+void ACJS_BallPlayer::RequestMoveLobby(APlayerController* RequestingPC)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::RequestMoveLobby()"));
+
+	if (!RequestingPC)
+	{
+		UE_LOG(LogTemp, Error, TEXT("RequestMoveLobby():: RequestingPC is null!"));
+		return;
+	}
+
+	// 클라이언트 요청 처리
+	if (!HasAuthority()) // 클라이언트에서 호출
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Requesting Server to move to Lobby from Client"));
+		ServerRPC_RequestMoveLobby(RequestingPC); // 서버에 RPC 요청
+	}
+	else // 서버에서 호출
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Handling move to Lobby on Server"));
+		MoveToLobby(RequestingPC); // 직접 이동 처리
+	}
+}
+void ACJS_BallPlayer::ServerRPC_RequestMoveLobby_Implementation(APlayerController* RequestingPC)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::ServerRPC_RequestMoveLobby_Implementation()"));
+
+	if (!RequestingPC)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ServerRPC_RequestMoveLobby():: RequestingPC is null!"));
+		return;
+	}
+
+	// 서버에서 이동 처리
+	MoveToLobby(RequestingPC);
+}
+void ACJS_BallPlayer::MoveToLobby(APlayerController* RequestingPC)
+{
+	if (!RequestingPC)
+	{
+		UE_LOG(LogTemp, Error, TEXT("MoveToLobby():: RequestingPC is null!"));
+		return;
+	}
+
+	APawn* ControlledPawn = RequestingPC->GetPawn();
+	if (ControlledPawn)
+	{
+		FVector NewLocation(19145.640926f, 4627.819710f, -871.678926f); // 이동 위치(로비 PlayerStart 지점)
+		ControlledPawn->SetActorLocation(NewLocation);
+		UE_LOG(LogTemp, Log, TEXT("ControlledPawn moved to Lobby at location: %s"), *NewLocation.ToString());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("MoveToLobby():: ControlledPawn is null!"));
+	}
+
+	if (CR_UI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MoveToLobby():: CR_UI is exsited"));
+		CR_UI->SetVisibility(ESlateVisibility::Hidden);
+		bMultiInnerWorldUIOn = false;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("MoveToLobby():: CR_UI is null!"));
+	}
+
+	if (SessionGI->GetbRefRoomUIMultiOn())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MoveToLobby() SessionGI->GetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
+		SessionGI->SetbRefRoomUIMultiOn(false);
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::MoveToLobby() after SessionGI->GetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::MoveToLobby() !SessionGI->bRefRoomUIMultiOn()"));
 	}
 
 }
