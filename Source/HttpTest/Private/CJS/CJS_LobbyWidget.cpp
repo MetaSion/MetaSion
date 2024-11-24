@@ -11,15 +11,38 @@
 #include "Components/WidgetSwitcher.h"
 #include "Components/Button.h"
 #include "Components/ScrollBox.h"
-#include "Kismet/GameplayStatics.h"
 #include "Components/MultiLineEditableText.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
+#include "Components/MultiLineEditableTextBox.h"
+
+#include "Kismet/GameplayStatics.h"
 #include "Animation/WidgetAnimation.h"
+
 
 void UCJS_LobbyWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	if (Lobby_WidgetSwitcher)
+	{
+		int32 TotalWidgets = Lobby_WidgetSwitcher->GetNumWidgets();
+		UE_LOG(LogTemp, Log, TEXT("WidgetSwitcher contains %d widgets:"), TotalWidgets);
+
+		for (int32 i = 0; i < TotalWidgets; ++i)
+		{
+			UWidget* Widget = Lobby_WidgetSwitcher->GetWidgetAtIndex(i);
+			if (Widget)
+			{
+				UE_LOG(LogTemp, Log, TEXT("Index %d: %s"), i, *Widget->GetName());
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Lobby_WidgetSwitcher is null!"));
+	}
+
 
 	// List Panel
 	Btn_MyWorld->OnClicked.AddDynamic(this, &UCJS_LobbyWidget::OnClickMyWorld);
@@ -33,7 +56,7 @@ void UCJS_LobbyWidget::SwitchToWidget(int32 index)
 	if (Lobby_WidgetSwitcher) {
 		UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::SwitchToWidget() UCJS_LobbyWidget exsied"));
 		Lobby_WidgetSwitcher->SetActiveWidgetIndex(index);
-		UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::SwitchToWidget() UCJS_LobbyWidget 3 Set"));
+		UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::SwitchToWidget() UCJS_LobbyWidget %d Set"), index);
 	}
 	else
 	{
@@ -45,24 +68,48 @@ void UCJS_LobbyWidget::SwitchToWidget(int32 index)
 
 
 // Info Panel Start ------------------------------------------------------------------------------------------------------
-void UCJS_LobbyWidget::SetRefWorldInfo()
+void UCJS_LobbyWidget::SetRefWorldInfo(const FString& name, const FString& owner, const FString& description, const FString& percent, const FString& reason)
 {
-	
-}
-
-void UCJS_LobbyWidget::ShowLobbyUIZeroOrder()
-{
-	UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::ShowLobbyUIZeroOrder"));
-	SwitchToWidget(0);
-	if (SlideLeft) // 애니메이션이 유효한지 확인
+	UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::SetRefWorldInfo"));
+	if (Txt_Name && Txt_Owner && Txt_Percent && Txt_Description && Txt_Recommand)
 	{
-		PlayAnimation(SlideLeft);
-		UE_LOG(LogTemp, Log, TEXT("Playing widget animation: %s"), *SlideLeft->GetName());
+		Txt_Name->SetText(FText::FromString(name));
+		Txt_Owner->SetText(FText::FromString(owner));
+		Txt_Percent->SetText(FText::FromString(percent));
+		Txt_Description->SetText(FText::FromString(description));
+		Txt_Recommand->SetText(FText::FromString(reason));
+
+		UE_LOG(LogTemp, Log, TEXT("RefWorldInfo set: Name=%s, Owner=%s, Percent=%s, Description=%s, Reason=%s"),
+			*name, *owner, *percent, *description, *reason);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("BtnSlide is null. Make sure it's assigned."));
+		UE_LOG(LogTemp, Error, TEXT("One or more text widgets are null!"));
 	}
+
+	ShowLobbyUIZeroOrder();
+}
+void UCJS_LobbyWidget::ShowLobbyUIZeroOrder()
+{
+	UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::ShowLobbyUIZeroOrder"));
+
+	// 현재 Visibility가 Hidden 상태라면 Visible로 변경
+	if (GetVisibility() == ESlateVisibility::Hidden)
+	{
+		SetVisibility(ESlateVisibility::Visible);
+		UE_LOG(LogTemp, Log, TEXT("UCJS_LobbyWidget was hidden. Changed to visible."));
+	}
+
+	SwitchToWidget(0);
+	//if (SlideLeft) // 애니메이션이 유효한지 확인
+	//{
+	//	PlayAnimation(SlideLeft);
+	//	UE_LOG(LogTemp, Log, TEXT("Playing widget animation: %s"), *SlideLeft->GetName());
+	//}
+	//else
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("BtnSlide is null. Make sure it's assigned."));
+	//}
 
 	if (GetWorld()) {
 		GetWorld()->GetTimerManager().SetTimer(HideRefWorldInfoHandler, this, &UCJS_LobbyWidget::HideLobbyUIZeroOrder, 5.0f, false);
@@ -75,25 +122,66 @@ void UCJS_LobbyWidget::ShowLobbyUIZeroOrder()
 void UCJS_LobbyWidget::HideLobbyUIZeroOrder()
 {
 	UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::HideLobbyUIZeroOrder"));
-	SwitchToWidget(0);
-	if (SlideRight) // 애니메이션이 유효한지 확인
+	//if (SlideRight) // 애니메이션이 유효한지 확인
+	//{
+	//	PlayAnimation(SlideRight);
+	//	UE_LOG(LogTemp, Log, TEXT("Playing widget animation: %s"), *SlideRight->GetName());
+	//}
+	//else
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("BtnSlide is null. Make sure it's assigned."));
+	//}
+
+	// 현재 Visibility가 Visible 상태라면 Hidden로 변경
+	if (GetVisibility() == ESlateVisibility::Visible)
 	{
-		PlayAnimation(SlideRight);
-		UE_LOG(LogTemp, Log, TEXT("Playing widget animation: %s"), *SlideRight->GetName());
+		SetVisibility(ESlateVisibility::Hidden);
+		UE_LOG(LogTemp, Log, TEXT("UCJS_LobbyWidget was visible. Changed to hidden."));
+	}
+
+	// BallPlayer를 찾아서 bShowRefRoomInfoUI를 false로 설정
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		APlayerController* PlayerController = World->GetFirstPlayerController();
+		if (PlayerController)
+		{
+			ACJS_BallPlayer* BallPlayer = Cast<ACJS_BallPlayer>(PlayerController->GetPawn());
+			if (BallPlayer)
+			{
+				BallPlayer->bShowRefRoomInfoUI = false;
+				UE_LOG(LogTemp, Log, TEXT("Successfully reset bShowRefRoomInfoUI to false."));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Failed to cast Pawn to ACJS_BallPlayer."));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("No PlayerController found in the world."));
+		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("BtnSlide is null. Make sure it's assigned."));
+		UE_LOG(LogTemp, Error, TEXT("GetWorld() returned NULL!"));
 	}
 }
-
 // Info Panel End --------------------------------------------------------------------------------------------------------
 
 
 // List Panel Start ------------------------------------------------------------------------------------------------------
 void UCJS_LobbyWidget::ShowLobbyUIFirstOrder()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::ShowLobbyUIFirstOrder"));
+	UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::ShowLobbyUIFirstOrder()"));
+
+	// 현재 Visibility가 Hidden 상태라면 Visible로 변경
+	if (GetVisibility() == ESlateVisibility::Hidden)
+	{
+		SetVisibility(ESlateVisibility::Visible);
+		UE_LOG(LogTemp, Log, TEXT("UCJS_LobbyWidget was hidden. Changed to visible."));
+	}
+
 	SwitchToWidget(1);
 	Box_List->SetVisibility(ESlateVisibility::Hidden);
 	SetRecList();
@@ -109,6 +197,8 @@ void UCJS_LobbyWidget::ShowLobbyUIFirstOrder()
 }
 void UCJS_LobbyWidget::HideLobbyUIFirstOrder()
 {
+	UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::HideLobbyUIFirstOrder()"));
+
 	if (BtnSlide) // 애니메이션이 유효한지 확인
 	{
 		PlayAnimationReverse(BtnSlide);
@@ -117,6 +207,13 @@ void UCJS_LobbyWidget::HideLobbyUIFirstOrder()
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("BtnSlide is null. Make sure it's assigned."));
+	}
+
+	// 현재 Visibility가 Visible 상태라면 Hidden로 변경
+	if (GetVisibility() == ESlateVisibility::Visible)
+	{
+		SetVisibility(ESlateVisibility::Hidden);
+		UE_LOG(LogTemp, Log, TEXT("UCJS_LobbyWidget was hidden. Changed to visible."));
 	}
 }
 
