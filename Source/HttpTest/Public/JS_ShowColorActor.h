@@ -30,7 +30,7 @@ public:
 	class UStaticMeshComponent* meshComp;
 
 	// Function to update material color
-    UFUNCTION()
+    UFUNCTION(BlueprintCallable, Category = "Color")
     void SetMaterialColor(FLinearColor newColor);
 
 	 //파티클 효과 ----------------------------------------------------------

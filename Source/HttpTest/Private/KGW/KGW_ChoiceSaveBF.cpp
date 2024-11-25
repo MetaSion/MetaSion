@@ -92,7 +92,8 @@ void UKGW_ChoiceSaveBF::SaveChoicesToJsonFile(UObject* WorldContextObject)
     }
 
     // MySessionName(userID)을 가져옵니다.
-    FString userID = SessionGI->GetMySessionName();
+    FString userID = SessionGI->GetMySessionName(); 
+//     FString userID = 
     FString ServerURL = FString::Printf(TEXT("mirrora.duckdns.org:3326/api/auth/processAndSendData"));
 
     UE_LOG(LogTemp, Warning, TEXT("Generated Server URL: %s"), *ServerURL);
@@ -100,7 +101,8 @@ void UKGW_ChoiceSaveBF::SaveChoicesToJsonFile(UObject* WorldContextObject)
     AHttpActor* PostChoice = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(WorldContextObject->GetWorld(), AHttpActor::StaticClass()));
     if (PostChoice)
     {
-        PostChoice->ReqPostChoice(ServerURL, JsonString);
+        //PostChoice->ReqPostChoice(ServerURL, JsonString);
+        PostChoice->OnResPostChoice();  // 통신x 테스트용
         UE_LOG(LogTemp, Warning, TEXT("ReqPostChoice called successfully with userID: %s"), *userID);
     }
     else
@@ -109,6 +111,48 @@ void UKGW_ChoiceSaveBF::SaveChoicesToJsonFile(UObject* WorldContextObject)
     }
 
 //      WorldContextObject�� ���� ���� �ν��Ͻ��� ������
+}
+
+void UKGW_ChoiceSaveBF::RoomDataSend(UObject* WorldContextObject)
+{
+    if (!WorldContextObject)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Invalid WorldContextObject: null object passed."));
+        return;  // null�̸� �Լ� ����
+    }
+
+    TMap<FString, FString> RoomData;
+
+    for (const TPair<FString, FString>& Pair : WheaterChoices)
+        //for (const TPair<FString, FString>& Pair : SelectedChoices)
+    {
+        RoomData.Add(Pair.Key, FString::FString(Pair.Value));  // int32 ���� FString���� ��ȯ
+        //ChoiceMap.Add(Pair.Key, FString::FString(Pair.Value));  // int32 ���� FString���� ��ȯ
+    }
+
+    FString JsonString = UJsonParseLib::MakeJson(RoomData);
+
+    UE_LOG(LogTemp, Warning, TEXT("Generated JSON: %s"), *JsonString);
+
+
+
+
+    FString ServerURL = FString::Printf(TEXT("mirrora.duckdns.org:3326/api/auth/saveRoomData"));
+
+    UE_LOG(LogTemp, Warning, TEXT("Generated Server URL: %s"), *ServerURL);
+
+    AHttpActor* isData = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(WorldContextObject->GetWorld(), AHttpActor::StaticClass()));
+    if (isData)
+    {
+        isData->RoomSendDataReqPost(ServerURL, JsonString);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Failed to find AHttpActor instance."));
+    }
+
+    //      WorldContextObject�� ���� ���� �ν��Ͻ��� ������
+
 }
 
 
@@ -207,14 +251,14 @@ TArray<FColorData> UKGW_ChoiceSaveBF::ParseJsonToRGB(const FString& JsonString)
 void UKGW_ChoiceSaveBF::StoreChoice(FString Question, FString SelectedValue)
 //void UKGW_ChoiceSaveBF::StoreChoice(FString Question, FString SelectedValue)  <-- 수정 필요
 {
-    UE_LOG(LogTemp, Warning, TEXT("UKGW_ChoiceSaveBF::StoreChoice()"));
+//     UE_LOG(LogTemp, Warning, TEXT("UKGW_ChoiceSaveBF::StoreChoice()"));
     SelectedChoices.Add(Question, SelectedValue);
 }
 
 void UKGW_ChoiceSaveBF::StoreSelectedMyRoom(FString Object, FString SelectedValue)
 //void UKGW_ChoiceSaveBF::StoreChoice(FString Question, FString SelectedValue)  <-- 수정 필요
 {
-    UE_LOG(LogTemp, Warning, TEXT("UKGW_ChoiceSaveBF::StoreSelectedMyRoom()"));
+//     UE_LOG(LogTemp, Warning, TEXT("UKGW_ChoiceSaveBF::StoreSelectedMyRoom()"));
     WheaterChoices.Add(Object, SelectedValue);
 }
 

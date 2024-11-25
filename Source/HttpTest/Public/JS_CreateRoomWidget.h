@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/EditableText.h"
+#include "CJS/CJS_InnerWorldParticleActor.h"
 #include "JS_CreateRoomWidget.generated.h"
 /**
  * 
@@ -28,7 +29,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	class AJS_RoomController* pc;
 
-
+    
 
     UPROPERTY(meta=(BindWidget))
     class UButton* btn_CreateRoom_Yes;   
@@ -58,8 +59,15 @@ public:
     UPROPERTY(meta=(BindWidget))
     class UMultiLineEditableText* Txt_Explane;
 
-    UPROPERTY(EditAnywhere)
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     FString RoomDescription;
+        UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    FString RoomName;
+            UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+    FString RoomPP;
+
+    
+    
     UPROPERTY(EditAnywhere)
     FString CurrentText;
     UPROPERTY(BlueprintReadWrite)
@@ -70,6 +78,9 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void SwitchToWidget(int32 index);  
+        UFUNCTION(BlueprintCallable)
+    void SetRoomInfo();  
+
     UFUNCTION(BlueprintCallable)
     void SwitchToWidget_PP(int32 index);
     UFUNCTION()
@@ -86,7 +97,7 @@ public:
     UFUNCTION()
     void HideUI();
     //Send CompleteRoom
-    UFUNCTION()
+    UFUNCTION(BlueprintCallable)
 	void SendCompleteRoomData();
     UFUNCTION()
     void OnTextChanged_SingleLine(const FText& Text);
@@ -106,15 +117,37 @@ public:
 	class UButton* Btn_Explanation;
     UPROPERTY(meta = (BindWidgetAnim),BlueprintReadWrite, Transient)
     class UWidgetAnimation* appear;   
+
+        UPROPERTY(meta=(BindWidget))
+    class UButton* btn_Good;
+
+        UPROPERTY(meta=(BindWidget))
+    class UButton* btn_Bad;
+
     UFUNCTION(BlueprintCallable)
     void OnClickCaptureImage();
     UFUNCTION(BlueprintCallable)
     void OnClikMypage();
     UFUNCTION(BlueprintCallable)
     void OnClikExplanation();
+
+        UFUNCTION(BlueprintCallable)
+    void OnClickGood();
+
+        UFUNCTION(BlueprintCallable)
+    void OnClikBad();
+
+
     UFUNCTION(BlueprintCallable)
     void SetExplanation(const FString& Text);
 
+    void SetParticle();
+
+
+    //KGW------ CreateCparticle---------
+
+   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+    TSubclassOf<ACJS_InnerWorldParticleActor> ParticleFactory;
 
 
 

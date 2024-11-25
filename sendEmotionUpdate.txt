@@ -1,0 +1,197 @@
+{
+    "RGB": {
+        "R": 0.33,
+        "G": 0.31,
+        "B": 0.68
+    },
+    "RGB18": {
+        "R1": "0.3",
+        "G1": "0.37",
+        "B1": "0.76",
+        "R2": "0.3",
+        "G2": "0.31",
+        "B2": "0.64",
+        "R3": "0.27",
+        "G3": "0.28",
+        "B3": "0.71",
+        "R4": "0.34",
+        "G4": "0.3",
+        "B4": "0.64",
+        "R5": "0.3",
+        "G5": "0.3",
+        "B5": "0.66",
+        "R6": "0.35",
+        "G6": "0.31",
+        "B6": "0.74"
+    },
+    "RecommendedMusic": "Music_01",
+    "Quadrant": null,
+    "Particle_num": null,
+    "result": "조용하고 차분한 시간이 필요하신가요? 저희가 마음의 위로와 편안함을 드릴 수 있도록 도와드리겠습니다.",
+    "result2": "당신의 감정을 담아 아바타를 생성했어요!\ntestuser님의 오늘의 감정을 표현해보세요.",
+    "result3": "당신의 감정이 공간 속으로 퍼져나가는 모습을 파티클로 표현했습니다.",
+    "rooms": [
+        {
+            "room_num": 1341,
+            "room_name": "qwer"
+        },
+        {
+            "room_num": 1340,
+            "room_name": "qwer"
+        },
+        {
+            "room_num": 1339,
+            "room_name": "테스트방이름5"
+        },
+        {
+            "room_num": 1338,
+            "room_name": "테스트방이름5"
+        },
+        {
+            "room_num": 1337,
+            "room_name": "테스트방이름5"
+        },
+        {
+            "room_num": 1336,
+            "room_name": "1234"
+        },
+        {
+            "room_num": 1335,
+            "room_name": "테스트방이름5"
+        },
+        {
+            "room_num": 1334,
+            "room_name": "테스트방이름5"
+        },
+        {
+            "room_num": 1333,
+            "room_name": "qwer"
+        },
+        {
+            "room_num": 1332,
+            "room_name": "테스트방이름5"
+        },
+        {
+            "room_num": 1331,
+            "room_name": "테스트방이름5"
+        },
+        {
+            "room_num": 1330,
+            "room_name": "테스트방이름5"
+        },
+        {
+            "room_num": 1329,
+            "room_name": "테스트방이름5"
+        },
+        {
+            "room_num": 1328,
+            "room_name": "테스트방이름5"
+        },
+        {
+            "room_num": 1327,
+            "room_name": "Unrealtest1"
+        },
+        {
+            "room_num": 1326,
+            "room_name": "sds"
+        },
+        {
+            "room_num": 1305,
+            "room_name": "qwer"
+        },
+        {
+            "room_num": 1304,
+            "room_name": "1234"
+        },
+        {
+            "room_num": 1303,
+            "room_name": "asf"
+        },
+        {
+            "room_num": 1302,
+            "room_name": "rorom"
+        }
+    ],
+    "suggest_list": [
+        {
+            "percent_message": "90.0%",
+            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_title": "죽어가는 백엔드",
+            "roomdescription": "방내용123123"
+        },
+        {
+            "percent_message": "90.0%",
+            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_title": "죽어가는 백엔드",
+            "roomdescription": "방내용123123"
+        },
+        {
+            "percent_message": "90.0%",
+            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_title": "죽어가는 백엔드",
+            "roomdescription": "방내용123123"
+        },
+        {
+            "percent_message": "90.0%",
+            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_title": "죽어가는 백엔드",
+            "roomdescription": "방내용123123"
+        },
+        {
+            "percent_message": "90.0%",
+            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_title": "죽어가는 백엔드",
+            "roomdescription": "방내용123123"
+        },
+        {
+            "percent_message": "90.0%",
+            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_title": "죽어가는 백엔드",
+            "roomdescription": "방내용123123"
+        },
+        {
+            "percent_message": "90.0%",
+            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_title": "죽어가는 백엔드",
+            "roomdescription": "방내용123123"
+        },
+        {
+            "percent_message": "90.0%",
+            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_title": "죽어가는 백엔드",
+            "roomdescription": "방내용123123"
+        },
+        {
+            "percent_message": "90.0%",
+            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_title": "죽어가는 백엔드",
+            "roomdescription": "방내용123123"
+        },
+        {
+            "percent_message": "90.0%",
+            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_title": "죽어가는 백엔드",
+            "roomdescription": "방내용123123"
+        }
+    ]
+}

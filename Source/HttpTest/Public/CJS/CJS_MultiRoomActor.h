@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "CJS/SessionGameInstance.h"
 #include "CJS_MultiRoomActor.generated.h"
 
 
@@ -69,6 +70,8 @@ public:
     class UStaticMeshComponent* SphereMesh;
 	UPROPERTY(VisibleAnywhere)
 	class UWidgetComponent* RefRoomInfoWidgetComp;
+	//UPROPERTY(VisibleAnywhere)
+	//class UBoxComponent* BoxCollider;
 
 
 	UPROPERTY(meta = (BindWidget))
@@ -80,8 +83,28 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* Txt_RefPercent;
 
+
+	UPROPERTY(VisibleAnywhere)
+	int32 ActorIndex;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Room Info")
+    FMySuggest_List RoomInfo; // suggest_list에서 가져온 데이터 저장
+
+
+	/*UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);*/
+
+
 	// Function to update the widget text values
 	void InitRefRoomInfoWidget(const FString& CurNumPlayer, const FString& MaxNumPlayer, const FString& RoomName, const FString& Percent);
+
+	// Function to change ref room Scale
+	void InitRefRoomScale(const FString& percent);
+	// Function to change ref room color
+	void InitRefRoomColor();
+
 
 	// Update MultiRoom PlayerNum value
 	void UpdateClickedRefRoomPlayerNum(const FString& CurNumPlayer, const FString& MaxNumPlayer);

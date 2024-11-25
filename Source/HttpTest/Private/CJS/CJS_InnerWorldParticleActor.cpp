@@ -111,19 +111,19 @@ void ACJS_InnerWorldParticleActor::UpdateInnerWorldNiagaraAsset(int32 NiagaraAss
 		FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
         UE_LOG(LogTemp, Warning, TEXT("ACJS_InnerWorldParticleActor::UpdateInnerWorldNiagaraAsset() LevelName : %s"), *LevelName);
 		FString AssetPath;
-        if (LevelName.Contains("Winter"))
+        if (LevelName.Contains("Room"))
         {
             UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_LV_Winter"));
             // Construct the asset path based on NiagaraAssetIndex
-            AssetPath = FString::Printf(TEXT("/Content/Main/Assets/Emotions/Particle_Num%d.Particle_Num%d"), NiagaraAssetIndex, NiagaraAssetIndex);
+            AssetPath = FString::Printf(TEXT("/Game/Main/Assets/NoSound/Particle_num%d.Particle_num%d"), NiagaraAssetIndex, NiagaraAssetIndex);
         }
         else if (LevelName.Contains("Sky"))
         {
             UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_Sky"));
             // Construct the asset path based on NiagaraAssetIndex
-            AssetPath = FString::Printf(TEXT("/Content/Main/Assets/NoSound/Particle_Num%d.Particle_Num%d"), NiagaraAssetIndex, NiagaraAssetIndex);
+            //AssetPath = FString::Printf(TEXT("/Content/Main/Assets/NoSound/Particle_Num%d.Particle_Num%d"), NiagaraAssetIndex, NiagaraAssetIndex);
+            AssetPath = FString::Printf(TEXT("/Game/Main/Assets/NoSound/Particle_num%d.Particle_num%d"), NiagaraAssetIndex, NiagaraAssetIndex);
         }
-
         // Load the Niagara System dynamically from the constructed path
         UNiagaraSystem* SelectedNiagaraSystem = Cast<UNiagaraSystem>(StaticLoadObject(UNiagaraSystem::StaticClass(), nullptr, *AssetPath));
 

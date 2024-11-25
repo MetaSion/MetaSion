@@ -31,6 +31,10 @@
 #include "CineCameraActor.h"
 #include "JS_ExplainWidget.h"
 #include "CJS/CJS_ChatWidget.h"
+#include <KGW_RoomListRenewal.h>
+#include "CJS/CJS_LobbyWidget.h"
+#include "JS_ShowColorActor.h"
+
 
 AJS_RoomController::AJS_RoomController()
 {
@@ -110,24 +114,20 @@ void AJS_RoomController::BeginPlay()
     }
     else if (LevelName.Contains("Test_Main_Sky"))
     {
-        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky"));
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Test_Main_Sky"));
         PlayUIAnimation();
         ShowExplainUI();
-        //if (SessionGI && SessionGI->bSuccess) {
-        //    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Sky-> SessionGI exsited"));
-        //    //if (HttpActor) {
-        //    //    //HttpActor->ShowQuestionUI();
-        //    //}
-        //    else
-        //    {
-        //        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() No HttpActor"));
-        //    }
-        //    SessionGI->bSuccess = false; // 사용 후 상태 초기화
-        //}
-		/*else
-		{
-			UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
-		}*/
+    }
+    else if (LevelName.Contains("Main_Sky")) {
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_Sky"));
+        GetWorld()->GetTimerManager().SetTimer(ShowRoomListTimerHandle, this, &AJS_RoomController::ShowRoomListUI, 3.2f, false);
+        GetWorld()->GetTimerManager().SetTimer(
+            TimingTimerHandle,
+            this,
+            &AJS_RoomController::SetChangeLevelData,
+            3.20001f,
+            false
+        );
     }
   //  else if (LevelName.Contains("Sky"))
   //  {
@@ -162,20 +162,22 @@ void AJS_RoomController::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO LoginActor"));
 		}
     }
-    if (LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question" || LevelName  == "Test_Main_Sky") {
-        GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, false);
-    }
-    else {
-        GetWorldTimerManager().SetTimer(OtherRoomCheckTimerHandle, this, &AJS_RoomController::SwitchToCamera, 0.01f, false);
-    }
+    //11-20
+//     if (LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question" || LevelName  == "Test_Main_Sky") {
+//         GetWorldTimerManager().SetTimer(LevelCheckTimerHandle, this, &AJS_RoomController::SpawnAndSwitchToCamera, 0.01f, false);
+//     }
+//     else {
+//         GetWorldTimerManager().SetTimer(OtherRoomCheckTimerHandle, this, &AJS_RoomController::SwitchToCamera, 0.01f, false);
+//     }
     // ------------------------------------------------------------------------------------------------
 
     //FTimerHandle TimerHandle;
     //GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AJS_RoomController::SetActorLocationAfterLevelLoad, 1.0f, false);
-    if (LevelName == "Main_Sky") {
-        //다음 틱에 액터 위치 변경 실행
-        GetWorldTimerManager().SetTimerForNextTick(this, &AJS_RoomController::SetActorLocationAfterLevelLoad);
-    }
+    // JS 주석처리
+    //if (LevelName == "Main_Sky") {
+    //    //다음 틱에 액터 위치 변경 실행
+    //    GetWorldTimerManager().SetTimerForNextTick(this, &AJS_RoomController::SetActorLocationAfterLevelLoad);
+    //}
 }
 
 void AJS_RoomController::SetupInputComponent()
@@ -243,6 +245,12 @@ void AJS_RoomController::CheckDate()
         bEnableClickEvents = true;
         bEnableMouseOverEvents = true;
     }
+    else if (LevelName.Contains("Room")) {
+        bShowMouseCursor = true;
+//         bEnableClickEvents = true;
+//         bEnableMouseOverEvents = true;
+    }
+
     else {
         bShowMouseCursor = false;
         bEnableClickEvents = false;
@@ -303,6 +311,31 @@ void AJS_RoomController::InitializeUIWidgets()
             ChatUI->AddToViewport();
             ChatUI->SetVisibility(ESlateVisibility::Hidden);
         }
+    }
+    //if (LobbyUIFactory)
+    //{
+    //    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() LobbyUIFactory exsited"));
+    //    LobbyUI = CreateWidget<UCJS_LobbyWidget>(this, LobbyUIFactory);
+    //    if (LobbyUI)
+    //    {
+    //        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() LobbyUI set"));
+    //        LobbyUI->AddToViewport();
+    //        LobbyUI->SetVisibility(ESlateVisibility::Hidden);
+    //    }
+    //}
+    if (RL_UIFactory)
+    {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() RL_UIFactory exsited"));
+        RL_UI = CreateWidget<UKGW_RoomList>(this, RL_UIFactory);
+        if (RL_UI)
+        {
+            UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() RL_UIFactory set"));
+            RL_UI->AddToViewport();
+            RL_UI->SetVisibility(ESlateVisibility::Hidden);
+        }
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() RL_UIFactory Nullptr"));
     }
 }
 void AJS_RoomController::ShowLoginUI()
@@ -371,7 +404,7 @@ void AJS_RoomController::PlayUIAnimation()
     UE_LOG(LogTemp, Log, TEXT(" AJS_RoomController::PlayUIAnimation()"));
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
-    if (R_UI && (LevelName == "LV_Spring" || LevelName == "LV_Summer" || LevelName == "LV_Fall" || LevelName == "LV_Winter")) {
+    if (R_UI && (LevelName == "LV_Spring" || LevelName == "LV_Summer" || LevelName == "LV_Fall" || LevelName == "LV_Winter" || LevelName == "Room_2")) {
         R_UI->PlayAnimation(R_UI->CameraSutterEffect);
     }
     else if (Ex_UI && LevelName == "Test_Main_Sky") {
@@ -395,6 +428,14 @@ void AJS_RoomController::HideExplainUI()
 {
     if (Ex_UI) Ex_UI->SetVisibility(ESlateVisibility::Hidden);
 }
+void AJS_RoomController::ShowRoomListUI()
+{
+    if(RL_UI) RL_UI->SetVisibility(ESlateVisibility::Visible);
+}
+void AJS_RoomController::HideRoomListUI()
+{
+    if (RL_UI) RL_UI->SetVisibility(ESlateVisibility::Hidden);
+}
 //Explain UI End --------------------------------------------------------------------------
 
 //myWorld -> MultiWorld:: Make Session
@@ -411,7 +452,7 @@ void AJS_RoomController::SetActorLocationAfterLevelLoad()
 		FVector NewListLocation(-470990.0f, 643490.0f, 648180.0f);
 		ListActor->SetActorLocation(NewListLocation, true, nullptr, ETeleportType::TeleportPhysics);
 		UE_LOG(LogTemp, Warning, TEXT("ListActor location set successfully."));
-		SetChangeLevelData();
+// 		SetChangeLevelData();
 	}
 	else
 	{
@@ -427,6 +468,12 @@ void AJS_RoomController::OnClickButtonImage()
     PlayUIAnimation();
     ScreenCapture();
     R_UI->SendWallPaperData();
+    FTimerHandle TimerHandle2;
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle2, this, &AJS_RoomController::HideRoomUI, 1.5f, false);
+
+    // 네 번째 함수 호출 (1.5초 뒤 실행)
+    FTimerHandle TimerHandle3;
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle3, this, &AJS_RoomController::ShowCreateRoomUI, 1.5f, false);
     GetWorld()->GetTimerManager().SetTimer(HeartUITimer, this, &AJS_RoomController::ShowHeartUITimer, 1.0f, false);
 }
 
@@ -632,7 +679,7 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
     FVector CameraLocation;
     FRotator CameraRotation;
 
-    if (LevelName == "Test_Main_Sky" || LevelName == "Main_Sky" || LevelName == "Main_Login" || LevelName == "Main_Question")
+    if (/*LevelName == "Test_Main_Sky" || LevelName == "Main_Sky" ||*/ LevelName == "Main_Login" || LevelName == "Main_Question")
     {
         // �ϴ� ���� ��ġ�� ȸ�� ����
         CameraLocation = FVector(-470047.589317, 643880.89814, 648118.610643);
@@ -659,7 +706,7 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
     //if (LevelName == "Main_Room") {
     if (LevelName.Contains("Main_LV"))
     {
-        TargetCamera->GetCameraComponent()->SetFieldOfView(50);
+        /*TargetCamera->GetCameraComponent()->SetFieldOfView(50);*/
     }
     else if (LevelName == "Main_Login"|| LevelName == "Main_Sky" || LevelName == "Main_Question")
     {
@@ -680,12 +727,14 @@ void AJS_RoomController::SpawnAndSwitchToCamera()
 }
 void AJS_RoomController::SetChangeLevelData()
 {
-    AKGW_RoomlistActor* MyWorldPlayer = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
-   SessionGI->WorldSetting;
+   AJS_ShowColorActor* MyWorldPlayer = Cast<AJS_ShowColorActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AJS_ShowColorActor::StaticClass()));
+    /*SessionGI->WorldSetting;*/
 
    AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
    UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
    UKGW_RoomList* Showlist = Cast<UKGW_RoomList>(WidgetComp->GetUserWidgetObject());
+   UKGW_RoomListRenewal* AnalyzeText = Cast<UKGW_RoomListRenewal>(WidgetComp->GetUserWidgetObject());
+
 
     // 2.추천 음악을 튼다
     HttpActor->SetBackgroundSound();
@@ -697,9 +746,9 @@ void AJS_RoomController::SetChangeLevelData()
         UE_LOG(LogTemp, Warning, TEXT("Setting Material Color: R=%f, G=%f, B=%f"), ColorToSet.R, ColorToSet.G, ColorToSet.B);
         MyWorldPlayer->SetMaterialColor(ColorToSet);
     }
-    // 4.파티클 색을 변경한다 +  감정 파티클을 변경한다.
-    HttpActor->ApplyMyWorldPointLightColors();
-    HttpActor->ApplyMyWorldNiagaraAssets();
+    else {
+        UE_LOG(LogTemp, Error, TEXT("Setting Material Color Fail..."));
+    }
     // 5.방 목록의 제목을 UI에 넣는다.
     if (SessionGI)
     {
@@ -708,36 +757,34 @@ void AJS_RoomController::SetChangeLevelData()
         TArray<FMyWorldRoomInfo> Result;
         Result = SessionGI->GettRoomNameNum(); // 데이터가 제대로 저장되었는지 로그로 확인
         UE_LOG(LogTemp, Warning, TEXT("GameInstance->GEtRoomInfoList size: %d"), Result.Num());
-        if (ListActor)
+
+        FString Example = TEXT("오늘을 날씨가 참 좋아요 당신의 기분도 참 좋아 보이네요 좋은하루 보내세요");
+        if (Showlist)
         {
-            if (WidgetComp)
-            {
-                if (Showlist)
-                {
-                    // RoomInfoList 데이터를 위젯에 추가
-                    Showlist->AddSessionSlotWidget(Result);
-                    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() Showlist updated successfully."));
+            // RoomInfoList 데이터를 위젯에 추가
+            Showlist->AddSessionSlotWidget(Result);
+            UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() Showlist updated successfully."));
 
-                    // 6.AI 분석 결과를 UI에 넣는다.
-                    Showlist->SetTextLog(SessionGI->WorldSetting.Result);
-                    // move to sugested tmeplate room 방이동
-                    Showlist->SetWheaterNumb(SessionGI->WorldSetting.Quadrant);
+            // move to sugested tmeplate room 방이동
+            Showlist->SetWheaterNumb(SessionGI->WorldSetting.Quadrant);
 
-                }
-                else
-                {
-                    UE_LOG(LogTemp, Error, TEXT("Showlist is null! Make sure the widget is correctly set in BP_ListActor."));
-                }
-            }
-            else
-            {
-                UE_LOG(LogTemp, Error, TEXT("WidgetComponent not found on BP_ListActor."));
-            }
         }
         else
         {
-            UE_LOG(LogTemp, Error, TEXT("No BP_ListActor."));
+            UE_LOG(LogTemp, Error, TEXT("Showlist is null! Make sure the widget is correctly set in BP_ListActor."));
         }
+        if (AnalyzeText)
+        {
+
+            // 6.AI 분석 결과를 UI에 넣는다.
+            AnalyzeText->SetMissionText(SessionGI->WorldSetting.Result);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("AnalyzeText is null! Make sure the widget is correctly set in BP_ListActor."));
+        }
+
+
     }
     else
     {
@@ -850,9 +897,10 @@ void AJS_RoomController::InitInnerWorldSetting()
     {
         UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::InitInnerWorldSetting() No SettingUI"));
     }
+    //JS 주석처리 이유 : UI를 눌러야 파티클이 스폰하기 때문에 사용하지 않을 거 같아서
     //2. 파티클 색 + 감정 파티클 적용
-    HttpActor->ApplyMyWorldPointLightColors();
-    HttpActor->ApplyMyWorldNiagaraAssets();
+    /*HttpActor->ApplyMyWorldPointLightColors();
+    HttpActor->ApplyMyWorldNiagaraAssets();*/
 }
 
 /* Inner World UI (After Setting UI Hidden) */

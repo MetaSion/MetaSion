@@ -61,6 +61,25 @@ struct FMyWorldRoomInfo
     UPROPERTY(BlueprintReadWrite)
     FString MyRoomName;
 };
+// Suggest_List 수신된 정보 저장용
+USTRUCT(BlueprintType)
+struct FMySuggest_List
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+    FString percent_message;
+	UPROPERTY(BlueprintReadWrite)
+    FString reason_message;
+	UPROPERTY(BlueprintReadWrite)
+    FString room_id;
+	UPROPERTY(BlueprintReadWrite)
+    FString room_num;
+	UPROPERTY(BlueprintReadWrite)
+    FString room_name;
+	UPROPERTY(BlueprintReadWrite)
+    FString roomdescription;
+};
 USTRUCT(BlueprintType)
 struct FMyRGBColor
 {
@@ -85,7 +104,7 @@ struct FMyWorldSetting
     UPROPERTY(BlueprintReadWrite)
     TArray<FMyRGBColor> RGB18;
     UPROPERTY(BlueprintReadWrite)
-    FString UserMusic;
+    FString UserMusic ;
     UPROPERTY(BlueprintReadWrite)
     FString Quadrant;
 	UPROPERTY(BlueprintReadWrite)
@@ -112,8 +131,14 @@ struct FMyWorldSetting
     FString ParticleNum;
     UPROPERTY(BlueprintReadWrite)
     FString Result;
+	UPROPERTY(BlueprintReadWrite)
+    FString Result2; // 파티클 설명
+	UPROPERTY(BlueprintReadWrite)
+    FString Result3; // 캐릭터 색 설명
     UPROPERTY(BlueprintReadWrite)
     TArray<FMyWorldRoomInfo> MyRooms;
+	UPROPERTY(BlueprintReadWrite)
+    TArray<FMySuggest_List> suggest_list;
 };
 
 
@@ -168,6 +193,15 @@ public:
 	void OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString);
 
 	
+	// 방 파괴 요청
+	void ExitSession();
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_ExitSession();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_ExitSession();
+	void OnMyDestroySessionComplete(FName SessionName, bool bWasSuccessful);
+
+
 
 	/* --------------------------------------------------------------------------------------------------------------------------- */
 	// UserId 할당
@@ -231,5 +265,21 @@ public:
 	bool bNotFirst = false;
 	FString UserId = TEXT("testuser");
 	FString AIResult;
+
+	//playMusic
+		UFUNCTION(BlueprintCallable)
+
+	void PlayMusic(USoundBase* Music);
+	void FadeOutAndPlayNewMusic(USoundBase* NewMusic);
+	void FadeOutCurrentMusic(USoundBase* NewMusic);
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* MusicSound;
+
+
+    UPROPERTY()
+    FTimerHandle FadeOutTimerHandle;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio", meta = (AllowPrivateAccess = "true"))
+    float FadeOutDuration = 1.0f; // 서서히 줄이는 시간 (초)
 };
 

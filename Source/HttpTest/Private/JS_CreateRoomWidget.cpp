@@ -2,22 +2,27 @@
 
 
 #include "JS_CreateRoomWidget.h"
+#include "JS_RoomController.h"
+#include "JsonParseLib.h"
+#include "JS_WidgetFunction.h"
+#include "HttpActor.h"
+
+#include "CJS/CJS_BallPlayer.h"
+#include "CJS/CJS_InnerWorldParticleActor.h"
+#include "CJS/CJS_MultiRoomActor.h"
+#include "CJS/CJS_ChatWidget.h"
+#include "CJS/CJS_ChatTextWidget.h"
+
 #include "Components/Button.h"
 #include "Components/EditableText.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/VerticalBox.h"
-#include "JS_RoomController.h"
-#include "Kismet/GameplayStatics.h"
-#include "HttpActor.h"
-#include "JsonParseLib.h"
-#include "JS_WidgetFunction.h"
 #include "Components/MultiLineEditableText.h"
 #include "Components/MultiLineEditableTextBox.h"
-#include "CJS/CJS_ChatWidget.h"
-#include "CJS/CJS_ChatTextWidget.h"
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
-#include "CJS/CJS_BallPlayer.h"
+#include "Kismet/GameplayStatics.h"
+
 
 void UJS_CreateRoomWidget::NativeConstruct()
 {
@@ -39,6 +44,10 @@ void UJS_CreateRoomWidget::NativeConstruct()
 	Btn_CaptureImage->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClickCaptureImage);
 	Btn_MyPage->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClikMypage);
 	Btn_Explanation->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClikExplanation);
+
+	btn_Good->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClickGood);
+	btn_Bad->OnClicked.AddDynamic(this, &UJS_CreateRoomWidget::OnClikBad);
+
 
 	if (ChatUI && ChatUI->Btn_Send)
 	{
@@ -65,22 +74,143 @@ void UJS_CreateRoomWidget::OnClickCaptureImage()
 }
 void UJS_CreateRoomWidget::OnClikMypage()
 {
-	SendCompleteRoomData();
-	UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikMypage()"));
+	SwitchToWidget(4);
 }
 void UJS_CreateRoomWidget::OnClikExplanation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation()"))
-	SetExplanation(CurrentText);
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation()"));
+
+	SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+	if (SessionGI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClikExplanation() SessionGI exised"));
+		if (SessionGI->GetbRefRoomUIMultiOn())
+		{
+			//멀티방 인덱스를 받아와서
+			APlayerController* OwningPlayer = GetWorld()->GetFirstPlayerController();
+			if (OwningPlayer)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() Set APlayerController"));
+				ACJS_BallPlayer* player = Cast<ACJS_BallPlayer>(OwningPlayer->GetPawn());
+				if (player)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() Set ACJS_BallPlayer"));
+					FString text = player->ClosestRoom->RoomInfo.roomdescription;
+					UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() text %s"), *text);
+					//방 설명 정보 삽입
+					SetExplanation(text);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::OnClikExplanation() No BallPlayer"));
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::OnClikExplanation() OwningPlayer is null"));
+			}		
+		}
+		else
+		{
+			// 이너월드 사용자가 작성한 문구
+			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() CurrentText %s"), *CurrentText);
+			SetExplanation(CurrentText);
+		}
+	}
+}
+void UJS_CreateRoomWidget::OnClickGood()
+{
+// 	SendCompleteRoomData();
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClickGood()"));
+	SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+	if (SessionGI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() SessionGI exised"));
+		if (SessionGI->GetbRefRoomUIMultiOn())
+		{
+			UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() SessionGI->GetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
+			APlayerController* OwningPlayer = GetWorld()->GetFirstPlayerController();
+			if (OwningPlayer)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set APlayerController"));
+				ACJS_BallPlayer* player = Cast<ACJS_BallPlayer>(OwningPlayer->GetPawn());
+				if (player)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set ACJS_BallPlayer"));
+					player->RequestMoveLobby(OwningPlayer);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() No BallPlayer"));
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() OwningPlayer is null"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClickGood() Move From InnerWorld to Main_Sky"));
+			UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() SessionGI is null"));
+	}
+}
+void UJS_CreateRoomWidget::OnClikBad()
+{
+// 	SendCompleteRoomData();
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikBad()"));
+
+	SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+	if (SessionGI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() SessionGI exised"));
+		if (SessionGI->GetbRefRoomUIMultiOn())
+		{
+			UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() SessionGI->GetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
+			APlayerController* OwningPlayer = GetWorld()->GetFirstPlayerController();
+			if (OwningPlayer)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set APlayerController"));
+				ACJS_BallPlayer* player = Cast<ACJS_BallPlayer>(OwningPlayer->GetPawn());
+				if (player)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set ACJS_BallPlayer"));
+					player->RequestMoveLobby(OwningPlayer);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() No BallPlayer"));
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() OwningPlayer is null"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClickGood() Move From InnerWorld to Main_Sky"));
+			UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() SessionGI is null"));
+	}
 }
 void UJS_CreateRoomWidget::SetExplanation(const FString& Text)
 { 	
-	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation()"))
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation()"));
 	//Txt_Explane->SetText(FText::FromString(Text));
-
 	if (ChatUI)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation() ChatUI exsited"))
+		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation() ChatUI exsited"));
 		ChatUI->SetEdit_RoomInfo(Text);
 	}
 	else
@@ -88,6 +218,32 @@ void UJS_CreateRoomWidget::SetExplanation(const FString& Text)
 		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::SetExplanation() ChatUI is null!"));
 	}
 }
+
+void UJS_CreateRoomWidget::SetParticle()
+{
+	if (!ParticleFactory)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ParticleFactory is not set!"));
+		return;
+	}
+// 	CleanParticle();
+// 	(X = 102.397720, Y = 303.903661, Z = -316.892022)
+	FVector Location = FVector(102.397720f, 303.903661f, -316.892022f);
+	FRotator Rotation = FRotator::ZeroRotator;
+
+	auto* CurrentParticleActor = GetWorld()->SpawnActor<ACJS_InnerWorldParticleActor>(
+		ParticleFactory, Location, Rotation);
+
+	// 4.파티클 색을 변경한다 +  감정 파티클을 변경한다.
+	if (httpActor) {
+		httpActor->ApplyMyWorldPointLightColors();
+		httpActor->ApplyMyWorldNiagaraAssets();
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("740 : Setting HttpActor Fail..."));
+	}
+}
+
 
 // Send 버튼 클릭 시
 void UJS_CreateRoomWidget::HandleSendButtonClicked()
@@ -199,6 +355,16 @@ void UJS_CreateRoomWidget::SwitchToWidget(int32 index)
 		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::SwitchToWidget() CR_WidgetSwitcher No"));
 	}
 }
+void UJS_CreateRoomWidget::SetRoomInfo()
+{
+
+	RoomName = ED_RoomName->GetText().ToString();
+	RoomDescription = ED_MultiText->GetText().ToString();
+
+	// �߰��� ��: bPrivate -> RoomPP ��ȯ
+	RoomPP = FString::FromInt(bPrivate);
+
+}
 //private, public
 void UJS_CreateRoomWidget::SwitchToWidget_PP(int32 index)
 {
@@ -229,6 +395,9 @@ void UJS_CreateRoomWidget::CompleteCreateRoom()
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UJS_CreateRoomWidget::DelayedSwitchToWidget, 0.7f, false);
 // 		SwitchToWidget(3);
 	}
+
+	SetParticle();
+	httpActor->SetNewBackGroundSound();
 }
 void UJS_CreateRoomWidget::DelayedSwitchToWidget()
 {
@@ -301,11 +470,11 @@ void UJS_CreateRoomWidget::SendCompleteRoomData()
 	FString SubObject = "1";
 	FString Background = "1";
 	FString WeatherParticle = "particle_maple";
-	FString RoomName = ED_RoomName->GetText().ToString();
-	RoomDescription = ED_MultiText->GetText().ToString();
-
-	// �߰��� ��: bPrivate -> RoomPP ��ȯ
-	FString RoomPP = FString::FromInt(bPrivate);
+// 	RoomName = ED_RoomName->GetText().ToString();
+// 	RoomDescription = ED_MultiText->GetText().ToString();
+// 
+// 	// �߰��� ��: bPrivate -> RoomPP ��ȯ
+// 	RoomPP = FString::FromInt(bPrivate);
 
 	// �߰��� ��: Quadrant (������ ��, ���� ������ �ּ���)
 	FString Quadrant = "1";  // ���� ��, ���� ���� �־��ּ���.

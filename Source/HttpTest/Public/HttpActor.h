@@ -67,7 +67,8 @@ public:
 	void RoomDataResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
 	void ReqPostChoice(FString url, FString json);
-	void OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+	//void OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);   // <--- 통신 시 해제
+	void OnResPostChoice();  // <--- 테스트용
 	//void OnResPostBackRoom(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
 
@@ -108,6 +109,13 @@ public:
 	//마이월드 인입 시 셋팅
 	class AJS_SoundActor* SoundActor;
 	void SetBackgroundSound();
+	void SetNewBackGroundSound();
+	//  노래 설정
+
+
+    UPROPERTY()
+    class USoundBase* NewSound;
+
 
 	class AKGW_RoomlistActor* MyWorldPlayer;
 	void ApplyMyWorldPointLightColors();
@@ -119,6 +127,9 @@ public:
 	void CallHttpClickMyRoomList(FString room_num);
 	void ReqPostClickMyRoomList(FString url, FString json);
 	void OnResPostClickMyRoomList(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+
+	//통신X, 데이터 읽어서 실행할 때
+	FString ReadAndParseJSON();
 	/* Sunny  end------------------------------------------------------------------------------------ */
 
 

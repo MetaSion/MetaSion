@@ -16,6 +16,24 @@ void UJS_ExplainWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
+    pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+    if (!pc) {
+        UE_LOG(LogTemp, Error, TEXT("PlayerController not found in the level!"));
+        return;
+    }
+    httpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
+    if (!httpActor)
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor not found in the level!"));
+        return;
+    }
+    SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+    if (!SessionGI)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to cast to USessionGameInstance!"));
+        return;
+    }
+
     // Initialize animations array
     Animations = {
         TextAnimation_1,
@@ -23,7 +41,11 @@ void UJS_ExplainWidget::NativeConstruct()
         TextAnimation_3,
         TextAnimation_4
     };
-
+    if (!Ex_WidgetSwitcher || Animations.IsEmpty() || !GetWorld())
+    {
+        UE_LOG(LogTemp, Error, TEXT("Widget initialization failed! Check Ex_WidgetSwitcher, Animations, or GetWorld."));
+        return;
+    }
     CurrentBallActor = nullptr;
     CurrentParticleActor = nullptr;
     CurrentAnimationIndex = 0;
@@ -37,7 +59,7 @@ void UJS_ExplainWidget::NativeConstruct()
             CurrentAnimationIndex = 0;
             PlayAnimation(Animations[0]);
 
-            // ¾Ö´Ï¸ÞÀÌ¼Ç ½ÃÀÛ 1ÃÊ ÈÄ¿¡ ¾×¼Ç ½ÇÇà
+            // ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ ï¿½Ä¿ï¿½ ï¿½×¼ï¿½ ï¿½ï¿½ï¿½ï¿½
             GetWorld()->GetTimerManager().SetTimer(
                 ActionTimerHandle,
                 this,
@@ -51,14 +73,24 @@ void UJS_ExplainWidget::NativeConstruct()
 
     FString JsonString = TEXT("{\"values\": [3, 2, 1, \"testuser\"]}");
     httpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
-    httpActor->ReqPostChoice(httpActor->EnteryLobbyURL, JsonString);
+    if (!httpActor)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to find AHttpActor in the level!"));
+        return;
+    }
+    //httpActor->ReqPostChoice(httpActor->EnteryLobbyURL, JsonString);
 
     SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+    if (!SessionGI)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to cast to USessionGameInstance!"));
+        return;
+    }
  }
 
 void UJS_ExplainWidget::ExecuteActionWithDelay()
 {
-    // ÇöÀç ¾Ö´Ï¸ÞÀÌ¼Ç ÀÎµ¦½º¿¡ ÇØ´çÇÏ´Â ¾×¼Ç ½ÇÇà
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½×¼ï¿½ ï¿½ï¿½ï¿½ï¿½
     HandleActionForIndex(CurrentAnimationIndex);
 }
 
@@ -66,7 +98,7 @@ void UJS_ExplainWidget::OnAnimationFinished_Implementation(const UWidgetAnimatio
 {
     Super::OnAnimationFinished_Implementation(Animation);
 
-    // ÇöÀç ¾×ÅÍµéÀ» Á¤¸®
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Íµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     CleanupCurrentActors();
 
     if (Nextindex < Animations.Num())
@@ -75,13 +107,17 @@ void UJS_ExplainWidget::OnAnimationFinished_Implementation(const UWidgetAnimatio
         {
             Ex_WidgetSwitcher->SetActiveWidgetIndex(Nextindex);
         }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("Ex_WidgetSwitcher is not properly set or has no children!"));
+        }
 
         if (Animations[Nextindex])
         {
             CurrentAnimationIndex = Nextindex;
             PlayAnimation(Animations[Nextindex]);
 
-            // ´ÙÀ½ ¾Ö´Ï¸ÞÀÌ¼Ç ½ÃÀÛ 1ÃÊ ÈÄ¿¡ ¾×¼Ç ½ÇÇà
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ ï¿½Ä¿ï¿½ ï¿½×¼ï¿½ ï¿½ï¿½ï¿½ï¿½
             GetWorld()->GetTimerManager().SetTimer(
                 ActionTimerHandle,
                 this,
@@ -117,7 +153,7 @@ void UJS_ExplainWidget::HandleActionForIndex(int32 index)
         ShowAIAnalysis();
         break;
     case 3:
-        ShowMyPage();
+        GetWorld()->GetTimerManager().SetTimer(LevelTimerHandle, this, &UJS_ExplainWidget::ShowMyPage, 1.0f, false);
         break;
     default:
         break;
@@ -133,7 +169,7 @@ void UJS_ExplainWidget::SpawnBall()
         return;
     }
 
-    // ÀÌÀü ¾×ÅÍ Á¤¸®
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     if (CurrentBallActor)
     {
         CurrentBallActor->Destroy();
@@ -143,8 +179,7 @@ void UJS_ExplainWidget::SpawnBall()
     FVector Location = FVector(-470270, 643800, 648140);
     FRotator Rotation = FRotator::ZeroRotator;
 
-    CurrentBallActor = GetWorld()->SpawnActor<AJS_ShowColorActor>(
-        SpawnShowColorActorFactory, Location, Rotation);
+    CurrentBallActor = GetWorld()->SpawnActor<AJS_ShowColorActor>(SpawnShowColorActorFactory, Location, Rotation);
 
     if (CurrentBallActor)
     {
@@ -164,7 +199,7 @@ void UJS_ExplainWidget::SpawnParticle()
         return;
     }
 
-    // ÀÌÀü ¾×ÅÍ Á¤¸®
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     if (CurrentParticleActor)
     {
         CurrentParticleActor->Destroy();
@@ -200,7 +235,7 @@ void UJS_ExplainWidget::ShowMyPage()
 
 void UJS_ExplainWidget::CleanupCurrentActors()
 {
-    // ±âÁ¸ ¾×ÅÍ Á¦°Å
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     if (CurrentBallActor)
     {
         CurrentBallActor->Destroy();
@@ -213,7 +248,7 @@ void UJS_ExplainWidget::CleanupCurrentActors()
         CurrentParticleActor = nullptr;
     }
 
-    // Å¸ÀÌ¸Ó°¡ ¾ÆÁ÷ ½ÇÇà ÁßÀÌ¶ó¸é Á¤¸®
+    // Å¸ï¿½Ì¸Ó°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¶ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     if (GetWorld())
     {
         GetWorld()->GetTimerManager().ClearTimer(ActionTimerHandle);
@@ -222,5 +257,10 @@ void UJS_ExplainWidget::CleanupCurrentActors()
 
 void UJS_ExplainWidget::SetAIAnalysis(const FString& Text)
 {
+    if (!txt_AIAnalysis)
+    {
+        UE_LOG(LogTemp, Error, TEXT("txt_AIAnalysis is nullptr!"));
+        return;
+    }
     txt_AIAnalysis->SetText(FText::FromString(Text));
 }
