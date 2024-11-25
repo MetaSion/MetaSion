@@ -92,7 +92,8 @@ void UKGW_ChoiceSaveBF::SaveChoicesToJsonFile(UObject* WorldContextObject)
     }
 
     // MySessionName(userID)을 가져옵니다.
-    FString userID = SessionGI->GetMySessionName();
+    FString userID = SessionGI->GetMySessionName(); 
+//     FString userID = 
     FString ServerURL = FString::Printf(TEXT("mirrora.duckdns.org:3326/api/auth/processAndSendData"));
 
     UE_LOG(LogTemp, Warning, TEXT("Generated Server URL: %s"), *ServerURL);
