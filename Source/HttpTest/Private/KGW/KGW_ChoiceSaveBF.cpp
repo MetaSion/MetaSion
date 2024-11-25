@@ -249,14 +249,14 @@ TArray<FColorData> UKGW_ChoiceSaveBF::ParseJsonToRGB(const FString& JsonString)
 void UKGW_ChoiceSaveBF::StoreChoice(FString Question, FString SelectedValue)
 //void UKGW_ChoiceSaveBF::StoreChoice(FString Question, FString SelectedValue)  <-- 수정 필요
 {
-    UE_LOG(LogTemp, Warning, TEXT("UKGW_ChoiceSaveBF::StoreChoice()"));
+//     UE_LOG(LogTemp, Warning, TEXT("UKGW_ChoiceSaveBF::StoreChoice()"));
     SelectedChoices.Add(Question, SelectedValue);
 }
 
 void UKGW_ChoiceSaveBF::StoreSelectedMyRoom(FString Object, FString SelectedValue)
 //void UKGW_ChoiceSaveBF::StoreChoice(FString Question, FString SelectedValue)  <-- 수정 필요
 {
-    UE_LOG(LogTemp, Warning, TEXT("UKGW_ChoiceSaveBF::StoreSelectedMyRoom()"));
+//     UE_LOG(LogTemp, Warning, TEXT("UKGW_ChoiceSaveBF::StoreSelectedMyRoom()"));
     WheaterChoices.Add(Object, SelectedValue);
 }
 
