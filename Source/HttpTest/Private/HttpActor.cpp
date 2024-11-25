@@ -602,7 +602,7 @@ void AHttpActor::RoomDataResPost(FHttpRequestPtr Request, FHttpResponsePtr Respo
 // MyWorld Setting Data Start--------------------------------------------------------------
 void AHttpActor::ReqPostChoice(FString url, FString json)
 {
-    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ReqPostChoice()"));
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ReqPostChoice() : %s"), *url);
     FHttpModule& httpModule = FHttpModule::Get();
     TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
 
@@ -611,6 +611,7 @@ void AHttpActor::ReqPostChoice(FString url, FString json)
     req->SetVerb(TEXT("POST"));
     req->SetHeader(TEXT("content-type"), TEXT("application/json"));
     req->SetContentAsString(json);
+    req->SetTimeout(30000.0f);
 
     //req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::OnResPostChoice);  // <--- 통신 시 해제
 
@@ -625,6 +626,7 @@ void AHttpActor::ReqPostChoice(FString url, FString json)
 //void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)  // <--- 통신 시 해제
 void AHttpActor::OnResPostChoice()  // <-- 테스트용
 {
+    //UE_LOG(LogTemp, Warning, TEXT("bConnectedSuccessfully is : %d"), bConnectedSuccessfully);
     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice()"));
     //if (bConnectedSuccessfully && Response.IsValid())
     //{
@@ -1253,6 +1255,7 @@ void AHttpActor::CallHttpClickMyRoomList(FString room_num)
 
     // JSON 형식으로 변환
     FString JsonRequest = UJsonParseLib::MakeJson(MyRoomNum);
+    
     
     ReqPostClickMyRoomList(ClickMyRoomURL, JsonRequest);
 }
