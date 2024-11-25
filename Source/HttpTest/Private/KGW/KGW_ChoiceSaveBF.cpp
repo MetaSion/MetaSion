@@ -101,7 +101,7 @@ void UKGW_ChoiceSaveBF::SaveChoicesToJsonFile(UObject* WorldContextObject)
     if (PostChoice)
     {
         //PostChoice->ReqPostChoice(ServerURL, JsonString);
-        PostChoice->OnResPostChoice();
+        PostChoice->OnResPostChoice();  // 통신x 테스트용
         UE_LOG(LogTemp, Warning, TEXT("ReqPostChoice called successfully with userID: %s"), *userID);
     }
     else
