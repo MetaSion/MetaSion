@@ -33,7 +33,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Color")
     void SetMaterialColor(FLinearColor newColor);
 
-	 //ÆÄÆ¼Å¬ È¿°ú ----------------------------------------------------------
+	 //ï¿½ï¿½Æ¼Å¬ È¿ï¿½ï¿½ ----------------------------------------------------------
     UPROPERTY(EditAnyWhere, Category = "VFX")
 	class UNiagaraComponent* CircleNiagara;
     UFUNCTION()

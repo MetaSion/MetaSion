@@ -407,9 +407,9 @@ void AHttpActor::RoomSendDataResPost(FHttpRequestPtr Request, FHttpResponsePtr R
             // Parse ParticleNum
             WorldSetting.ParticleNum = JsonObject->GetStringField(TEXT("Particle_num"));
             // Parse Result
-            WorldSetting.Result = JsonObject->GetStringField(TEXT("result"));
-            WorldSetting.Result2 = JsonObject->GetStringField(TEXT("result2"));
-            WorldSetting.Result3 = JsonObject->GetStringField(TEXT("result3"));
+            WorldSetting.Result = JsonObject->GetStringField(TEXT("result"));   // 분석결과
+            WorldSetting.Result2 = JsonObject->GetStringField(TEXT("result2")); // 아바타 색 이유
+            WorldSetting.Result3 = JsonObject->GetStringField(TEXT("result3")); // 파티클 이유
             if (SessionGI) {
                 SessionGI->AIResult = JsonObject->GetStringField(TEXT("result"));
             }
