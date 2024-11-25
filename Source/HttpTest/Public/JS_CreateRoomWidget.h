@@ -29,7 +29,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	class AJS_RoomController* pc;
 
-
+    
 
     UPROPERTY(meta=(BindWidget))
     class UButton* btn_CreateRoom_Yes;   
