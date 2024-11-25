@@ -104,7 +104,7 @@ struct FMyWorldSetting
     UPROPERTY(BlueprintReadWrite)
     TArray<FMyRGBColor> RGB18;
     UPROPERTY(BlueprintReadWrite)
-    FString UserMusic;
+    FString UserMusic ;
     UPROPERTY(BlueprintReadWrite)
     FString Quadrant;
 	UPROPERTY(BlueprintReadWrite)

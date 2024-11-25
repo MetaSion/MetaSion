@@ -35,10 +35,10 @@ void UHttpWidget::SendLoginData()
 	UE_LOG(LogTemp, Warning, TEXT("UHttpWidget::SendLoginData()"));
 	// ����ü�� �ִ� ������ UI �ؽ�Ʈ ���� �־���� ��.
 	FLogin loginData;
-	//loginData.userId = userId->GetText().ToString();
-	//loginData.userpass = userpass->GetText().ToString();
-	loginData.userId = TEXT("testuser");
-	loginData.userpass = TEXT("testpassword");;
+	loginData.userId = userId->GetText().ToString();
+	loginData.userpass = userpass->GetText().ToString();
+// 	loginData.userId = TEXT("testuser");
+// 	loginData.userpass = TEXT("testpassword");;
 
 	FString json = UJsonParseLib::Login_Convert_StructToJson(loginData);
 	//Login��û
