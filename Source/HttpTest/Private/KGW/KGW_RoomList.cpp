@@ -2,28 +2,30 @@
 
 #include "KGW/KGW_RoomList.h"
 #include "KGW/KGW_UserRoomName.h"
+#include "HttpActor.h"
+#include "JS_RoomController.h"
+#include "JS_OnClickRoomUI.h"
+#include "JS_ShowColorActor.h"
+#include "JS_RoomButton.h"
+#include "CJS/CJS_InnerWorldParticleActor.h"
+#include "CJS/CJS_InnerWorldSettingWidget.h"
+
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
-#include "HttpActor.h"
 #include "Components/MultiLineEditableTextBox.h"
 #include "Components/Button.h"
-#include "Kismet/GameplayStatics.h"
-#include "CJS/CJS_InnerWorldSettingWidget.h"
-#include "Components/WidgetSwitcher.h"
-#include "JS_RoomController.h"
-#include "Engine/Texture2D.h"
 #include "Components/Image.h"
 #include "Components/UniformGridPanel.h"
+#include "Components/WidgetSwitcher.h"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Components/SizeBox.h"
 #include "Engine/LevelStreamingDynamic.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Engine/SceneCapture2D.h"
-#include "Components/SceneCaptureComponent2D.h"
+#include "Engine/Texture2D.h"
+#include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/SizeBox.h"
-#include "JS_OnClickRoomUI.h"
-#include "CJS/CJS_InnerWorldParticleActor.h"
-#include "JS_ShowColorActor.h"
-#include "JS_RoomButton.h"
+
 
 void UKGW_RoomList::NativeConstruct()
 {
@@ -34,6 +36,7 @@ void UKGW_RoomList::NativeConstruct()
 	btn_List_of_all_rooms->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowListOfAllRooms);
     btn_MyRoom->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickInnerWorld);
     btn_MultiWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickMultiWorld);
+    btn_ShowCharacter->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowCharacterUI);
 
     pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
     if (!pc) {
@@ -63,36 +66,64 @@ void UKGW_RoomList::NativeConstruct()
     InitializeOnClickRoomUI();
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
     if (LevelName == "Main_Sky") {
-        GetWorld()->GetTimerManager().SetTimer(SpawnBallTimerHandle, this, &UKGW_RoomList::SpawnBall, 3.2f, false);
+        //GetWorld()->GetTimerManager().SetTimer(SpawnBallTimerHandle, this, &UKGW_RoomList::SpawnBall, 3.2f, false);
+        GetWorld()->GetTimerManager().SetTimer(SpawnBallTimerHandle, this, &UKGW_RoomList::ShowCharacterUI, 3.2f, false);
     }
 }
 void UKGW_RoomList::SpawnBall()
 {
+    UE_LOG(LogTemp, Warning, TEXT("UKGW_RoomList::SpawnBall()"));
     if (!SpawnShowColorActorFactory)
     {
         UE_LOG(LogTemp, Error, TEXT("SpawnShowColorActorFactory is not set!"));
         return;
     }
-
     // ���� ���� ����
-    if (CurrentBallActor)
+    /*if (CurrentBallActor)
     {
         CurrentBallActor->Destroy();
         CurrentBallActor = nullptr;
-    }
-    FVector Location = FVector(-470356, 643870, 648165);
+    }*/
+    FVector Location = FVector(-470356, 643800, 648165);
     FRotator Rotation = FRotator::ZeroRotator;
 
+    FMyRGBColor RGB = SGI->WorldSetting.RGB;
+    FLinearColor ColorToSet(RGB.R, RGB.G, RGB.B);
     CurrentBallActor = GetWorld()->SpawnActor<AJS_ShowColorActor>(SpawnShowColorActorFactory, Location, Rotation);
     if (CurrentBallActor)
     {
         UE_LOG(LogTemp, Log, TEXT("Successfully spawned ball at Location: %s"), *Location.ToString());
+
+        CurrentBallActor->SetMaterialColor(ColorToSet);
     }
     else
     {
         UE_LOG(LogTemp, Error, TEXT("Failed to spawn ball!"));
     }
+
+    FMyWorldSetting WorldSetting = SGI->WorldSetting;
+    FString explain = WorldSetting.Result2;
+    UE_LOG(LogTemp, Warning, TEXT("UKGW_RoomList::SpawnBall() explain %s"), *explain);
+    if (txt_SG_ColorReason)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("txt_SG_ColorReason exsited"));
+        txt_SG_ColorReason->SetText(FText::FromString(explain));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("txt_SG_ColorReason nullptr"));
+    }
 }
+void UKGW_RoomList::DestroyBall()
+{
+    UE_LOG(LogTemp, Warning, TEXT("UKGW_RoomList::DestroyBall()"));
+    if (CurrentBallActor)
+    {
+        CurrentBallActor->Destroy();
+        CurrentBallActor = nullptr;
+    }
+}
+
 void UKGW_RoomList::ChangeCanvas(int32 index)
 {
     if (WS_RoomList) {
@@ -107,27 +138,37 @@ void UKGW_RoomList::ChangeCanvas(int32 index)
         case 2:
             //파티클 스폰
             HideOnClickRoomUI();
-            SpawnParticle();
+            if (CurrentBallActor) DestroyBall();
+            SpawnParticle();     
             break;
         case 3:
             //AI 결과 저장해서 보여주기
             HideOnClickRoomUI();
+            if (CurrentBallActor) DestroyBall();
             if (CurrentParticleActor) CleanParticle();
             break;
         case 4:
-            HideOnClickRoomUI();
-            // 전체방목록 데이터 받아서 보여주기
-            if (CurrentParticleActor) CleanParticle();
             // 내방목록 데이터 받아서 보여주기
+            HideOnClickRoomUI();
+            if (CurrentBallActor) DestroyBall();
+            if (CurrentParticleActor) CleanParticle();
             break;
         case 5:
-            HideOnClickRoomUI();
             // 전체방목록 데이터 받아서 보여주기
+            HideOnClickRoomUI();
+            if (CurrentBallActor) DestroyBall();
             if (CurrentParticleActor) CleanParticle();
+            break;
+        case 6:
+            // 캐릭터 데이터 받아서 보여주기
+            HideOnClickRoomUI();
+            if (CurrentParticleActor) CleanParticle();
+            SpawnBall();
             break;
         default:
             HideOnClickRoomUI();
             if (CurrentParticleActor) CleanParticle();
+            if (CurrentBallActor) DestroyBall();
             break;
         }
     }
@@ -176,6 +217,11 @@ void UKGW_RoomList::ShowListOfAllRooms()
     }
     ChangeCanvas(5);
 }
+void UKGW_RoomList::ShowCharacterUI()
+{
+    ChangeCanvas(6);
+}
+
 // GridPanel 부분 -------------------------------------------------------------
 void UKGW_RoomList::AddImageToGrid(FString TexturePath)
 {
@@ -332,7 +378,8 @@ void UKGW_RoomList::SpawnParticle()
     }
     CleanParticle();
     
-    FVector Location = FVector(-470990.0f, 643286.0f, 648362.0f);
+    //FVector Location = FVector(-470990.0f, 643286.0f, 648362.0f); 
+    FVector Location = FVector(-470356.0f, 643800.0f, 648165.0f); 
     FRotator Rotation = FRotator::ZeroRotator;
 
     CurrentParticleActor = GetWorld()->SpawnActor<ACJS_InnerWorldParticleActor>(
@@ -348,8 +395,8 @@ void UKGW_RoomList::SpawnParticle()
     }
     //파티클 설명 업데이트 부분
     FMyWorldSetting WorldSetting = SGI->WorldSetting;
-    SetTextLog(WorldSetting.Result2);
-
+    SetTextLog(WorldSetting.Result3);
+   
     if (CurrentParticleActor)
     {
         UE_LOG(LogTemp, Log, TEXT("Successfully spawned particle actor"));
