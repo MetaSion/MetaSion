@@ -13,11 +13,17 @@ UCLASS()
 class HTTPTEST_API UJS_RoomButton : public UButton
 {
 	GENERATED_BODY()
-
 public:
-	UJS_RoomButton();
-	FString RoomNum = "";
+
+	UPROPERTY(EditAnywhere)
+	class UKGW_RoomList* RL;
+
+	int32 RoomNum = 1;
+
+	void Initialize();
+	void SetIndex(int32 NewIndex);
+	int32 GetIndex() const;
+	UFUNCTION()
+	void OnImageClicked();
 	
-	void SetIndex(FString NewIndex);
-	FString GetIndex() const;
 };

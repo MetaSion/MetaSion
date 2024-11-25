@@ -9,6 +9,7 @@
 #include "Components/Image.h"
 #include "Kismet/GameplayStatics.h"
 #include "CJS/CJS_InnerWorldParticleActor.h"
+#include "JS_ShowColorActor.h"
 #include "KGW_RoomList.generated.h"
 
 /**
@@ -137,10 +138,8 @@ public:
 	UFUNCTION()
 	void OnImageUnhovered();
 
-	UPROPERTY(EditAnywhere)
-	class UJS_RoomButton* ImageButtonTemp;
 	UFUNCTION()
-	void OnClickedImageRoomList();
+	//void OnClickedImageRoomList();
     void ShowCommentUI(UImage* Image);
     void HideCommentUI();
 	
@@ -177,5 +176,5 @@ public:
 
 	void StartHttpMultyWorld();
 
-	FString RoomNumber = "";
+	int32 RoomNumber = -1;
 };

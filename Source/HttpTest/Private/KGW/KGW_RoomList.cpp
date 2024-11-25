@@ -170,7 +170,7 @@ void UKGW_RoomList::ShowListOfAllRooms()
         SettingPath();
         for (int32 i = 0; i < 21; i++) {
             FString RandomPath = GetRandomPath();
-            RoomNumber = FString::FromInt(i);
+            RoomNumber = i;
             AddImageToGrid(RandomPath);
         }
     }
@@ -195,10 +195,10 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
 
     // 버튼 생성
     UJS_RoomButton* ImageButton = NewObject<UJS_RoomButton>(this);
-
+    ImageButton->Initialize();
+    ImageButton->RL = this;
     //버튼의 인덱스 할당
     ImageButton->SetIndex(RoomNumber);
-    ImageButtonTemp = ImageButton;
 
     // 버튼의 배경 스타일 설정
     FButtonStyle ButtonStyle;
@@ -228,7 +228,7 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
     // 버튼 이벤트 바인딩
     ImageButton->OnHovered.AddDynamic(this, &UKGW_RoomList::OnImageHovered);
     ImageButton->OnUnhovered.AddDynamic(this, &UKGW_RoomList::OnImageUnhovered);
-    ImageButton->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickedImageRoomList);
+    //ImageButton->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickedImageRoomList);
 
     if (bRoomList) {
         int32 RowCount = UGP_RoomList->GetChildrenCount() / 3;
@@ -298,21 +298,21 @@ void UKGW_RoomList::OnImageUnhovered()
     // 호버 해제 시 댓글 UI 숨김
     HideCommentUI();
 }
-void UKGW_RoomList::OnClickedImageRoomList()
-{
-    // 특정 레벨로 이동 여기에 루트 정보 해야함.
-    if (bRoomList) {
-        UGameplayStatics::OpenLevel(GetWorld(), FName("Main_LV_Fall"));
-    }
-    else if (bMultiRoomList) {
-        // 새로운 UI가 뜨고 뜬 UI에서 방이름, 방유사도, 코멘트 넣어서 보여주기
-        ShowOnClickRoomUI();
-        pc->HideRoomListUI();
-        if (OnClickRoomUI) {
-            OnClickRoomUI->SettingData(OnClickRoomUI->ImagePath, ImageButtonTemp);
-        }
-    }
-}
+//void UKGW_RoomList::OnClickedImageRoomList()
+//{
+//    // 특정 레벨로 이동 여기에 루트 정보 해야함.
+//    if (bRoomList) {
+//        UGameplayStatics::OpenLevel(GetWorld(), FName("Main_LV_Fall"));
+//    }
+//    else if (bMultiRoomList) {
+//        // 새로운 UI가 뜨고 뜬 UI에서 방이름, 방유사도, 코멘트 넣어서 보여주기
+//        ShowOnClickRoomUI();
+//        pc->HideRoomListUI();
+//        if (OnClickRoomUI) {
+//            OnClickRoomUI->SettingData(OnClickRoomUI->ImagePath, ImageButtonTemp);
+//        }
+//    }
+//}
 void UKGW_RoomList::ShowCommentUI(UImage* Image)
 {
     // 이미지에 대한 댓글 UI 생성 및 표시 로직

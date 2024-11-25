@@ -376,7 +376,7 @@ void ACJS_BallPlayer::Tick(float DeltaTime)
 			if (RoomActor)
 			{
 				float Distance = FVector::Dist(this->GetActorLocation(), RoomActor->GetActorLocation());
-				UE_LOG(LogTemp, Log, TEXT("ACJS_BallPlayer::Tick() Distance to %s: %f"), *RoomActor->GetName(), Distance);
+				UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::Tick() Distance to %s: %f"), *RoomActor->GetName(), Distance);
 
 				if (Distance < NearestDistance)
 				{
@@ -388,11 +388,11 @@ void ACJS_BallPlayer::Tick(float DeltaTime)
 		// 가까운 방이 ActivationDistance 내에 있으면 UI를 보여줌
 		if (NearestRoom && NearestDistance <= ActivationDistance)
 		{
-			UE_LOG(LogTemp, Log, TEXT("Nearest room is within activation distance (%f <= %f)."), NearestDistance, ActivationDistance);
+			UE_LOG(LogTemp, Warning, TEXT("Nearest room is within activation distance (%f <= %f)."), NearestDistance, ActivationDistance);
 
 			if (ClosestRoom != NearestRoom) // 가장 가까운 방이 바뀌었을 때만 처리
 			{
-				UE_LOG(LogTemp, Log, TEXT("ACJS_BallPlayer::Tick() ClosestRoom changed to: %s"), *NearestRoom->GetName());
+				UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::Tick() ClosestRoom changed to: %s"), *NearestRoom->GetName());
 				ClosestRoom = NearestRoom;
 				SetRefRoomInfo(ClosestRoom); // 방 정보를 UI에 반영
 			}
@@ -401,8 +401,8 @@ void ACJS_BallPlayer::Tick(float DeltaTime)
 		{
 			if (ClosestRoom) // 멀어졌다면 UI를 비활성화
 			{
-				UE_LOG(LogTemp, Log, TEXT("ACJS_BallPlayer::Tick() Player is out of activation distance. Clearing ClosestRoom."));
-				ClosestRoom = nullptr;
+				UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::Tick() Player is out of activation distance. Clearing ClosestRoom."));
+				//ClosestRoom = nullptr;
 				// HideRoomUI();
 			}
 		}
@@ -1263,6 +1263,7 @@ void ACJS_BallPlayer::InitializeFromJson()
 	//	float B = JsonObject->GetNumberField(TEXT("B"));
 	//	SetInitColorValue(R, G, B);
 
+	// 1. RGB 값 추출 및 SetInitColorValue 호출
 	if (SessionGI)
 	{
 		// WorldSetting에서 RGB 값 가져오기
@@ -1308,9 +1309,9 @@ void ACJS_BallPlayer::InitializeFromJson()
 			ACJS_MultiRoomActor* MultiRoomActor = Cast<ACJS_MultiRoomActor>(FoundActors[i]);
 			if (MultiRoomActor)
 			{
-				MultiRoomActors.Add(MultiRoomActor);
 				MultiRoomActor->ActorIndex = i; // 인덱스 설정
 				MultiRoomActor->RoomInfo = SuggestList[i]; // suggest_list 데이터 저장
+				MultiRoomActors.Add(MultiRoomActor);
 
 				// 로그 출력
 				UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::InitializeFromJson() Assigned Room Info to MultiRoomActor %d"), i);
