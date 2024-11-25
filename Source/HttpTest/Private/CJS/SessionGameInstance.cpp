@@ -115,9 +115,8 @@ void USessionGameInstance::OnCreateSessionComplete(FName sessionName, bool bWasS
 		PRINTLOG(TEXT("Session created successfully with name: %s"), *sessionName.ToString());
 
 		UE_LOG(LogTemp, Warning, TEXT("Before Level Travel: WorldSetting Suggest List Count: %d"), WorldSetting.suggest_list.Num());
-		GetWorld()->ServerTravel(TEXT("/Game/Junguk/Maps/Lobby?listen"));
+		GetWorld()->ServerTravel(TEXT("/Game/Main/Maps/Beta_Lobby?listen"));
 		UE_LOG(LogTemp, Warning, TEXT("After Level Travel: WorldSetting Suggest List Count: %d"), WorldSetting.suggest_list.Num());
-		
 	}
 	else
 	{
