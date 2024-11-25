@@ -71,6 +71,9 @@ public:
 	class UInputAction* IA_LobbyUI;
 	UPROPERTY(EditDefaultsOnly, Category = "INPUT")
 	class UInputAction* IA_MoveRefWorld;
+	UPROPERTY(EditDefaultsOnly, Category = "INPUT")
+	class UInputAction* IA_Camera;
+
 	
 // 	void OnMyActionMove(const FInputActionValue& Value);
 // 	void OnMyActionLook(const FInputActionValue& Value);
