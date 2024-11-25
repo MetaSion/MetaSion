@@ -100,7 +100,8 @@ void UKGW_ChoiceSaveBF::SaveChoicesToJsonFile(UObject* WorldContextObject)
     AHttpActor* PostChoice = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(WorldContextObject->GetWorld(), AHttpActor::StaticClass()));
     if (PostChoice)
     {
-        PostChoice->ReqPostChoice(ServerURL, JsonString);
+        //PostChoice->ReqPostChoice(ServerURL, JsonString);
+        PostChoice->OnResPostChoice();
         UE_LOG(LogTemp, Warning, TEXT("ReqPostChoice called successfully with userID: %s"), *userID);
     }
     else
