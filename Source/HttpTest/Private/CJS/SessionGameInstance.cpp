@@ -115,9 +115,8 @@ void USessionGameInstance::OnCreateSessionComplete(FName sessionName, bool bWasS
 		PRINTLOG(TEXT("Session created successfully with name: %s"), *sessionName.ToString());
 
 		UE_LOG(LogTemp, Warning, TEXT("Before Level Travel: WorldSetting Suggest List Count: %d"), WorldSetting.suggest_list.Num());
-		GetWorld()->ServerTravel(TEXT("/Game/Junguk/Maps/Lobby?listen"));
+		GetWorld()->ServerTravel(TEXT("/Game/Main/Maps/Beta_Lobby?listen"));
 		UE_LOG(LogTemp, Warning, TEXT("After Level Travel: WorldSetting Suggest List Count: %d"), WorldSetting.suggest_list.Num());
-		
 	}
 	else
 	{
@@ -544,4 +543,60 @@ void USessionGameInstance::PlayMusic(USoundBase* Music)
 
 	// AudioComponent를 MusicSound 변수에 저장
 	MusicSound = AudioComponent;
+}
+void USessionGameInstance::FadeOutAndPlayNewMusic(USoundBase* NewMusic)
+{
+	if (!NewMusic)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NewMusic is null. Cannot play music."));
+		return;
+	}
+
+	if (MusicSound)
+	{
+		// 기존 음악이 재생 중이면 페이드 아웃 실행
+		FadeOutCurrentMusic(NewMusic);
+	}
+	else
+	{
+		// 기존 음악이 없으면 바로 새로운 음악 재생
+		PlayMusic(NewMusic);
+	}
+}
+void USessionGameInstance::FadeOutCurrentMusic(USoundBase* NewMusic)
+{
+	GetWorld()->GetTimerManager().SetTimer(FadeOutTimerHandle, [this, NewMusic]()
+		{
+			if (MusicSound)
+			{
+				// 현재 볼륨 가져오기
+				float CurrentVolume = MusicSound->VolumeMultiplier;
+
+				// 볼륨이 0보다 크면 서서히 감소
+				if (CurrentVolume > 0.0f)
+				{
+					CurrentVolume = FMath::Clamp(CurrentVolume - (1.0f / FadeOutDuration) * GetWorld()->GetDeltaSeconds(), 0.0f, 1.0f);
+					MusicSound->SetVolumeMultiplier(CurrentVolume);
+				}
+				else
+				{
+					// 볼륨이 0이 되면 음악 정지
+					MusicSound->Stop();
+					MusicSound = nullptr;
+
+					// 타이머 정리
+					GetWorld()->GetTimerManager().ClearTimer(FadeOutTimerHandle);
+
+					// 새로운 음악 재생
+					PlayMusic(NewMusic);
+				}
+			}
+			else
+			{
+				// MusicSound가 null일 경우 즉시 새로운 음악 재생
+				UE_LOG(LogTemp, Warning, TEXT("MusicSound is null during fade out. Playing new music."));
+				GetWorld()->GetTimerManager().ClearTimer(FadeOutTimerHandle);
+				PlayMusic(NewMusic);
+			}
+		}, 0.1f, true); // 0.1초 간격으로 타이머 실행
 }

@@ -104,7 +104,7 @@ struct FMyWorldSetting
     UPROPERTY(BlueprintReadWrite)
     TArray<FMyRGBColor> RGB18;
     UPROPERTY(BlueprintReadWrite)
-    FString UserMusic;
+    FString UserMusic ;
     UPROPERTY(BlueprintReadWrite)
     FString Quadrant;
 	UPROPERTY(BlueprintReadWrite)
@@ -270,7 +270,16 @@ public:
 		UFUNCTION(BlueprintCallable)
 
 	void PlayMusic(USoundBase* Music);
+	void FadeOutAndPlayNewMusic(USoundBase* NewMusic);
+	void FadeOutCurrentMusic(USoundBase* NewMusic);
 	UPROPERTY(EditAnywhere)
 	class UAudioComponent* MusicSound;
+
+
+    UPROPERTY()
+    FTimerHandle FadeOutTimerHandle;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio", meta = (AllowPrivateAccess = "true"))
+    float FadeOutDuration = 1.0f; // 서서히 줄이는 시간 (초)
 };
 
