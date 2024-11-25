@@ -245,6 +245,12 @@ void AJS_RoomController::CheckDate()
         bEnableClickEvents = true;
         bEnableMouseOverEvents = true;
     }
+    else if (LevelName.Contains("Room")) {
+        bShowMouseCursor = true;
+//         bEnableClickEvents = true;
+//         bEnableMouseOverEvents = true;
+    }
+
     else {
         bShowMouseCursor = false;
         bEnableClickEvents = false;
@@ -398,7 +404,7 @@ void AJS_RoomController::PlayUIAnimation()
     UE_LOG(LogTemp, Log, TEXT(" AJS_RoomController::PlayUIAnimation()"));
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
-    if (R_UI && (LevelName == "LV_Spring" || LevelName == "LV_Summer" || LevelName == "LV_Fall" || LevelName == "LV_Winter")) {
+    if (R_UI && (LevelName == "LV_Spring" || LevelName == "LV_Summer" || LevelName == "LV_Fall" || LevelName == "LV_Winter" || LevelName == "Room_2")) {
         R_UI->PlayAnimation(R_UI->CameraSutterEffect);
     }
     else if (Ex_UI && LevelName == "Test_Main_Sky") {
@@ -462,6 +468,12 @@ void AJS_RoomController::OnClickButtonImage()
     PlayUIAnimation();
     ScreenCapture();
     R_UI->SendWallPaperData();
+    FTimerHandle TimerHandle2;
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle2, this, &AJS_RoomController::HideRoomUI, 1.5f, false);
+
+    // 네 번째 함수 호출 (1.5초 뒤 실행)
+    FTimerHandle TimerHandle3;
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle3, this, &AJS_RoomController::ShowCreateRoomUI, 1.5f, false);
     GetWorld()->GetTimerManager().SetTimer(HeartUITimer, this, &AJS_RoomController::ShowHeartUITimer, 1.0f, false);
 }
 

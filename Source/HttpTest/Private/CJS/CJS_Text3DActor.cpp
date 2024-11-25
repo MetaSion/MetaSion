@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "HttpWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "CJS/SessionGameInstance.h"
 
 
 
@@ -19,6 +20,10 @@ void ACJS_Text3DActor::BeginPlay()
 
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
     UE_LOG(LogTemp, Warning, TEXT("ACJS_Text3DActor::BeginPlay() LevelName : %s"), *LevelName);
+    FString AssetPath = FString::Printf(TEXT("/Game/Main/Maps/BackGroundSound/wind_wave_bird.wind_wave_bird"));
+    auto* BackSound = Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, *AssetPath));
+
+    GameInstance = Cast<USessionGameInstance>(GetGameInstance());
 
     if (LevelName.Contains("Question"))
     {
@@ -48,6 +53,13 @@ void ACJS_Text3DActor::BeginPlay()
     }
     else if (LevelName.Contains("Login"))
     {
+
+        if (GameInstance)
+        {
+            GameInstance->PlayMusic(BackSound);
+            UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance is set"));
+        }
+
         UE_LOG(LogTemp, Warning, TEXT("ACJS_Text3DActor::BeginPlay() LevelName.Contains->Main_Login"));
     }
     

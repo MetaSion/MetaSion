@@ -29,68 +29,66 @@ public:
 	class USessionGameInstance* SGI;
 	UPROPERTY()
 	class AHttpActor* HttpActor;
-
 	UPROPERTY(EditAnywhere)
 	class USessionGameInstance* GameInstance;
-
 	UPROPERTY(EditAnywhere)
     class AJS_RoomController* pc;
 
 	UPROPERTY(meta = (BindWidget))
 	class UScrollBox* ScrollBox;
-
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* Text_RecomendRoom;
-
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* TxtBox_Report;
-
 	UPROPERTY(meta = (BindWidget))
 	class UButton* btn_ShowParticle;
-
 	UPROPERTY(meta = (BindWidget))
 	class UButton* btn_MyRoom;
-
 	UPROPERTY(meta = (BindWidget))
 	class UButton* btn_MyRoom_List;
-
 	UPROPERTY(meta = (BindWidget))
 	class UButton* btn_List_of_all_rooms;
-
 	UPROPERTY(meta = (BindWidget))
 	class UButton* btn_MultiWorld;
+	UPROPERTY(meta = (BindWidget))
+	class UButton* btn_ShowCharacter;
 
 	//Reasons for recommending particles
 	UPROPERTY(meta = (BindWidget))
 	class UMultiLineEditableTextBox* txt_SG_ParticleReason;
+	UPROPERTY(meta = (BindWidget))
+	class UMultiLineEditableTextBox* txt_SG_ColorReason;
 
 	//SwitchWidget
 	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* WS_RoomList;
 
+	// Particle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
     TSubclassOf<ACJS_InnerWorldParticleActor> ParticleActorFactory;
-	// MyPage ºÎºÐ ------------------------------------
+
+	// MyPage ï¿½Îºï¿½ ------------------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Factory")
 	TSubclassOf<class UJS_OnClickRoomUI> OnClickRoomUIFactory;
 	UPROPERTY(EditAnywhere)
     class UJS_OnClickRoomUI* OnClickRoomUI;
 
-	// SpawnBall ºÎºÐ ----------------------------------------------
-
+	// SpawnBall ï¿½Îºï¿½ ----------------------------------------------
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
     TSubclassOf<class AJS_ShowColorActor> SpawnShowColorActorFactory;
     UPROPERTY()
-    AJS_ShowColorActor* CurrentBallActor;// ÇöÀç ½ºÆùµÈ Ball ÃßÀû
+    AJS_ShowColorActor* CurrentBallActor;// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ball ï¿½ï¿½ï¿½ï¿½
 
 	FTimerHandle SpawnBallTimerHandle;
 
 	void SpawnBall();
-	// SpawnBall ºÎºÐ ----------------------------------------------
+	void DestroyBall();
+	// SpawnBall ï¿½Îºï¿½ ----------------------------------------------
+	
 	UPROPERTY()
     AActor* CurrentParticleActor;
 	
-	//°æ·Î ¼¼ÆÃ
+	//ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	TArray<FString> ImagePath;
 	void SettingPath();
 	FString GetRandomPath();
@@ -102,8 +100,10 @@ public:
 	void CleanParticle();
 	void AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos);
 
+
 	// switcher indexï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ canvasï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 	void ChangeCanvas(int32 index);
+	
 	// Side Menu
 	UFUNCTION()
 	void ShowMenuUI();
@@ -113,17 +113,18 @@ public:
 	void ShowAIAnalysisUI();*/
 	UFUNCTION()
 	void ShowMyRoomListUI();
-
 	UFUNCTION()
 	void ShowListOfAllRooms();
+	UFUNCTION()
+	void ShowCharacterUI();
 
-	//±×¸®µå ÆÐ³Î ºÎºÐ
+	//ï¿½×¸ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ ï¿½Îºï¿½
     UPROPERTY(meta = (BindWidget))
     UUniformGridPanel* UGP_RoomList;
 	UPROPERTY(meta = (BindWidget))
 	UUniformGridPanel* UGP_Multi_RoomList;
 
-	//ÀÌ¹ÌÁö Ãß°¡ µÆ´ÂÁö È®ÀÎ
+	//ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½Æ´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
 	bool bIsListMyRooms = false;
 	bool bIsListAllRooms = false;
 	bool bRoomList = false;
@@ -145,7 +146,7 @@ public:
 	
 	void SpawnParticle();
 
-	// MyPage ºÎºÐ End ------------------------------------
+	// MyPage ï¿½Îºï¿½ End ------------------------------------
 	
 	// 	void SetRecomendRoomName(const )
 

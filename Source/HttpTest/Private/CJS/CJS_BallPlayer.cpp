@@ -41,6 +41,8 @@
 #include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraFunctionLibrary.h"
 #include "GameFramework/Actor.h"
 #include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraComponent.h"
+#include "Camera/CameraActor.h"
+#include "EngineUtils.h"
 
 
 
@@ -449,6 +451,8 @@ void ACJS_BallPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		input->BindAction(IA_LobbyUI, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionLobbyUI);
 		// 체험방 이동
 		input->BindAction(IA_MoveRefWorld, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionMoveRefWorld);
+
+		
 		// 숫자키 애니메이션 (인덱스 사용해 바인딩)
 		for (int32 i = 0; i < 8; i++)
 		{
@@ -719,12 +723,14 @@ void ACJS_BallPlayer::OnMyActionShowInnerWorldUI(const FInputActionValue& Value)
 			return;
 		}
 
-		if (SessionGI->GetbRefRoomUIMultiOn())
+		/*if (SessionGI->GetbRefRoomUIMultiOn())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI() SessionGI->GetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
 			return;
 		}
 		else
+		{*/
+		if (SessionGI)
 		{
 			SessionGI->SetbRefRoomUIMultiOn(true);
 			if (SessionGI->GetbRefRoomUIMultiOn())
@@ -772,6 +778,11 @@ void ACJS_BallPlayer::OnMyActionShowInnerWorldUI(const FInputActionValue& Value)
 				UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI()SessionGI->GetbRefRoomUIMultiOn() true!! "));
 			}
 		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionShowInnerWorldUI()SessionGI Null!! "));
+		}
+		//}
 	}
 	else
 	{
@@ -788,12 +799,36 @@ void ACJS_BallPlayer::OnMyActionLobbyUI(const FInputActionValue& Value)
 	{
 		//LobbyUI->SetVisibility(ESlateVisibility::Visible);
 		LobbyUI->ShowLobbyUIFirstOrder();
+		if(PC)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionLobbyUI() PC exsited"));
+			PC->SetIgnoreLookInput(true); // 카메라 회전에 대한 마우스 입력 비활성화
+			PC->bShowMouseCursor = true;
+			PC->bEnableClickEvents = true;
+			PC->bEnableMouseOverEvents = true;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionLobbyUI() NO PC"));
+		}
 		bShowLobbyUI = true;
 	}
 	else
 	{
 		//LobbyUI->SetVisibility(ESlateVisibility::Hidden);
 		LobbyUI->HideLobbyUIFirstOrder();
+		if (PC)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::OnMyActionLobbyUI() PC exsited"));
+			PC->SetIgnoreLookInput(false); // 카메라 회전에 대한 마우스 입력 비활성화
+			PC->bShowMouseCursor = false;
+			PC->bEnableClickEvents = false;
+			PC->bEnableMouseOverEvents = false;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::OnMyActionLobbyUI() NO PC"));
+		}
 		bShowLobbyUI = false;
 	}
 }
@@ -1148,18 +1183,52 @@ void ACJS_BallPlayer::MoveToMultiRoom(APlayerController* RequestingPC)
 	{
 		// 체험방 위치 정의 (Room3 및 Room4)
 		FVector Room3Location(308907.221385f, 923351.405033f, -3730.988342f);
-		FVector Room4Location(1895545.290658f, 1285152.582352f, 520820.178077f);
+		//FVector Room4Location(1895545.290658f, 1285152.582352f, 520820.178077f);
 
 		// 랜덤으로 위치 선택
-		FVector NewLocation = FMath::RandBool() ? Room3Location : Room4Location;
+		//FVector NewLocation = FMath::RandBool() ? Room3Location : Room4Location;
 
 		// 선택된 위치로 이동
-		ControlledPawn->SetActorLocation(NewLocation);
-		UE_LOG(LogTemp, Log, TEXT("MoveToMultiRoom():: ControlledPawn moved to location: %s"), *NewLocation.ToString());
+		//ControlledPawn->SetActorLocation(NewLocation);
+		ControlledPawn->SetActorLocation(Room3Location);
+		//UE_LOG(LogTemp, Warning, TEXT("MoveToMultiRoom():: ControlledPawn moved to location: %s"), *NewLocation.ToString());
+		UE_LOG(LogTemp, Warning, TEXT("MoveToMultiRoom():: ControlledPawn moved to location: %s"), *Room3Location.ToString());
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("MoveToMultiRoom():: ControlledPawn is null!"));
+	}
+
+	// 마우스 커서 표시 및 이벤트 활성화
+	RequestingPC->bShowMouseCursor = true;
+	RequestingPC->bEnableClickEvents = true;
+	RequestingPC->bEnableMouseOverEvents = true;
+	RequestingPC->SetIgnoreLookInput(true); // 카메라 회전에 대한 마우스 입력 비활성화
+	UE_LOG(LogTemp, Warning, TEXT("MoveToMultiRoom():: Mouse cursor and Look input ignore."));
+
+	// BallPlayer를 Hidden으로 설정
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false); // 필요 시 충돌 비활성화
+	UE_LOG(LogTemp, Warning, TEXT("MoveToMultiRoom():: ControlledPawn is now hidden."));
+	bShowRefRoomInfoUI = true;
+
+	// 새로운 카메라 액터 생성 (Room3 카메라 위치)
+	FVector CameraLocation(308445.662792f, 922703.557885f, -3140.599543f); // 지정된 위치
+	FRotator CameraRotation(0.0f, 120.0f, 0.0f); // 예제 회전값 (필요시 수정)
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this; // BallPlayer를 소유자로 설정
+	ACameraActor* NewCamera = GetWorld()->SpawnActor<ACameraActor>(CameraLocation, CameraRotation, SpawnParams);
+	if (NewCamera)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MoveToMultiRoom():: New camera created at location: %s"), *CameraLocation.ToString());
+
+		// 새로운 카메라로 뷰 전환
+		RequestingPC->SetViewTargetWithBlend(NewCamera, 0.5f); // 전환 시간: 0.5초 (필요시 조정 가능)
+		UE_LOG(LogTemp, Warning, TEXT("MoveToMultiRoom():: View switched to new camera."));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("MoveToMultiRoom():: Failed to create new camera actor."));
 	}
 }
 
@@ -1241,6 +1310,32 @@ void ACJS_BallPlayer::MoveToLobby(APlayerController* RequestingPC)
 		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::MoveToLobby() !SessionGI->bRefRoomUIMultiOn()"));
 	}
 
+	// 마우스 커서 표시 및 이벤트 비활성화
+	RequestingPC->bShowMouseCursor = false;
+	RequestingPC->bEnableClickEvents = false;
+	RequestingPC->bEnableMouseOverEvents = false;
+	RequestingPC->SetIgnoreLookInput(false); // 카메라 회전에 대한 마우스 입력 비활성화
+	UE_LOG(LogTemp, Warning, TEXT("MoveToMultiRoom():: lookInput activate."));
+
+	// BallPlayer를 Hidden으로 설정
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(true); // 필요 시 충돌 비활성화
+	UE_LOG(LogTemp, Warning, TEXT("MoveToMultiRoom():: ControlledPawn is now hidden."));
+	bShowRefRoomInfoUI = false;
+
+	// MultiRoom에서 생성된 카메라 액터 제거
+	for (TActorIterator<ACameraActor> It(GetWorld()); It; ++It)
+	{
+		ACameraActor* CameraActor = *It;
+		if (CameraActor && CameraActor->GetOwner() == this)
+		{
+			CameraActor->Destroy();
+			UE_LOG(LogTemp, Warning, TEXT("MoveToLobby():: Removed camera actor owned by BallPlayer."));
+		}
+	}
+	// 뷰를 다시 ControlledPawn으로 전환
+	RequestingPC->SetViewTargetWithBlend(this, 0.5f);
+	UE_LOG(LogTemp, Warning, TEXT("MoveToLobby():: View switched back to BallPlayer."));
 }
 
 // 로비 진입 시, 캐릭터 초기 설정 ================================================================================================

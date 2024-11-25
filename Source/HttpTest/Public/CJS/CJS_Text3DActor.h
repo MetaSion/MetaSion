@@ -21,6 +21,8 @@ public:
 
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
     //class UHttpWidget* LoginWidget;
+			UPROPERTY()
+	class USessionGameInstance* GameInstance;
 
 	/* Main_Login Map */
 	UFUNCTION(BlueprintCallable, Category="Text")

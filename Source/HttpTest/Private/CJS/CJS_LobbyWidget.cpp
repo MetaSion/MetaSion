@@ -45,8 +45,8 @@ void UCJS_LobbyWidget::NativeConstruct()
 
 
 	// List Panel
-	Btn_MyWorld->OnClicked.AddDynamic(this, &UCJS_LobbyWidget::OnClickMyWorld);
 	Btn_RecList->OnClicked.AddDynamic(this, &UCJS_LobbyWidget::OnClickRecList);
+	Btn_MyWorld->OnClicked.AddDynamic(this, &UCJS_LobbyWidget::OnClickMyWorld);
 }
 
 // Widget Switch Start ---------------------------------------------------------------------------------------------------

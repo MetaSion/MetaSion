@@ -27,6 +27,7 @@ void UHttpWidget::NativeConstruct()
 	pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 	HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
+
 }
 
 //Login
