@@ -831,18 +831,35 @@ void AJS_RoomController::ExecuteWallPaperPython()
 {
     UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ExecuteWallPaperPython()"));
 
-    // ?�이???�일 경로 ?�정
     FString ScriptPath = FPaths::ProjectContentDir() + TEXT("Python/Wallpaper.py");
 
-    // ?�이???�크립트 ?�행
+    // 파일 존재 여부 확인
+    if (!FPaths::FileExists(ScriptPath))
+    {
+        UE_LOG(LogTemp, Error, TEXT("Python script not found at: %s"), *ScriptPath);
+        return;
+    }
+
+    // Python 코드 로드
+    FString PythonCode;
+    if (!FFileHelper::LoadFileToString(PythonCode, *ScriptPath))
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load Python script"));
+        return;
+    }
+
     IPythonScriptPlugin* PythonPlugin = IPythonScriptPlugin::Get();
     if (PythonPlugin && PythonPlugin->IsPythonAvailable())
     {
-        PythonPlugin->ExecPythonCommand(*ScriptPath);
+        // Result 매개변수 제거
+        if (!PythonPlugin->ExecPythonCommand(*PythonCode))
+        {
+            UE_LOG(LogTemp, Error, TEXT("Python script execution failed"));
+        }
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("Python is not available in this build."));
+        UE_LOG(LogTemp, Error, TEXT("Python is not available in this build."));
     }
 }
 //Wallpaper Python Auto Execute End ------------------------------------------------------------------------
