@@ -607,3 +607,24 @@ void USessionGameInstance::FadeOutCurrentMusic(USoundBase* NewMusic)
 			}
 		}, 0.1f, true); // 0.1초 간격으로 타이머 실행
 }
+
+void USessionGameInstance::StopnPlayMusic(USoundBase* NewMusic)
+{
+	if (!NewMusic)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NewMusic is null. Cannot play music."));
+		return;
+	}
+
+	if (MusicSound)
+	{
+		// 기존 음악이 있으면 멈춤
+		MusicSound->Stop();
+		MusicSound = nullptr;
+	}
+
+	// 새로운 음악 재생
+	PlayMusic(NewMusic);
+
+	UE_LOG(LogTemp, Log, TEXT("Stopped current music and started new music."));
+}

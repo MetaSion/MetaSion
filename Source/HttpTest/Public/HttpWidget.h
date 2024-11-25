@@ -17,6 +17,8 @@ class HTTPTEST_API UHttpWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
+
+
 	UPROPERTY(EditAnywhere)
 	class AJS_RoomController* pc;
 

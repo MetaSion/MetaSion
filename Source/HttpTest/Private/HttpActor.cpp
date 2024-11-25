@@ -1101,7 +1101,7 @@ void AHttpActor::SetBackgroundSound()
         
         if (NewSound)
         {   
-            SessionGI-> PlayMusic(NewSound);
+            SessionGI->StopnPlayMusic(NewSound);
             UE_LOG(LogTemp, Warning, TEXT("Background sound changed and started playing: %s"), *UserMusic);
         }
         else
