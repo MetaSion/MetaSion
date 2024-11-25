@@ -612,7 +612,7 @@ void AHttpActor::ReqPostChoice(FString url, FString json)
     req->SetHeader(TEXT("content-type"), TEXT("application/json"));
     req->SetContentAsString(json);
 
-    req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::OnResPostChoice);
+    //req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::OnResPostChoice);  // <--- 통신 시 해제
 
     // 요청 처리
     if (!req->ProcessRequest())
@@ -622,18 +622,20 @@ void AHttpActor::ReqPostChoice(FString url, FString json)
 
     req->ProcessRequest();
 }
-void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
+//void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)  // <--- 통신 시 해제
+void AHttpActor::OnResPostChoice()  // <-- 테스트용
 {
     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice()"));
-    if (bConnectedSuccessfully && Response.IsValid())
-    {
-        // ���������� ������ �޾��� ��
-        FString ResponseContent = Response->GetContentAsString();
-        UE_LOG(LogTemp, Warning, TEXT("POST Response: %s"), *ResponseContent);
-        StoredJsonResponse = ResponseContent;
-        UE_LOG(LogTemp, Warning, TEXT("Stored JSON Response: %s"), *StoredJsonResponse);
-        //StoredJsonResponse = StoredJsonResponsetest;    // <----- 여기부터 수정  (임의값 넣고 확인해 보기)
+    //if (bConnectedSuccessfully && Response.IsValid())
+    //{
+    //    // ���������� ������ �޾��� ��
+    //    FString ResponseContent = Response->GetContentAsString();
+    //    UE_LOG(LogTemp, Warning, TEXT("POST Response: %s"), *ResponseContent);
+    //    //StoredJsonResponse = ResponseContent;
+        //UE_LOG(LogTemp, Warning, TEXT("Stored JSON Response: %s"), *StoredJsonResponse);
 
+        StoredJsonResponse = ReadAndParseJSON();  // <----- .txt파일에서 데이터 가져올 때
+        UE_LOG(LogTemp, Warning, TEXT("Stored JSON Response: %s"), *StoredJsonResponse);
         // JSON 문자열을 JSON 객체로 파싱
         TSharedPtr<FJsonObject> JsonObject;
         TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(StoredJsonResponse);
@@ -793,12 +795,12 @@ void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Respo
         {
             UE_LOG(LogTemp, Error, TEXT("AHttpActor::OnResPostChoice() Failed to parse JSON data."));
         }
-    }
-    else
-    {
-        // ��û�� �������� ��
-        UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() POST Request Failed"));
-    }
+    //}
+    //else
+    //{
+    //    // ��û�� �������� ��
+    //    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() POST Request Failed"));
+    //}
     
 }
 // void AHttpActor::ShowQuestionUI()
@@ -1334,8 +1336,38 @@ g1":null,"b1":null,"r2":null,"g2":null"b2":null,"r3":null,"g3":null,"b3":null,"r
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("Request Failed: %d"), Response->GetResponseCode());
+        UE_LOG(LogTemp, Error, TEXT("Request Failed: %d"), Response->GetResponseCode());
     }
+}
+
+// 통신X, 데이터 읽어서 실행할 때
+FString AHttpActor::ReadAndParseJSON()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ReadAndParseJSON()"));
+
+    FString FilePath = FPaths::ProjectDir() + TEXT("SavedData.txt");
+    // 디버깅용 경로 출력
+    UE_LOG(LogTemp, Warning, TEXT("File Path: %s"), *FilePath);
+
+    FString FileContent;
+    if (FFileHelper::LoadFileToString(FileContent, *FilePath))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Successed to load file: %s"), *FilePath);
+    }
+    else
+    {
+        // 파일 존재 여부 확인
+        if (!FPaths::FileExists(FilePath))
+        {
+            UE_LOG(LogTemp, Error, TEXT("File does not exist: %s"), *FilePath);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("Failed to load file: %s"), *FilePath);
+        }
+        return TEXT(""); // 실패 시 빈 문자열 반환
+    }
+    return FileContent;
 }
 
 //Getter 함수
