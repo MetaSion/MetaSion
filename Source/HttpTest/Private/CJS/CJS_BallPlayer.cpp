@@ -449,6 +449,8 @@ void ACJS_BallPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		input->BindAction(IA_LobbyUI, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionLobbyUI);
 		// 체험방 이동
 		input->BindAction(IA_MoveRefWorld, ETriggerEvent::Started, this, &ACJS_BallPlayer::OnMyActionMoveRefWorld);
+
+		
 		// 숫자키 애니메이션 (인덱스 사용해 바인딩)
 		for (int32 i = 0; i < 8; i++)
 		{
