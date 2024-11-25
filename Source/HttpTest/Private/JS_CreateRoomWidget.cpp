@@ -2,23 +2,27 @@
 
 
 #include "JS_CreateRoomWidget.h"
+#include "JS_RoomController.h"
+#include "JsonParseLib.h"
+#include "JS_WidgetFunction.h"
+#include "HttpActor.h"
+
+#include "CJS/CJS_BallPlayer.h"
+#include "CJS/CJS_InnerWorldParticleActor.h"
+#include "CJS/CJS_MultiRoomActor.h"
+#include "CJS/CJS_ChatWidget.h"
+#include "CJS/CJS_ChatTextWidget.h"
+
 #include "Components/Button.h"
 #include "Components/EditableText.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/VerticalBox.h"
-#include "JS_RoomController.h"
-#include "Kismet/GameplayStatics.h"
-#include "HttpActor.h"
-#include "JsonParseLib.h"
-#include "JS_WidgetFunction.h"
 #include "Components/MultiLineEditableText.h"
 #include "Components/MultiLineEditableTextBox.h"
-#include "CJS/CJS_ChatWidget.h"
-#include "CJS/CJS_ChatTextWidget.h"
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
-#include "CJS/CJS_BallPlayer.h"
-#include "CJS/CJS_InnerWorldParticleActor.h"
+#include "Kismet/GameplayStatics.h"
+
 
 void UJS_CreateRoomWidget::NativeConstruct()
 {
@@ -76,7 +80,44 @@ void UJS_CreateRoomWidget::OnClikMypage()
 void UJS_CreateRoomWidget::OnClikExplanation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation()"));
-	SetExplanation(CurrentText);
+
+	SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+	if (SessionGI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClikExplanation() SessionGI exised"));
+		if (SessionGI->GetbRefRoomUIMultiOn())
+		{
+			//멀티방 인덱스를 받아와서
+			APlayerController* OwningPlayer = GetWorld()->GetFirstPlayerController();
+			if (OwningPlayer)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() Set APlayerController"));
+				ACJS_BallPlayer* player = Cast<ACJS_BallPlayer>(OwningPlayer->GetPawn());
+				if (player)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() Set ACJS_BallPlayer"));
+					FString text = player->ClosestRoom->RoomInfo.roomdescription;
+					UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() text %s"), *text);
+					//방 설명 정보 삽입
+					SetExplanation(text);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::OnClikExplanation() No BallPlayer"));
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::OnClikExplanation() OwningPlayer is null"));
+			}		
+		}
+		else
+		{
+			// 이너월드 사용자가 작성한 문구
+			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() CurrentText %s"), *CurrentText);
+			SetExplanation(CurrentText);
+		}
+	}
 }
 void UJS_CreateRoomWidget::OnClickGood()
 {
@@ -167,7 +208,6 @@ void UJS_CreateRoomWidget::SetExplanation(const FString& Text)
 { 	
 	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation()"));
 	//Txt_Explane->SetText(FText::FromString(Text));
-
 	if (ChatUI)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetExplanation() ChatUI exsited"));
