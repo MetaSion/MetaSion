@@ -160,7 +160,8 @@ public:
 
 
 	// 로비 입장 시 초기 설정 ============================================================================
-	void InitializeFromJson(const FString& LocalJsonData);
+	//void InitializeFromJson(const FString& LocalJsonData);  // <--- old
+	void InitializeFromJson(); // <--- New
 
 	/* 재질 색상 */
 	FLinearColor InitColorValue; // RGB 값을 저장하는 변수 (생성 시 초기화에 사용)

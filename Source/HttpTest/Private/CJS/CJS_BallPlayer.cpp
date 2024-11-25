@@ -115,7 +115,8 @@ void ACJS_BallPlayer::BeginPlay()
 	}
 
 	// Initialize from JSON data
-	InitializeFromJson(JsonData);
+	//InitializeFromJson(JsonData);
+	InitializeFromJson();
 
 	// Material 설정 부분 추가 (SkeletalMesh 사용)
 	if (GetMesh()) // SkeletalMeshComponent 접근
@@ -1243,20 +1244,35 @@ void ACJS_BallPlayer::MoveToLobby(APlayerController* RequestingPC)
 }
 
 // 로비 진입 시, 캐릭터 초기 설정 ================================================================================================
-void ACJS_BallPlayer::InitializeFromJson(const FString& LocalJsonData)
+//void ACJS_BallPlayer::InitializeFromJson(const FString& LocalJsonData)
+void ACJS_BallPlayer::InitializeFromJson()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::InitializeFromJson()"));
-	// JSON 문자열을 JSON 객체로 파싱
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(LocalJsonData);
 
-	if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+	//// JSON 문자열을 JSON 객체로 파싱  // <--- 통신 필요 시 해제
+	//TSharedPtr<FJsonObject> JsonObject;
+	//TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(LocalJsonData);
+
+	//if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+	//{
+	//	// 1. RGB 값 추출 및 SetInitColorValue 호출
+	//	float R = JsonObject->GetNumberField(TEXT("R"));
+	//	float G = JsonObject->GetNumberField(TEXT("G"));
+	//	float B = JsonObject->GetNumberField(TEXT("B"));
+	//	SetInitColorValue(R, G, B);
+
+	if (SessionGI)
 	{
-		// 1. RGB 값 추출 및 SetInitColorValue 호출
-		float R = JsonObject->GetNumberField(TEXT("R"));
-		float G = JsonObject->GetNumberField(TEXT("G"));
-		float B = JsonObject->GetNumberField(TEXT("B"));
-		SetInitColorValue(R, G, B);
+		// WorldSetting에서 RGB 값 가져오기
+		const FMyRGBColor& RGB = SessionGI->WorldSetting.RGB;
+		// SetInitColorValue 호출
+		SetInitColorValue(RGB.R, RGB.G, RGB.B);
+		UE_LOG(LogTemp, Log, TEXT("ACJS_BallPlayer::InitializeFromJson() SetInitColorValue called with R=%f, G=%f, B=%f"), RGB.R, RGB.G, RGB.B);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::InitializeFromJson() Failed to cast GameInstance to UMySessionGameInstance."));
+	}
 
 		// 2. 월드에 배치된 20개의 MultiRoomActor를 찾고 저장
 		TArray<AActor*> FoundActors;
@@ -1267,7 +1283,7 @@ void ACJS_BallPlayer::InitializeFromJson(const FString& LocalJsonData)
 		{
 			if (!SessionGI || SessionGI->WorldSetting.suggest_list.Num() == 0)
 			{
-				UE_LOG(LogTemp, Error, TEXT("SessionGI or suggest_list is invalid!"));
+				UE_LOG(LogTemp, Error, TEXT("ACJS_BallPlayer::InitializeFromJson() SessionGI or suggest_list is invalid!"));
 				return;
 			}
 		}
@@ -1295,7 +1311,7 @@ void ACJS_BallPlayer::InitializeFromJson(const FString& LocalJsonData)
 				MultiRoomActor->RoomInfo = SuggestList[i]; // suggest_list 데이터 저장
 
 				// 로그 출력
-				UE_LOG(LogTemp, Warning, TEXT("Assigned Room Info to MultiRoomActor %d"), i);
+				UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::InitializeFromJson() Assigned Room Info to MultiRoomActor %d"), i);
 				UE_LOG(LogTemp, Warning, TEXT("  Room Name: %s"), *SuggestList[i].room_name);
 				UE_LOG(LogTemp, Warning, TEXT("  Room ID: %s"), *SuggestList[i].room_id);
 				UE_LOG(LogTemp, Warning, TEXT("  Room Num: %s"), *SuggestList[i].room_num);
@@ -1305,7 +1321,7 @@ void ACJS_BallPlayer::InitializeFromJson(const FString& LocalJsonData)
 			}
 		}
 		// 저장된 MultiRoomActor의 개수 출력
-		UE_LOG(LogTemp, Warning, TEXT("Found %d MultiRoomActors in the world."), MultiRoomActors.Num());
+		UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::InitializeFromJson() Found %d MultiRoomActors in the world."), MultiRoomActors.Num());
 
 
 		// 3. SimilarUsers 및 OppositeUsers 배열 추출 및 저장   // <-- 통신 시 주석 해제                         <-------------- 수정 필요 (소유자의 UserId, RoomNum 같이 저장 필요)
@@ -1366,11 +1382,11 @@ void ACJS_BallPlayer::InitializeFromJson(const FString& LocalJsonData)
 			FString MaxNumPlayer = "5";
 			SetInitMultiRoomInfo(MultiRoomActors[i], CurNumPlayer, MaxNumPlayer, RoomName, Percent);
 		}
-	}
+	/*}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to parse JSON data."));
-	}
+	}*/
 }
 
 void ACJS_BallPlayer::SetInitColorValue(float r, float g, float b) // 색상
