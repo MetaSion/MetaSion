@@ -93,7 +93,7 @@ void UJS_OnClickRoomUI::SettingData(FString TexturePath, UJS_RoomButton* Button)
     if (SG_RoomOwner)
         SG_RoomOwner->SetText(FText::FromString(Suggestion.room_id));
     if (SG_Similarity)
-        SG_Similarity->SetText(FText::FromString(FString::Printf(TEXT("Similarity: %s%%"), *Suggestion.percent_message)));
+        SG_Similarity->SetText(FText::FromString(FString::Printf(TEXT("Similarity: %s%"), *Suggestion.percent_message)));
     if (SG_ReasonForRecommendation)
         SG_ReasonForRecommendation->SetText(FText::FromString(Suggestion.reason_message));
     if (SG_RoomComment)

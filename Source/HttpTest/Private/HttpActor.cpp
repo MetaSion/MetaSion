@@ -626,7 +626,7 @@ void AHttpActor::ReqPostChoice(FString url, FString json)
 //void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)  // <--- 통신 시 해제
 void AHttpActor::OnResPostChoice()  // <-- 테스트용
 {
-    UE_LOG(LogTemp, Warning, TEXT("bConnectedSuccessfully is : %d"), bConnectedSuccessfully);
+    //UE_LOG(LogTemp, Warning, TEXT("bConnectedSuccessfully is : %d"), bConnectedSuccessfully);
     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice()"));
     //if (bConnectedSuccessfully && Response.IsValid())
     //{
