@@ -56,6 +56,10 @@ void USessionGameInstance::Init()	// 게임 인스턴스 초기화 함수로, �
 
 		// 방 조인 요청 -> 응답
 		SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &USessionGameInstance::OnMyJoinSessionComplete);
+
+		// 방 파괴 요청 -> 응답
+		SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &USessionGameInstance::OnMyDestroySessionComplete);
+
 	}
 
 	GEngine->OnNetworkFailure().AddUObject(this, &USessionGameInstance::OnNetworkFailure);
@@ -317,30 +321,33 @@ void USessionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetDriver
 // 세션 파괴
 void USessionGameInstance::ExitSession()
 {
-	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::ExitSession"));
-	//ServerRPC_ExitSession();
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::ExitSession()"));
+	ServerRPC_ExitSession();
 }
-
 void USessionGameInstance::ServerRPC_ExitSession_Implementation()
 {
-	//MulticastRPC_ExitSession();
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::ServerRPC_ExitSession_Implementation()"));
+	MulticastRPC_ExitSession();
 }
-
 void USessionGameInstance::MulticastRPC_ExitSession_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::MulticastRPC_ExitSession_Implementation()"));
 	// 방퇴장 요청
-	//SessionInterface->DestroySession(FName(MySessionName));
+	SessionInterface->DestroySession(FName(MySessionName));
 }
-
-
 void USessionGameInstance::OnMyDestroySessionComplete(FName SessionName, bool bWasSuccessful)
 {
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::OnMyDestroySessionComplete()"));
 	if (bWasSuccessful)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::OnMyDestroySessionComplete() bWasSuccessful true"));
 		// 클라이언트가 로비로 여행을 가고싶다.
 		auto* pc = GetWorld()->GetFirstPlayerController();
-		pc->ClientTravel(TEXT("/Game/NetTPS/Maps/LobbyMap"), ETravelType::TRAVEL_Absolute);
+		pc->ClientTravel(TEXT("/Game/Main/Maps/Main_Sky"), ETravelType::TRAVEL_Absolute);
+		UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::OnMyDestroySessionComplete() Move Main_Sky Map"));
 	}
+
+	// 통신 부분 추가 작업하기
 }
 
 
