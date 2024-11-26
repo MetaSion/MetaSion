@@ -181,6 +181,7 @@ public:
     /* Screen Capture + Wallpaper Python Auto Execute */
     void ScreenCapture();
     void ExecuteWallPaperPython();
+    void RunAsyncPythonScript(const FString &path);
 
     /* Http Actor */
     class AHttpActor* HttpActor;

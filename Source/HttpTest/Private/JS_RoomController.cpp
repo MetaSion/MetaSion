@@ -828,10 +828,8 @@ void AJS_RoomController::ScreenCapture()
 {
     UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ScreenCapture()"));
 
-    // ?�일 경로 ?�정 (?? ?�로?�트 ?�렉?�리 ??Screenshots ?�더)
     FString ScreenshotPath = FPaths::ProjectDir() + TEXT("Screenshots/ScreenCapture.png");
 
-    // ?�크린샷 캡처 ?�청
     FScreenshotRequest::RequestScreenshot(ScreenshotPath, false, false);
 
     UE_LOG(LogTemp, Warning, TEXT("Screenshot saved at: %s"), *ScreenshotPath);
@@ -843,37 +841,73 @@ void AJS_RoomController::ScreenCapture()
 //Wallpaper Python Auto Execute Start ------------------------------------------------------------------------
 void AJS_RoomController::ExecuteWallPaperPython()
 {
-    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ExecuteWallPaperPython()"));
+    //UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ExecuteWallPaperPython()"));
 
+    //FString ScriptPath = FPaths::ProjectContentDir() + TEXT("Python/Wallpaper.py");
+    //UE_LOG(LogTemp, Warning, TEXT("Saving Screenshot to: %s"), *ScriptPath);
+    //// 파일 존재 여부 확인
+    //if (!FPaths::FileExists(ScriptPath))
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("Python script not found at: %s"), *ScriptPath);
+    //    return;
+    //}
+    //UE_LOG(LogTemp, Warning, TEXT("PythonCode : %s"), *ScriptPath);
+    //RunAsyncPythonScript(*ScriptPath);
+
+    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ExecuteWallPaperPython()"));
+
+    // Python 스크립트 경로 설정
     FString ScriptPath = FPaths::ProjectContentDir() + TEXT("Python/Wallpaper.py");
+    UE_LOG(LogTemp, Warning, TEXT("ScriptPath: %s"), *ScriptPath);
 
-    // 파일 존재 여부 확인
-    if (!FPaths::FileExists(ScriptPath))
+    // Python 스크립트 실행
+    RunAsyncPythonScript(*ScriptPath);
+    //// Python 코드 로드
+    //FString PythonCode;
+    //if (!FFileHelper::LoadFileToString(PythonCode, *ScriptPath))
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("Failed to load Python script"));
+    //    return;
+    //}
+    //IPythonScriptPlugin* PythonPlugin = IPythonScriptPlugin::Get();
+    //if (PythonPlugin && PythonPlugin->IsPythonAvailable())
+    //{
+    //    // Result 매개변수 제거
+    //    if (!PythonPlugin->ExecPythonCommand(*PythonCode))
+    //    {
+    //        UE_LOG(LogTemp, Error, TEXT("Python script execution failed"));
+    //    }
+    //}
+    //else
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("Python is not available in this build."));
+    //}
+}
+void AJS_RoomController::RunAsyncPythonScript(const FString& path)
+{
+    // GPT 수정 안한 버전
+    //FString PythonExePath = TEXT("C:/Users/jeong/AppData/Local/Programs/Python/Python313/python.exe");
+    //UE_LOG(LogTemp, Warning, TEXT("PythonExePath : %s, Path : %s"), *PythonExePath, *path);
+    //if (FPaths::FileExists(PythonExePath) && FPaths::FileExists(path))
+    //{
+    //    // Python 프로세스를 실행
+    //    FPlatformProcess::CreateProc(*PythonExePath, *path, true, false, false, nullptr, 0, nullptr, nullptr);
+    //    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("자체 python에서 실행"));
+    //}
+    //else {
+    //    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("자체 python에서 실행 실패"));
+    //}
+     // 서버 권한 확인
+    FString PythonExePath = TEXT("C:/Users/jeong/AppData/Local/Programs/Python/Python313/python.exe");
+    UE_LOG(LogTemp, Warning, TEXT("PythonExePath: %s"), *PythonExePath);
+    if (FPaths::FileExists(PythonExePath) && FPaths::FileExists(path))
     {
-        UE_LOG(LogTemp, Error, TEXT("Python script not found at: %s"), *ScriptPath);
-        return;
+        // Python 프로세스를 실행
+        FPlatformProcess::CreateProc(*PythonExePath, *path, true, false, false, nullptr, 0, nullptr, nullptr);
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("자체 python에서 실행"));
     }
-
-    // Python 코드 로드
-    FString PythonCode;
-    if (!FFileHelper::LoadFileToString(PythonCode, *ScriptPath))
-    {
-        UE_LOG(LogTemp, Error, TEXT("Failed to load Python script"));
-        return;
-    }
-
-    IPythonScriptPlugin* PythonPlugin = IPythonScriptPlugin::Get();
-    if (PythonPlugin && PythonPlugin->IsPythonAvailable())
-    {
-        // Result 매개변수 제거
-        if (!PythonPlugin->ExecPythonCommand(*PythonCode))
-        {
-            UE_LOG(LogTemp, Error, TEXT("Python script execution failed"));
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Python is not available in this build."));
+    else {
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("자체 python에서 실행 실패"));
     }
 }
 //Wallpaper Python Auto Execute End ------------------------------------------------------------------------
