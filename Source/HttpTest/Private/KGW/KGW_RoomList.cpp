@@ -225,6 +225,8 @@ void UKGW_RoomList::ShowCharacterUI()
 // GridPanel 부분 -------------------------------------------------------------
 void UKGW_RoomList::AddImageToGrid(FString TexturePath)
 {
+    static int32 RoomNumberCounter = 0; // RoomNumber 초기화 및 카운터 설정
+
     // 텍스처 로드
     UTexture2D* ImageTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, *TexturePath));
 
@@ -243,8 +245,10 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
     UJS_RoomButton* ImageButton = NewObject<UJS_RoomButton>(this);
     ImageButton->Initialize();
     ImageButton->RL = this;
-    //버튼의 인덱스 할당
-    ImageButton->SetIndex(RoomNumber);
+
+    // 버튼의 인덱스 할당
+    ImageButton->SetIndex(RoomNumberCounter);
+    RoomNumberCounter++; // RoomNumber 카운터 증가
 
     // 버튼의 배경 스타일 설정
     FButtonStyle ButtonStyle;
@@ -260,11 +264,6 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
     NewImage->SetBrushFromTexture(ImageTexture, true);
     NewImage->SetDesiredSizeOverride(FVector2D(600, 500));
 
-    // 이미지의 배경 브러시 설정
-    FSlateBrush ImageBrush = NewImage->Brush;
-    ImageBrush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // 이미지 자체는 완전 불투명
-    NewImage->SetBrush(ImageBrush);
-
     // 이미지를 버튼의 자식으로 추가
     ImageButton->AddChild(NewImage);
 
@@ -274,18 +273,23 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
     // 버튼 이벤트 바인딩
     ImageButton->OnHovered.AddDynamic(this, &UKGW_RoomList::OnImageHovered);
     ImageButton->OnUnhovered.AddDynamic(this, &UKGW_RoomList::OnImageUnhovered);
-    //ImageButton->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickedImageRoomList);
 
-    if (bRoomList) {
+    // RoomList UI에 버튼 추가
+    if (bRoomList)
+    {
         int32 RowCount = UGP_RoomList->GetChildrenCount() / 3;
         int32 ColCount = UGP_RoomList->GetChildrenCount() % 3;
         UGP_RoomList->AddChildToUniformGrid(SizeBox, RowCount, ColCount);
     }
-    if (bMultiRoomList) {
+    if (bMultiRoomList)
+    {
         int32 RowCount = UGP_Multi_RoomList->GetChildrenCount() / 3;
         int32 ColCount = UGP_Multi_RoomList->GetChildrenCount() % 3;
         UGP_Multi_RoomList->AddChildToUniformGrid(SizeBox, RowCount, ColCount);
     }
+
+    // 디버깅 로그 추가
+    UE_LOG(LogTemp, Warning, TEXT("AddImageToGrid: Added button with index: %d"), ImageButton->GetIndex());
 }
 
 void UKGW_RoomList::SettingPath()

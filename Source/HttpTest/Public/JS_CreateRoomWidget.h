@@ -158,11 +158,11 @@ public:
 	class UCJS_ChatWidget* ChatUI;
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UCJS_ChatTextWidget> ChatTextWidgetFactory;
-	//UPROPERTY()
-	//class UCJS_ChatTextWidget* ChatTextWidget;
 
     UFUNCTION()
     void HandleSendButtonClicked();
     UFUNCTION()
     void AddChatMessage(const FString& msg);
+
+
 };

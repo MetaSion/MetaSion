@@ -25,5 +25,7 @@ public:
 	int32 GetIndex() const;
 	UFUNCTION()
 	void OnImageClicked();
+
+	int32 LastBtnIdx = -1;
 	
 };

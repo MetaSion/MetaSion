@@ -22,6 +22,8 @@
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
+#include "KGW/KGW_RoomList.h"
+#include "JS_RoomButton.h"
 
 
 void UJS_CreateRoomWidget::NativeConstruct()
@@ -75,19 +77,14 @@ void UJS_CreateRoomWidget::OnClickCaptureImage()
 		UE_LOG(LogTemp, Error, TEXT("captured"));
 	}
 }
-void UJS_CreateRoomWidget::OnClikMypage()
-{
-	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikMypage()"));
-	SwitchToWidget(4);
-}
 void UJS_CreateRoomWidget::OnClikExplanation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation()"));
-
 	SessionGI = Cast<USessionGameInstance>(GetGameInstance());
 	if (SessionGI)
 	{
 		UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClikExplanation() SessionGI exised"));
+		UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() SessionGI->GetbRefRoomUIMultiOn() %d"), SessionGI->GetbRefRoomUIMultiOn());
 		if (SessionGI->GetbRefRoomUIMultiOn())
 		{
 			//멀티방 인덱스를 받아와서
@@ -116,28 +113,63 @@ void UJS_CreateRoomWidget::OnClikExplanation()
 		}
 		else
 		{
-			// 이너월드 사용자가 작성한 문구
-			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() CurrentText %s"), *CurrentText);
-			SetExplanation(CurrentText);
+			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() SessionGI->GetbMyRoomWatchingOn() %d"), SessionGI->GetbMyRoomWatchingOn());
+			if (SessionGI->GetbMyRoomWatchingOn())
+			{
+				//내방 목록 중 클릭 시, UI 이너월드 정보 삽입
+				UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() Set roomBtn"));
+				int32 idx = SessionGI->GetLastMyWolrdBtnIdx();
+				UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() SessionGI->GetLastMyWolrdBtnIdx() %d"), idx);
+				int32 ArraySize = SessionGI->WorldSetting.MyRooms.Num();
+				UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() SessionGI->WorldSetting.MyRooms.Num() %d"), ArraySize);
+				if (idx >= 0 && idx < ArraySize)
+				{
+					FString text = SessionGI->WorldSetting.MyRooms[idx].MyRoomName;
+					UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() roomName: %s"), *text);
+					SetExplanation(text);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::OnClikExplanation() Invalid index: %d, MyRooms size: %d"), idx, ArraySize);
+					SetExplanation(TEXT("Invalid room information."));
+				}
+			}
+			else
+			{
+				// 이너월드 생성 사용자가 작성한 문구
+				UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikExplanation() CurrentText %s"), *CurrentText);
+				SetExplanation(CurrentText);
+			}		
 		}
 	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::OnClikExplanation() SessionGI is null!"));
+		return;
+	}
+}
+void UJS_CreateRoomWidget::OnClikMypage()
+{
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClikMypage()"));
+	SwitchToWidget(4);
 }
 void UJS_CreateRoomWidget::OnClickGood()
 {
 // 	SendCompleteRoomData();
 	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClickGood()"));
 	SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+	APlayerController* OwningPlayer = GetWorld()->GetFirstPlayerController();
+	ACJS_BallPlayer* player = Cast<ACJS_BallPlayer>(OwningPlayer->GetPawn());
+
 	if (SessionGI)
 	{
 		UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() SessionGI exised"));
 		if (SessionGI->GetbRefRoomUIMultiOn())
 		{
 			UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() SessionGI->GetbRefRoomUIMultiOn() : %d"), SessionGI->GetbRefRoomUIMultiOn());
-			APlayerController* OwningPlayer = GetWorld()->GetFirstPlayerController();
 			if (OwningPlayer)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set APlayerController"));
-				ACJS_BallPlayer* player = Cast<ACJS_BallPlayer>(OwningPlayer->GetPawn());
+				UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set APlayerController"));				
 				if (player)
 				{
 					UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::HandleSendButtonClicked() Set ACJS_BallPlayer"));
@@ -155,6 +187,14 @@ void UJS_CreateRoomWidget::OnClickGood()
 		}
 		else
 		{
+			UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() SessionGI->GetbMyRoomWatchingOn() : %d"), SessionGI->GetbMyRoomWatchingOn());
+			if (SessionGI->GetbMyRoomWatchingOn())
+			{
+				SessionGI->SetbtMyRoomWatchingOn(false);
+				UJS_RoomButton* ImageButton = NewObject<UJS_RoomButton>(this);
+				ImageButton->Initialize();   // <-- 수정 필요!!
+				UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() Change SessionGI->SetbMyRoomWatchingOn(false) : %d"), SessionGI->GetbMyRoomWatchingOn());
+			}
 			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClickGood() Move From InnerWorld to Main_Sky"));
 			UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
 		}
@@ -198,6 +238,14 @@ void UJS_CreateRoomWidget::OnClikBad()
 		}
 		else
 		{
+			UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() SessionGI->GetbMyRoomWatchingOn() : %d"), SessionGI->GetbMyRoomWatchingOn());
+			if (SessionGI->GetbMyRoomWatchingOn())
+			{
+				SessionGI->SetbtMyRoomWatchingOn(false);
+				UJS_RoomButton* ImageButton = NewObject<UJS_RoomButton>(this);
+				ImageButton->Initialize();  // <-- 수정 필요!!
+				UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() Change SessionGI->SetbMyRoomWatchingOn(false) : %d"), SessionGI->GetbMyRoomWatchingOn());
+			}
 			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClickGood() Move From InnerWorld to Main_Sky"));
 			UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
 		}
