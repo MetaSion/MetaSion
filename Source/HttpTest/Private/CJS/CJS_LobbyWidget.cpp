@@ -18,6 +18,8 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Animation/WidgetAnimation.h"
+#include "HttpActor.h"
+#include "CJS/CJS_MultiRoomActor.h"
 
 
 void UCJS_LobbyWidget::NativeConstruct()
@@ -42,6 +44,7 @@ void UCJS_LobbyWidget::NativeConstruct()
 	{
 		UE_LOG(LogTemp, Error, TEXT("Lobby_WidgetSwitcher is null!"));
 	}
+	HttpActor = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AHttpActor::StaticClass()));
 
 
 	// List Panel
@@ -316,15 +319,46 @@ void UCJS_LobbyWidget::OnClickMyWorld()
 {
 	UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::OnClickMyWorld()"));
 	USessionGameInstance* SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+	FString UserId;
+	auto* ball = Cast<ACJS_BallPlayer>(GetWorld()->GetFirstPlayerController());
 	if (SessionGI)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::OnClickMyWorld() SessionGI set"));
 		SessionGI->ExitSession();  // <------ 수정 예정
+		UserId = "testuser";
+		//UserId = GameInstance->MySessionName;
+// 		if(ball)
+// 		{
+// 			FString lastroomnum = ball->ClosestRoom->RoomInfo.room_num;
+// 		}
+// 		else 
+// 		{
+// 			UE_LOG(LogTemp, Error, TEXT("Ball player is null!"));
+// 		}
+		TMap<FString, FString> MyRoomData;
+		MyRoomData.Add("UserId", UserId);
+		// 	MyRoomData.Add("Last_room_num", lastroomnum);
+
+		MyRoomData.Add("Last_room_num", "2");
+		// JSON 형식으로 변환
+		FString JsonRequest = UJsonParseLib::MakeJson(MyRoomData);
+
+		if (HttpActor)
+		{
+			HttpActor->OnReqPostLastRoom(HttpActor->MultiToLastRoom, JsonRequest);
+			UE_LOG(LogTemp, Error, TEXT("OnClickMyWorld json is %s"), *JsonRequest);
+
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("HttpActor is null at OnClickMyWorld!"));
+		}
+
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("UCJS_LobbyWidget::OnClickMyWorld() SessionGI is null!"));
 	}
+
 
 }
 // List Panel End --------------------------------------------------------------------------------------------------------
