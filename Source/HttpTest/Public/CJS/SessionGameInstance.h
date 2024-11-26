@@ -273,6 +273,7 @@ public:
 	void FadeOutAndPlayNewMusic(USoundBase* NewMusic);
 	void FadeOutCurrentMusic(USoundBase* NewMusic);
 	void StopnPlayMusic(USoundBase* NewMusic);
+	void StopMusic();
 	UPROPERTY(EditAnywhere)
 	class UAudioComponent* MusicSound;
 
