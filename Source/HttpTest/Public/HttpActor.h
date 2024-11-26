@@ -86,11 +86,12 @@ public:
 	FString HeartURL = "jsonplaceholder.typicode.com/posts";
 	FString EntryMultiWorldURL = "mirrora.duckdns.org:3326/api/auth/";  // <-- BE 작업 완료 후 추가하기
 	FString SaveRoomData = "mirrora.duckdns.org:3326/api/auth/saveRoomData";
-	
+	FString MultiToLastRoom = "mirrora.duckdns.org:3326/api/auth/sendEmotionUpdate";
 
 	/* Sunny start ------------------------------------------------------------------------------------- */ 
 	//캐릭터생성 -> 로비 입장 시 초기 설정
 	UPROPERTY()
+
 	class USessionGameInstance* SessionGI;
 
 	//로비 -> 멀티방 입장 시 통신
@@ -153,6 +154,10 @@ public:
 	void OnResPostTest(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
 	void ReqPostRoomList(FString url, FString json);
+
+	void OnReqPostLastRoom(FString url, FString json);
+
+	void OnResPostBacktoMyRoom(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
 	void OnResPostRoomList(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 };
