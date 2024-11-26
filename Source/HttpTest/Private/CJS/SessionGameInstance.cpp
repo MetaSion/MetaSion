@@ -628,3 +628,12 @@ void USessionGameInstance::StopnPlayMusic(USoundBase* NewMusic)
 
 	UE_LOG(LogTemp, Log, TEXT("Stopped current music and started new music."));
 }
+
+void USessionGameInstance::StopMusic()
+{
+	if (MusicSound)
+	{
+		MusicSound ->Stop();
+
+	}
+}
