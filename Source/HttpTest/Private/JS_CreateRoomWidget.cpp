@@ -68,9 +68,12 @@ void UJS_CreateRoomWidget::NativeConstruct()
 }
 void UJS_CreateRoomWidget::OnClickCaptureImage()
 {
-	pc->OnClickButtonImage();
-	UE_LOG(LogTemp, Error, TEXT("captured"));
-
+	if (pc) {
+		pc->OnClickButtonImage();
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("captured"));
+	}
 }
 void UJS_CreateRoomWidget::OnClikMypage()
 {
