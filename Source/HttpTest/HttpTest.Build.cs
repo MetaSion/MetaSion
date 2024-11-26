@@ -8,9 +8,20 @@ public class HttpTest : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "HTTP", "Json", "JsonUtilities", "OnlineSubsystem", "OnlineSubsystemSteam", "Slate", "SlateCore", "UnrealEd", "BlueprintGraph", "PythonScriptPlugin", "Niagara", "CinematicCamera", "Engine" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "HTTP", "Json", "JsonUtilities", "OnlineSubsystem", "OnlineSubsystemSteam", "Slate", "SlateCore", "Niagara", "CinematicCamera"});
         
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
+
+        if (Target.Type == TargetType.Editor)
+        {
+            PrivateDependencyModuleNames.AddRange(new string[] {
+                "UnrealEd",
+                "BlueprintGraph",
+                "KismetCompiler",
+                 "PythonScriptPlugin" // public¿∏∑Œ 
+
+            });
+        }
 
         RuntimeDependencies.Add("$(ProjectDir)/Content/Python/Wallpaper.py");
         // Uncomment if you are using Slate UI
