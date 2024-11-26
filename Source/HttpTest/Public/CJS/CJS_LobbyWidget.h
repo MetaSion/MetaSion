@@ -84,6 +84,10 @@ public:
 	UFUNCTION()
 	void HideLobbyUIFirstOrder();
 
+	UPROPERTY(EditAnywhere)
+	class AHttpActor* HttpActor;
+
+	//to MyRoom
 	UFUNCTION()
     void OnClickMyWorld();
     UFUNCTION()
