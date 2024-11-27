@@ -41,10 +41,7 @@ public:
 	UPROPERTY()
 	class UKGW_WBP_Question* QuestionUI;
 
-	UPROPERTY(BlueprintReadWrite, Category = "JSON Data")
-	FString StoredJsonResponse;
-
-	FString StoredJsonResponsetest = TEXT("{\"UserId\":\"testuser\",\"R\":1.0,\"G\":0.9225690792809692,\"B\":0.4,\"SimilarUsers\":[{\"UserId\":\"user_8\",\"EmotionScore\":82.0,\"RoomName\":\"Sunny World\"},{\"UserId\":\"user_8\",\"EmotionScore\":82.0,\"RoomName\":\"Sol World\"},{\"UserId\":\"abc11\",\"EmotionScore\":81.0,\"RoomName\":\"KW World\"}],\"OppositeUsers\":[{\"UserId\":\"user_1\",\"EmotionScore\":283.5,\"RoomName\":\"JW World\"},{\"UserId\":\"user_3\",\"EmotionScore\":321.0,\"RoomName\":\"DL World\"}]}");
+	//FString StoredJsonResponsetest = TEXT("{\"UserId\":\"testuser\",\"R\":1.0,\"G\":0.9225690792809692,\"B\":0.4,\"SimilarUsers\":[{\"UserId\":\"user_8\",\"EmotionScore\":82.0,\"RoomName\":\"Sunny World\"},{\"UserId\":\"user_8\",\"EmotionScore\":82.0,\"RoomName\":\"Sol World\"},{\"UserId\":\"abc11\",\"EmotionScore\":81.0,\"RoomName\":\"KW World\"}],\"OppositeUsers\":[{\"UserId\":\"user_1\",\"EmotionScore\":283.5,\"RoomName\":\"JW World\"},{\"UserId\":\"user_3\",\"EmotionScore\":321.0,\"RoomName\":\"DL World\"}]}");
 
 	// Login
 	void LoginReqPost(FString url, FString json);
@@ -67,16 +64,14 @@ public:
 	void RoomDataResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
 	void ReqPostChoice(FString url, FString json);
-	//void OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);   // <--- 통신 시 해제
-	void OnResPostChoice();  // <--- 테스트용
+	void OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);   // <--- 통신 시 해제
 	//void OnResPostBackRoom(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
 
 	void ShowQuestionUI();
 	void HidQuestionUI();
 
-	UFUNCTION(BlueprintCallable, Category = "JSON")
-    FString StoreJsonResponse();
+
 
 	FString LoginURL = "mirrora.duckdns.org:3326/api/auth/login";
 	FString EnteryLobbyURL = "mirrora.duckdns.org:3326/api/auth/processAndSendData";
@@ -87,6 +82,7 @@ public:
 	FString EntryMultiWorldURL = "mirrora.duckdns.org:3326/api/auth/";  // <-- BE 작업 완료 후 추가하기
 	FString SaveRoomData = "mirrora.duckdns.org:3326/api/auth/saveRoomData";
 	FString MultiToLastRoom = "mirrora.duckdns.org:3326/api/auth/sendEmotionUpdate";
+
 
 	/* Sunny start ------------------------------------------------------------------------------------- */ 
 	//캐릭터생성 -> 로비 입장 시 초기 설정
@@ -111,12 +107,10 @@ public:
 	class AJS_SoundActor* SoundActor;
 	void SetBackgroundSound();
 	void SetNewBackGroundSound();
+
 	//  노래 설정
-
-
     UPROPERTY()
     class USoundBase* NewSound;
-
 
 	class AKGW_RoomlistActor* MyWorldPlayer;
 	void ApplyMyWorldPointLightColors();
@@ -129,8 +123,32 @@ public:
 	void ReqPostClickMyRoomList(FString url, FString json);
 	void OnResPostClickMyRoomList(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 
+
 	//통신X, 데이터 읽어서 실행할 때
-	FString ReadAndParseJSON();
+	UPROPERTY(BlueprintReadWrite, Category = "JSON Data")
+	FString StoredJsonResponse;
+
+
+	// 파일 경로
+	UFUNCTION()
+	void CallFirstJsonData();
+	UFUNCTION()
+	void CallSecondJsonData();
+	UFUNCTION()
+	void CallThirdJsonData();
+
+	UFUNCTION()
+    void SaveJsonDataToSGI(FString jsonData);
+	UFUNCTION()
+	FString ReadAndParseJSON(FString filePath);
+
+	FString FirstFilePath; 
+	FString SecondFilePath;
+	FString ThirdFilePath;
+	void InitGetJsonDataFilePath();
+
+	// 데이터 로컬 저장 
+	void SetUserAndAIData(FString jsonData);
 	/* Sunny  end------------------------------------------------------------------------------------ */
 
 

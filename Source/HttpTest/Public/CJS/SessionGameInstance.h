@@ -241,6 +241,16 @@ public:
 	int32 GetLastMyWolrdBtnIdx();
 	void SetLastMyWolrdBtnIdx(int32 value);
 
+	/* --------------------------------------------------------------------------------------------------------------------------- */
+	//통신X, 데이터 읽어서 실행할 때
+	UPROPERTY(BlueprintReadWrite, Category = "JSON Data")
+	FString StoredJsonResponse;
+
+	UFUNCTION()
+	void SetStoredJsonResponse(FString data);
+	UFUNCTION()
+	FString GetStoredJsonResponse();
+
 
 	/* --------------------------------------------------------------------------------------------------------------------------- */
 	// MyWorld Setting 시 필요한 정보 저장한 구조체의 변수

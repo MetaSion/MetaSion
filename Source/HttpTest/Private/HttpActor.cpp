@@ -43,6 +43,9 @@ void AHttpActor::BeginPlay()
 {
 	Super::BeginPlay();
 
+    // Json Data 파일 경로 설정
+    InitGetJsonDataFilePath();
+
     pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
     if (pc)
     {
@@ -293,8 +296,6 @@ void AHttpActor::RoomSendDataReqPost(FString url, FString json)
     // ������ ��û
     req->ProcessRequest();
 }
-
-
 void AHttpActor::RoomSendDataResPost(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
 //     if (!Response.IsValid())
@@ -346,8 +347,8 @@ void AHttpActor::RoomSendDataResPost(FHttpRequestPtr Request, FHttpResponsePtr R
         // ���������� ������ �޾��� ��
         FString ResponseContent = Response->GetContentAsString();
         UE_LOG(LogTemp, Warning, TEXT("POST Response: %s"), *ResponseContent);
-        StoredJsonResponse = ResponseContent;
-        UE_LOG(LogTemp, Warning, TEXT("Stored JSON Response: %s"), *StoredJsonResponse);
+        //StoredJsonResponse = ResponseContent;
+        //UE_LOG(LogTemp, Warning, TEXT("Stored JSON Response: %s"), *StoredJsonResponse);
         //StoredJsonResponse = StoredJsonResponsetest;    // <----- 여기부터 수정  (임의값 넣고 확인해 보기)
 
         // JSON 문자열을 JSON 객체로 파싱
@@ -623,8 +624,8 @@ void AHttpActor::ReqPostChoice(FString url, FString json)
 
     req->ProcessRequest();
 }
-//void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)  // <--- 통신 시 해제
-void AHttpActor::OnResPostChoice()  // <-- 테스트용
+void AHttpActor::OnResPostChoice(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)  // <--- 통신 시 해제
+//void AHttpActor::OnResPostChoice()  // <-- 테스트용
 {
     //UE_LOG(LogTemp, Warning, TEXT("bConnectedSuccessfully is : %d"), bConnectedSuccessfully);
     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice()"));
@@ -636,174 +637,171 @@ void AHttpActor::OnResPostChoice()  // <-- 테스트용
     //    //StoredJsonResponse = ResponseContent;
         //UE_LOG(LogTemp, Warning, TEXT("Stored JSON Response: %s"), *StoredJsonResponse);
 
-        StoredJsonResponse = ReadAndParseJSON();  // <----- .txt파일에서 데이터 가져올 때
-        UE_LOG(LogTemp, Warning, TEXT("Stored JSON Response: %s"), *StoredJsonResponse);
-        // JSON 문자열을 JSON 객체로 파싱
-        TSharedPtr<FJsonObject> JsonObject;
-        TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(StoredJsonResponse);
-
-        USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
-        if (!SessionGameInstance)
-        {
-            UE_LOG(LogTemp, Error, TEXT("AHttpActor::OnResPostChoice() SessionGameInstance is null! Failed to store data."));
-            return;
-        }
-		/*AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
-		UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
-		UKGW_RoomList* Showlist = Cast<UKGW_RoomList>(WidgetComp->GetUserWidgetObject());*/
-
-        if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
-        {
-            // 1.요소마다 받아서 SessionGameInstance에 저장을 한다.
-            FMyWorldSetting WorldSetting;
-            // Parse RGB
-            if (JsonObject->HasTypedField<EJson::Object>(TEXT("RGB")))
-            {
-                TSharedPtr<FJsonObject> RGBObject = JsonObject->GetObjectField(TEXT("RGB"));
-                WorldSetting.RGB.R = FCString::Atof(*RGBObject->GetStringField(TEXT("R")));
-                WorldSetting.RGB.G = FCString::Atof(*RGBObject->GetStringField(TEXT("G")));
-                WorldSetting.RGB.B = FCString::Atof(*RGBObject->GetStringField(TEXT("B")));
-            }
-            // Parse RGB18
-            if (JsonObject->HasTypedField<EJson::Object>(TEXT("RGB18")))
-            {
-                TSharedPtr<FJsonObject> RGB18Object = JsonObject->GetObjectField(TEXT("RGB18"));
-                for (int32 i = 1; i <= 6; i++)
-                {
-                    FMyRGBColor Color;
-                    Color.R = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("R%d"), i)));
-                    Color.G = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("G%d"), i)));
-                    Color.B = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("B%d"), i)));
-                    WorldSetting.RGB18.Add(Color);
-                }
-            }
-            // Parse UserMusic
-            WorldSetting.UserMusic = JsonObject->GetStringField(TEXT("userMusic"));
-            // Parse Quadrant
-            WorldSetting.Quadrant = JsonObject->GetStringField(TEXT("Quadrant"));
-            // Parse Initial Room Info
-            WorldSetting.TimeOfDay = JsonObject->GetStringField(TEXT("UltraSky_TimeOfDay"));
-            WorldSetting.CloudCoverage = JsonObject->GetStringField(TEXT("UltraWeather_CloudCoverage"));
-            WorldSetting.Fog = JsonObject->GetStringField(TEXT("UltraWeather_Fog"));
-            WorldSetting.Rain = JsonObject->GetStringField(TEXT("UltraWeather_Rain"));
-            WorldSetting.Snow = JsonObject->GetStringField(TEXT("UltraWeather_Snow"));
-            WorldSetting.Dust = JsonObject->GetStringField(TEXT("UltraWeather_Dust"));
-            WorldSetting.Thunder = JsonObject->GetStringField(TEXT("UltraWeather_Thunder"));
-            WorldSetting.MainObject = JsonObject->GetStringField(TEXT("MainObject"));
-            WorldSetting.SubObject = JsonObject->GetStringField(TEXT("SubObject"));
-            WorldSetting.Background = JsonObject->GetStringField(TEXT("Background"));
-            // Parse ParticleNum
-            WorldSetting.ParticleNum = JsonObject->GetStringField(TEXT("Particle_num"));
-            // Parse Result
-            WorldSetting.Result = JsonObject->GetStringField(TEXT("result"));
-            WorldSetting.Result2 = JsonObject->GetStringField(TEXT("result2"));
-            WorldSetting.Result3 = JsonObject->GetStringField(TEXT("result3"));
-            if (SessionGI) {
-                SessionGI->AIResult = JsonObject->GetStringField(TEXT("result"));
-            }
-            else {
-                UE_LOG(LogTemp, Warning, TEXT("SessionGI Fail From HttpActorLine : 479 "));
-            }
-            // Parse Rooms
-            if (JsonObject->HasTypedField<EJson::Array>(TEXT("rooms")))
-            {
-                TArray<TSharedPtr<FJsonValue>> RoomsArray = JsonObject->GetArrayField(TEXT("rooms"));
-                for (const TSharedPtr<FJsonValue>& RoomValue : RoomsArray)
-                {
-                    TSharedPtr<FJsonObject> RoomObject = RoomValue->AsObject();
-                    if (RoomObject.IsValid())
-                    {
-                        FMyWorldRoomInfo RoomInfo;
-                        RoomInfo.MyRoomNum = RoomObject->GetIntegerField(TEXT("room_num"));
-                        RoomInfo.MyRoomName = RoomObject->GetStringField(TEXT("room_name"));
-                        WorldSetting.MyRooms.Add(RoomInfo);
-                    }
-                }
-            }
-            //Suggest_List JS 추가 추천 방 리스트 파싱
-            if (JsonObject->HasTypedField<EJson::Array>(TEXT("suggest_list")))
-            {
-                TArray<TSharedPtr<FJsonValue>> SuggestListArray = JsonObject->GetArrayField(TEXT("suggest_list"));
-                for (const TSharedPtr<FJsonValue>& SuggestValue : SuggestListArray)
-                {
-                    TSharedPtr<FJsonObject> SuggestObject = SuggestValue->AsObject();
-                    if (SuggestObject.IsValid())
-                    {
-                        FMySuggest_List SuggestList;
-                        SuggestList.percent_message = SuggestObject->GetStringField(TEXT("percent_message"));
-                        SuggestList.reason_message = SuggestObject->GetStringField(TEXT("reason_message"));
-                        SuggestList.room_id = SuggestObject->GetStringField(TEXT("room_id"));
-                        SuggestList.room_num = SuggestObject->GetStringField(TEXT("room_num"));
-                        SuggestList.room_name = SuggestObject->GetStringField(TEXT("room_name"));
-                        SuggestList.roomdescription = SuggestObject->GetStringField(TEXT("roomdescription"));
-                        WorldSetting.suggest_list.Add(SuggestList);
-                    }
-                }
-            }
-            
-            // Store the parsed data in GameInstance or other persistent storage
-            if (UGameInstance* GameInstance = GetGameInstance())
-            {
-//                 USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GameInstance);
-                if (SessionGameInstance)
-                {
-                    SessionGameInstance->WorldSetting = WorldSetting;
-                    //SessionGameInstance->bmyWorldPageOn = true;  // 마이페이지 UI 
-
-                    // 로그 출력
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB: R=%f, G=%f, B=%f"),
-                        WorldSetting.RGB.R, WorldSetting.RGB.G, WorldSetting.RGB.B);
-                    for (int32 i = 0; i < WorldSetting.RGB18.Num(); i++)
-                    {
-                        const FMyRGBColor& Color = WorldSetting.RGB18[i];
-                        UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB18[%d]: R=%f, G=%f, B=%f"), i, Color.R, Color.G, Color.B);
-                    }
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting UserMusic: %s"), *WorldSetting.UserMusic);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Quadrant: %s"), *WorldSetting.Quadrant);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting TimeOfDay: %s"), *WorldSetting.TimeOfDay);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting CloudCoverage: %s"), *WorldSetting.CloudCoverage);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Fog: %s"), *WorldSetting.Fog);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Rain: %s"), *WorldSetting.Rain);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Snow: %s"), *WorldSetting.Snow);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Dust: %s"), *WorldSetting.Dust);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Thunder: %s"), *WorldSetting.Thunder);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting MainObject: %s"), *WorldSetting.MainObject);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting SubObject: %s"), *WorldSetting.SubObject);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Background: %s"), *WorldSetting.Background);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting ParticleNum: %s"), *WorldSetting.ParticleNum);
-                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Result: %s"), *WorldSetting.Result);
-                    for (const FMyWorldRoomInfo& Room : WorldSetting.MyRooms)
-                    {
-                        UE_LOG(LogTemp, Warning, TEXT("Room Number: %d, Room Name: %s"), Room.MyRoomNum, *Room.MyRoomName);
-                    }
-                }
-            }
-            // 전체 리스트 크기 확인 및 각 항목 출력
-            UE_LOG(LogTemp, Warning, TEXT("Total Suggest Lists Added: %d"), WorldSetting.suggest_list.Num());
-            for (int32 Index = 0; Index < WorldSetting.suggest_list.Num(); ++Index)
-            {
-                const FMySuggest_List& SuggestList = WorldSetting.suggest_list[Index];
-                UE_LOG(LogTemp, Log, TEXT("Index %d:"), Index);
-                UE_LOG(LogTemp, Log, TEXT("  Percent Message: %s"), *SuggestList.percent_message);
-                UE_LOG(LogTemp, Log, TEXT("  Reason Message: %s"), *SuggestList.reason_message);
-                UE_LOG(LogTemp, Log, TEXT("  Room ID: %s"), *SuggestList.room_id);
-                UE_LOG(LogTemp, Log, TEXT("  Room Num: %s"), *SuggestList.room_num);
-                UE_LOG(LogTemp, Log, TEXT("  Room Name: %s"), *SuggestList.room_name);
-                UE_LOG(LogTemp, Log, TEXT("  Room Description: %s"), *SuggestList.roomdescription);
-            }
-            UE_LOG(LogTemp, Warning, TEXT("Successfully parsed and stored WorldSetting"));
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("AHttpActor::OnResPostChoice() Failed to parse JSON data."));
-        }
+//        // JSON 문자열을 JSON 객체로 파싱
+//        TSharedPtr<FJsonObject> JsonObject;
+//        TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(StoredJsonResponse);
+//
+//        USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
+//        if (!SessionGameInstance)
+//        {
+//            UE_LOG(LogTemp, Error, TEXT("AHttpActor::OnResPostChoice() SessionGameInstance is null! Failed to store data."));
+//            return;
+//        }
+//		/*AKGW_RoomlistActor* ListActor = Cast<AKGW_RoomlistActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AKGW_RoomlistActor::StaticClass()));
+//		UWidgetComponent* WidgetComp = ListActor->FindComponentByClass<UWidgetComponent>();
+//		UKGW_RoomList* Showlist = Cast<UKGW_RoomList>(WidgetComp->GetUserWidgetObject());*/
+//
+//        if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+//        {
+//            // 1.요소마다 받아서 SessionGameInstance에 저장을 한다.
+//            FMyWorldSetting WorldSetting;
+//            // Parse RGB
+//            if (JsonObject->HasTypedField<EJson::Object>(TEXT("RGB")))
+//            {
+//                TSharedPtr<FJsonObject> RGBObject = JsonObject->GetObjectField(TEXT("RGB"));
+//                WorldSetting.RGB.R = FCString::Atof(*RGBObject->GetStringField(TEXT("R")));
+//                WorldSetting.RGB.G = FCString::Atof(*RGBObject->GetStringField(TEXT("G")));
+//                WorldSetting.RGB.B = FCString::Atof(*RGBObject->GetStringField(TEXT("B")));
+//            }
+//            // Parse RGB18
+//            if (JsonObject->HasTypedField<EJson::Object>(TEXT("RGB18")))
+//            {
+//                TSharedPtr<FJsonObject> RGB18Object = JsonObject->GetObjectField(TEXT("RGB18"));
+//                for (int32 i = 1; i <= 6; i++)
+//                {
+//                    FMyRGBColor Color;
+//                    Color.R = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("R%d"), i)));
+//                    Color.G = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("G%d"), i)));
+//                    Color.B = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("B%d"), i)));
+//                    WorldSetting.RGB18.Add(Color);
+//                }
+//            }
+//            // Parse UserMusic
+//            WorldSetting.UserMusic = JsonObject->GetStringField(TEXT("userMusic"));
+//            // Parse Quadrant
+//            WorldSetting.Quadrant = JsonObject->GetStringField(TEXT("Quadrant"));
+//            // Parse Initial Room Info
+//            WorldSetting.TimeOfDay = JsonObject->GetStringField(TEXT("UltraSky_TimeOfDay"));
+//            WorldSetting.CloudCoverage = JsonObject->GetStringField(TEXT("UltraWeather_CloudCoverage"));
+//            WorldSetting.Fog = JsonObject->GetStringField(TEXT("UltraWeather_Fog"));
+//            WorldSetting.Rain = JsonObject->GetStringField(TEXT("UltraWeather_Rain"));
+//            WorldSetting.Snow = JsonObject->GetStringField(TEXT("UltraWeather_Snow"));
+//            WorldSetting.Dust = JsonObject->GetStringField(TEXT("UltraWeather_Dust"));
+//            WorldSetting.Thunder = JsonObject->GetStringField(TEXT("UltraWeather_Thunder"));
+//            WorldSetting.MainObject = JsonObject->GetStringField(TEXT("MainObject"));
+//            WorldSetting.SubObject = JsonObject->GetStringField(TEXT("SubObject"));
+//            WorldSetting.Background = JsonObject->GetStringField(TEXT("Background"));
+//            // Parse ParticleNum
+//            WorldSetting.ParticleNum = JsonObject->GetStringField(TEXT("Particle_num"));
+//            // Parse Result
+//            WorldSetting.Result = JsonObject->GetStringField(TEXT("result"));
+//            WorldSetting.Result2 = JsonObject->GetStringField(TEXT("result2"));
+//            WorldSetting.Result3 = JsonObject->GetStringField(TEXT("result3"));
+//            if (SessionGI) {
+//                SessionGI->AIResult = JsonObject->GetStringField(TEXT("result"));
+//            }
+//            else {
+//                UE_LOG(LogTemp, Warning, TEXT("SessionGI Fail From HttpActorLine : 479 "));
+//            }
+//            // Parse Rooms
+//            if (JsonObject->HasTypedField<EJson::Array>(TEXT("rooms")))
+//            {
+//                TArray<TSharedPtr<FJsonValue>> RoomsArray = JsonObject->GetArrayField(TEXT("rooms"));
+//                for (const TSharedPtr<FJsonValue>& RoomValue : RoomsArray)
+//                {
+//                    TSharedPtr<FJsonObject> RoomObject = RoomValue->AsObject();
+//                    if (RoomObject.IsValid())
+//                    {
+//                        FMyWorldRoomInfo RoomInfo;
+//                        RoomInfo.MyRoomNum = RoomObject->GetIntegerField(TEXT("room_num"));
+//                        RoomInfo.MyRoomName = RoomObject->GetStringField(TEXT("room_name"));
+//                        WorldSetting.MyRooms.Add(RoomInfo);
+//                    }
+//                }
+//            }
+//            //Suggest_List JS 추가 추천 방 리스트 파싱
+//            if (JsonObject->HasTypedField<EJson::Array>(TEXT("suggest_list")))
+//            {
+//                TArray<TSharedPtr<FJsonValue>> SuggestListArray = JsonObject->GetArrayField(TEXT("suggest_list"));
+//                for (const TSharedPtr<FJsonValue>& SuggestValue : SuggestListArray)
+//                {
+//                    TSharedPtr<FJsonObject> SuggestObject = SuggestValue->AsObject();
+//                    if (SuggestObject.IsValid())
+//                    {
+//                        FMySuggest_List SuggestList;
+//                        SuggestList.percent_message = SuggestObject->GetStringField(TEXT("percent_message"));
+//                        SuggestList.reason_message = SuggestObject->GetStringField(TEXT("reason_message"));
+//                        SuggestList.room_id = SuggestObject->GetStringField(TEXT("room_id"));
+//                        SuggestList.room_num = SuggestObject->GetStringField(TEXT("room_num"));
+//                        SuggestList.room_name = SuggestObject->GetStringField(TEXT("room_name"));
+//                        SuggestList.roomdescription = SuggestObject->GetStringField(TEXT("roomdescription"));
+//                        WorldSetting.suggest_list.Add(SuggestList);
+//                    }
+//                }
+//            }
+//            
+//            // Store the parsed data in GameInstance or other persistent storage
+//            if (UGameInstance* GameInstance = GetGameInstance())
+//            {
+////                 USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GameInstance);
+//                if (SessionGameInstance)
+//                {
+//                    SessionGameInstance->WorldSetting = WorldSetting;
+//                    //SessionGameInstance->bmyWorldPageOn = true;  // 마이페이지 UI 
+//
+//                    // 로그 출력
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB: R=%f, G=%f, B=%f"),
+//                        WorldSetting.RGB.R, WorldSetting.RGB.G, WorldSetting.RGB.B);
+//                    for (int32 i = 0; i < WorldSetting.RGB18.Num(); i++)
+//                    {
+//                        const FMyRGBColor& Color = WorldSetting.RGB18[i];
+//                        UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB18[%d]: R=%f, G=%f, B=%f"), i, Color.R, Color.G, Color.B);
+//                    }
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting UserMusic: %s"), *WorldSetting.UserMusic);
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Quadrant: %s"), *WorldSetting.Quadrant);
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting TimeOfDay: %s"), *WorldSetting.TimeOfDay);
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting CloudCoverage: %s"), *WorldSetting.CloudCoverage);
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Fog: %s"), *WorldSetting.Fog);
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Rain: %s"), *WorldSetting.Rain);
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Snow: %s"), *WorldSetting.Snow);
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Dust: %s"), *WorldSetting.Dust);
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Thunder: %s"), *WorldSetting.Thunder);
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting MainObject: %s"), *WorldSetting.MainObject);
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting SubObject: %s"), *WorldSetting.SubObject);
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Background: %s"), *WorldSetting.Background);
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting ParticleNum: %s"), *WorldSetting.ParticleNum);
+//                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting Result: %s"), *WorldSetting.Result);
+//                    for (const FMyWorldRoomInfo& Room : WorldSetting.MyRooms)
+//                    {
+//                        UE_LOG(LogTemp, Warning, TEXT("Room Number: %d, Room Name: %s"), Room.MyRoomNum, *Room.MyRoomName);
+//                    }
+//                }
+//            }
+//            // 전체 리스트 크기 확인 및 각 항목 출력
+//            UE_LOG(LogTemp, Warning, TEXT("Total Suggest Lists Added: %d"), WorldSetting.suggest_list.Num());
+//            for (int32 Index = 0; Index < WorldSetting.suggest_list.Num(); ++Index)
+//            {
+//                const FMySuggest_List& SuggestList = WorldSetting.suggest_list[Index];
+//                UE_LOG(LogTemp, Log, TEXT("Index %d:"), Index);
+//                UE_LOG(LogTemp, Log, TEXT("  Percent Message: %s"), *SuggestList.percent_message);
+//                UE_LOG(LogTemp, Log, TEXT("  Reason Message: %s"), *SuggestList.reason_message);
+//                UE_LOG(LogTemp, Log, TEXT("  Room ID: %s"), *SuggestList.room_id);
+//                UE_LOG(LogTemp, Log, TEXT("  Room Num: %s"), *SuggestList.room_num);
+//                UE_LOG(LogTemp, Log, TEXT("  Room Name: %s"), *SuggestList.room_name);
+//                UE_LOG(LogTemp, Log, TEXT("  Room Description: %s"), *SuggestList.roomdescription);
+//            }
+//            UE_LOG(LogTemp, Warning, TEXT("Successfully parsed and stored WorldSetting"));
+//        }
+//        else
+//        {
+//            UE_LOG(LogTemp, Error, TEXT("AHttpActor::OnResPostChoice() Failed to parse JSON data."));
+//        }
     //}
     //else
     //{
     //    // ��û�� �������� ��
     //    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostChoice() POST Request Failed"));
     //}
-    
 }
 // void AHttpActor::ShowQuestionUI()
 // {    
@@ -844,12 +842,12 @@ void AHttpActor::OnResPostChoice()  // <-- 테스트용
 //     }
 // }
 
-FString AHttpActor::StoreJsonResponse()
-{
-    FString JsonString = StoredJsonResponsetest;
-
-    return JsonString;
-}
+//FString AHttpActor::StoreJsonResponse()
+//{
+//    FString JsonString = StoredJsonResponsetest;
+//
+//    return JsonString;
+//}
 
 void AHttpActor::ReqPostClickMultiRoom(FString url, FString json)
 {
@@ -1071,7 +1069,7 @@ void AHttpActor::OnResPostClickMultiWorld(FHttpRequestPtr Request, FHttpResponse
 void AHttpActor::CallStartMakeSession(FString result)
 {
     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::CallStartMakeSession()"));
-    StoredJsonResponse = StoredJsonResponsetest;  // <-- 테스트 시   
+    //StoredJsonResponse = StoredJsonResponsetest;  // <-- 테스트 시   
     if (SessionGI)
     {
         UE_LOG(LogTemp, Warning, TEXT("SessionGM is OK"));
@@ -1343,34 +1341,243 @@ g1":null,"b1":null,"r2":null,"g2":null"b2":null,"r3":null,"g3":null,"b3":null,"r
     }
 }
 
+
+void AHttpActor::CallFirstJsonData()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::CallFirstJsonData()"));
+    FString getJsonData = ReadAndParseJSON(FirstFilePath);
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::CallFirstJsonData() getJsonData %s"), *getJsonData);
+    SaveJsonDataToSGI(getJsonData);
+}
+void AHttpActor::CallSecondJsonData()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::CallSaveJsonData()"));
+    FString getJsonData = ReadAndParseJSON(SecondFilePath);
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::CallSecondJsonData() getJsonData %s"), *getJsonData);
+    SaveJsonDataToSGI(getJsonData);
+}
+void AHttpActor::CallThirdJsonData()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::CallThirdJsonData()"));
+    FString getJsonData = ReadAndParseJSON(ThirdFilePath);
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::CallThirdJsonData() getJsonData %s"), *getJsonData);
+    SaveJsonDataToSGI(getJsonData);
+}
+void AHttpActor::SaveJsonDataToSGI(FString jsonData)
+{
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SaveJsonDataToSGI()"));
+    if (SessionGI)
+    {
+        SessionGI->SetStoredJsonResponse(jsonData);
+        SetUserAndAIData(SessionGI->GetStoredJsonResponse());
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::SaveJsonDataToSGI() SessionGI No"));
+    }  
+}
+
+
 // 통신X, 데이터 읽어서 실행할 때
-FString AHttpActor::ReadAndParseJSON()
+FString AHttpActor::ReadAndParseJSON(FString filePath)
 {
     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ReadAndParseJSON()"));
 
-    FString FilePath = FPaths::ProjectDir() + TEXT("SavedData.txt");
+   /* FString FilePath = FPaths::ProjectDir() + TEXT("processAndSendData.txt");
+    FString FilePath = FPaths::ProjectDir() + TEXT("saveRoomData.txt");
+    FString FilePath = FPaths::ProjectDir() + TEXT("sendEmotionUpdate.txt");*/
     // 디버깅용 경로 출력
-    UE_LOG(LogTemp, Warning, TEXT("File Path: %s"), *FilePath);
+    UE_LOG(LogTemp, Warning, TEXT("File Path: %s"), *filePath);
 
     FString FileContent;
-    if (FFileHelper::LoadFileToString(FileContent, *FilePath))
+    if (FFileHelper::LoadFileToString(FileContent, *filePath))
     {
-        UE_LOG(LogTemp, Warning, TEXT("Successed to load file: %s"), *FilePath);
+        UE_LOG(LogTemp, Warning, TEXT("Successed to load file: %s"), *filePath);
     }
     else
     {
         // 파일 존재 여부 확인
-        if (!FPaths::FileExists(FilePath))
+        if (!FPaths::FileExists(filePath))
         {
-            UE_LOG(LogTemp, Error, TEXT("File does not exist: %s"), *FilePath);
+            UE_LOG(LogTemp, Error, TEXT("File does not exist: %s"), *filePath);
         }
         else
         {
-            UE_LOG(LogTemp, Error, TEXT("Failed to load file: %s"), *FilePath);
+            UE_LOG(LogTemp, Error, TEXT("Failed to load file: %s"), *filePath);
         }
         return TEXT(""); // 실패 시 빈 문자열 반환
     }
     return FileContent;
+}
+
+
+// Json Data 파일 경로 설정
+void AHttpActor::InitGetJsonDataFilePath()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::InitGetJsonDataFilePath()"));
+    FirstFilePath = FPaths::ProjectDir() + TEXT("processAndSendData.txt");
+    SecondFilePath = FPaths::ProjectDir() + TEXT("sendEmotionUpdate.txt");
+    ThirdFilePath = FPaths::ProjectDir() + TEXT("saveRoomData.txt");
+}
+// 데이터 로컬 저장
+void AHttpActor::SetUserAndAIData(FString jsonData)
+{
+    UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SetUserAndAIData()"));
+    // JSON 문자열을 JSON 객체로 파싱
+    TSharedPtr<FJsonObject> JsonObject;
+    TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(jsonData);
+
+    USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GetWorld()->GetGameInstance());
+    if (!SessionGameInstance)
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::SetUserAndAIData() SessionGameInstance is null! Failed to store data."));
+        return;
+    }
+    if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+    {
+        // 1.요소마다 받아서 SessionGameInstance에 저장을 한다.
+        FMyWorldSetting WorldSetting;
+        // Parse RGB
+        if (JsonObject->HasTypedField<EJson::Object>(TEXT("RGB")))
+        {
+            TSharedPtr<FJsonObject> RGBObject = JsonObject->GetObjectField(TEXT("RGB"));
+            WorldSetting.RGB.R = FCString::Atof(*RGBObject->GetStringField(TEXT("R")));
+            WorldSetting.RGB.G = FCString::Atof(*RGBObject->GetStringField(TEXT("G")));
+            WorldSetting.RGB.B = FCString::Atof(*RGBObject->GetStringField(TEXT("B")));
+        }
+        // Parse RGB18
+        if (JsonObject->HasTypedField<EJson::Object>(TEXT("RGB18")))
+        {
+            TSharedPtr<FJsonObject> RGB18Object = JsonObject->GetObjectField(TEXT("RGB18"));
+            for (int32 i = 1; i <= 6; i++)
+            {
+                FMyRGBColor Color;
+                Color.R = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("R%d"), i)));
+                Color.G = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("G%d"), i)));
+                Color.B = FCString::Atof(*RGB18Object->GetStringField(FString::Printf(TEXT("B%d"), i)));
+                WorldSetting.RGB18.Add(Color);
+            }
+        }
+        // Parse UserMusic
+        WorldSetting.UserMusic = JsonObject->GetStringField(TEXT("userMusic"));
+        // Parse Quadrant
+        WorldSetting.Quadrant = JsonObject->GetStringField(TEXT("Quadrant"));
+        // Parse Initial Room Info
+        WorldSetting.TimeOfDay = JsonObject->GetStringField(TEXT("UltraSky_TimeOfDay"));
+        WorldSetting.CloudCoverage = JsonObject->GetStringField(TEXT("UltraWeather_CloudCoverage"));
+        WorldSetting.Fog = JsonObject->GetStringField(TEXT("UltraWeather_Fog"));
+        WorldSetting.Rain = JsonObject->GetStringField(TEXT("UltraWeather_Rain"));
+        WorldSetting.Snow = JsonObject->GetStringField(TEXT("UltraWeather_Snow"));
+        WorldSetting.Dust = JsonObject->GetStringField(TEXT("UltraWeather_Dust"));
+        WorldSetting.Thunder = JsonObject->GetStringField(TEXT("UltraWeather_Thunder"));
+        WorldSetting.MainObject = JsonObject->GetStringField(TEXT("MainObject"));
+        WorldSetting.SubObject = JsonObject->GetStringField(TEXT("SubObject"));
+        WorldSetting.Background = JsonObject->GetStringField(TEXT("Background"));
+        // Parse ParticleNum
+        WorldSetting.ParticleNum = JsonObject->GetStringField(TEXT("Particle_num"));
+        // Parse Result
+        WorldSetting.Result = JsonObject->GetStringField(TEXT("result"));
+        WorldSetting.Result2 = JsonObject->GetStringField(TEXT("result2"));
+        WorldSetting.Result3 = JsonObject->GetStringField(TEXT("result3"));
+        if (SessionGI) {
+            SessionGI->AIResult = JsonObject->GetStringField(TEXT("result"));
+        }
+        else {
+            UE_LOG(LogTemp, Warning, TEXT("SessionGI Fail From HttpActorLine : 479 "));
+        }
+        // Parse Rooms
+        if (JsonObject->HasTypedField<EJson::Array>(TEXT("rooms")))
+        {
+            TArray<TSharedPtr<FJsonValue>> RoomsArray = JsonObject->GetArrayField(TEXT("rooms"));
+            for (const TSharedPtr<FJsonValue>& RoomValue : RoomsArray)
+            {
+                TSharedPtr<FJsonObject> RoomObject = RoomValue->AsObject();
+                if (RoomObject.IsValid())
+                {
+                    FMyWorldRoomInfo RoomInfo;
+                    RoomInfo.MyRoomNum = RoomObject->GetIntegerField(TEXT("room_num"));
+                    RoomInfo.MyRoomName = RoomObject->GetStringField(TEXT("room_name"));
+                    WorldSetting.MyRooms.Add(RoomInfo);
+                }
+            }
+        }
+        //Suggest_List JS 추가 추천 방 리스트 파싱
+        if (JsonObject->HasTypedField<EJson::Array>(TEXT("suggest_list")))
+        {
+            TArray<TSharedPtr<FJsonValue>> SuggestListArray = JsonObject->GetArrayField(TEXT("suggest_list"));
+            for (const TSharedPtr<FJsonValue>& SuggestValue : SuggestListArray)
+            {
+                TSharedPtr<FJsonObject> SuggestObject = SuggestValue->AsObject();
+                if (SuggestObject.IsValid())
+                {
+                    FMySuggest_List SuggestList;
+                    SuggestList.percent_message = SuggestObject->GetStringField(TEXT("percent_message"));
+                    SuggestList.reason_message = SuggestObject->GetStringField(TEXT("reason_message"));
+                    SuggestList.room_id = SuggestObject->GetStringField(TEXT("room_id"));
+                    SuggestList.room_num = SuggestObject->GetStringField(TEXT("room_num"));
+                    SuggestList.room_name = SuggestObject->GetStringField(TEXT("room_name"));
+                    SuggestList.roomdescription = SuggestObject->GetStringField(TEXT("roomdescription"));
+                    WorldSetting.suggest_list.Add(SuggestList);
+                }
+            }
+        }
+
+        // Store the parsed data in GameInstance or other persistent storage
+        if (UGameInstance* GameInstance = GetGameInstance())
+        {
+            //                 USessionGameInstance* SessionGameInstance = Cast<USessionGameInstance>(GameInstance);
+            if (SessionGameInstance)
+            {
+                SessionGameInstance->WorldSetting = WorldSetting;
+                //SessionGameInstance->bmyWorldPageOn = true;  // 마이페이지 UI 
+
+                // 로그 출력
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB: R=%f, G=%f, B=%f"),
+                    WorldSetting.RGB.R, WorldSetting.RGB.G, WorldSetting.RGB.B);
+                for (int32 i = 0; i < WorldSetting.RGB18.Num(); i++)
+                {
+                    const FMyRGBColor& Color = WorldSetting.RGB18[i];
+                    UE_LOG(LogTemp, Warning, TEXT("WorldSetting RGB18[%d]: R=%f, G=%f, B=%f"), i, Color.R, Color.G, Color.B);
+                }
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting UserMusic: %s"), *WorldSetting.UserMusic);
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting Quadrant: %s"), *WorldSetting.Quadrant);
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting TimeOfDay: %s"), *WorldSetting.TimeOfDay);
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting CloudCoverage: %s"), *WorldSetting.CloudCoverage);
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting Fog: %s"), *WorldSetting.Fog);
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting Rain: %s"), *WorldSetting.Rain);
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting Snow: %s"), *WorldSetting.Snow);
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting Dust: %s"), *WorldSetting.Dust);
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting Thunder: %s"), *WorldSetting.Thunder);
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting MainObject: %s"), *WorldSetting.MainObject);
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting SubObject: %s"), *WorldSetting.SubObject);
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting Background: %s"), *WorldSetting.Background);
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting ParticleNum: %s"), *WorldSetting.ParticleNum);
+                UE_LOG(LogTemp, Warning, TEXT("WorldSetting Result: %s"), *WorldSetting.Result);
+                for (const FMyWorldRoomInfo& Room : WorldSetting.MyRooms)
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("Room Number: %d, Room Name: %s"), Room.MyRoomNum, *Room.MyRoomName);
+                }
+            }
+        }
+        // 전체 리스트 크기 확인 및 각 항목 출력
+        UE_LOG(LogTemp, Warning, TEXT("Total Suggest Lists Added: %d"), WorldSetting.suggest_list.Num());
+        for (int32 Index = 0; Index < WorldSetting.suggest_list.Num(); ++Index)
+        {
+            const FMySuggest_List& SuggestList = WorldSetting.suggest_list[Index];
+            UE_LOG(LogTemp, Log, TEXT("Index %d:"), Index);
+            UE_LOG(LogTemp, Log, TEXT("  Percent Message: %s"), *SuggestList.percent_message);
+            UE_LOG(LogTemp, Log, TEXT("  Reason Message: %s"), *SuggestList.reason_message);
+            UE_LOG(LogTemp, Log, TEXT("  Room ID: %s"), *SuggestList.room_id);
+            UE_LOG(LogTemp, Log, TEXT("  Room Num: %s"), *SuggestList.room_num);
+            UE_LOG(LogTemp, Log, TEXT("  Room Name: %s"), *SuggestList.room_name);
+            UE_LOG(LogTemp, Log, TEXT("  Room Description: %s"), *SuggestList.roomdescription);
+        }
+        UE_LOG(LogTemp, Warning, TEXT("Successfully parsed and stored WorldSetting"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AHttpActor::OnResPostChoice() Failed to parse JSON data."));
+    }
 }
 
 //Getter 함수
@@ -1496,8 +1703,6 @@ void AHttpActor::OnReqPostLastRoom(FString url, FString json)
     // ������ ��û
     req->ProcessRequest();
 }
-
-
 void AHttpActor::OnResPostBacktoMyRoom(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::OnResPostBacktoMyRoom()"));
