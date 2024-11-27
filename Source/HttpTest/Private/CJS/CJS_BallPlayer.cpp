@@ -378,7 +378,7 @@ void ACJS_BallPlayer::Tick(float DeltaTime)
 			if (RoomActor)
 			{
 				float Distance = FVector::Dist(this->GetActorLocation(), RoomActor->GetActorLocation());
-				UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::Tick() Distance to %s: %f"), *RoomActor->GetName(), Distance);
+				//UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::Tick() Distance to %s: %f"), *RoomActor->GetName(), Distance);
 
 				if (Distance < NearestDistance)
 				{
@@ -390,11 +390,11 @@ void ACJS_BallPlayer::Tick(float DeltaTime)
 		// 가까운 방이 ActivationDistance 내에 있으면 UI를 보여줌
 		if (NearestRoom && NearestDistance <= ActivationDistance)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Nearest room is within activation distance (%f <= %f)."), NearestDistance, ActivationDistance);
+			//UE_LOG(LogTemp, Warning, TEXT("Nearest room is within activation distance (%f <= %f)."), NearestDistance, ActivationDistance);
 
 			if (ClosestRoom != NearestRoom) // 가장 가까운 방이 바뀌었을 때만 처리
 			{
-				UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::Tick() ClosestRoom changed to: %s"), *NearestRoom->GetName());
+				//UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::Tick() ClosestRoom changed to: %s"), *NearestRoom->GetName());
 				ClosestRoom = NearestRoom;
 				SetRefRoomInfo(ClosestRoom); // 방 정보를 UI에 반영
 			}
@@ -403,7 +403,7 @@ void ACJS_BallPlayer::Tick(float DeltaTime)
 		{
 			if (ClosestRoom) // 멀어졌다면 UI를 비활성화
 			{
-				UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::Tick() Player is out of activation distance. Clearing ClosestRoom."));
+				//UE_LOG(LogTemp, Warning, TEXT("ACJS_BallPlayer::Tick() Player is out of activation distance. Clearing ClosestRoom."));
 				//ClosestRoom = nullptr;
 				// HideRoomUI();
 			}
