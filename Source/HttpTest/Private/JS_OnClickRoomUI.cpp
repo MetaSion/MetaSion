@@ -28,15 +28,32 @@ void UJS_OnClickRoomUI::NativeConstruct()
 	}
 }
 
-void UJS_OnClickRoomUI::SettingImagePath()
+FString UJS_OnClickRoomUI::SettingImagePath()
 {
-	ImagePath = TEXT("/Game/Main/Assets/UI/sunny");
-	if (!(ImagePath.IsEmpty())) {
-		UE_LOG(LogTemp, Warning, TEXT("SettingPath : %s "), *ImagePath);
+	TArray<FString> ImagePaths = {
+		   TEXT("/Game/Main/Assets/UI/room_1"),
+		   TEXT("/Game/Main/Assets/UI/room_2"),
+		   TEXT("/Game/Main/Assets/UI/room_3"),
+		   TEXT("/Game/Main/Assets/UI/room_4"),
+		   TEXT("/Game/Main/Assets/UI/room_5"),
+		   TEXT("/Game/Main/Assets/UI/room_6"),
+		   TEXT("/Game/Main/Assets/UI/room_7")
+	};
+
+	int32 RandomIndex = FMath::RandRange(0, ImagePaths.Num() - 1);
+
+	FString SelectedPath = ImagePaths[RandomIndex];
+
+	if (!SelectedPath.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Randomly Selected Path: %s"), *SelectedPath);
 	}
-	else {
-		UE_LOG(LogTemp, Warning, TEXT("JS_OnClickRoomUI SettingPath Fail.. "));
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to select an ImagePath!"));
 	}
+
+	return SelectedPath;
 }
 
 void UJS_OnClickRoomUI::SettingData(FString TexturePath, UJS_RoomButton* Button)
