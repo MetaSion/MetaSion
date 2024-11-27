@@ -4,7 +4,6 @@
 #include "KGW/KGW_UserRoomName.h"
 #include "HttpActor.h"
 #include "JS_RoomController.h"
-#include "JS_OnClickRoomUI.h"
 #include "JS_ShowColorActor.h"
 #include "JS_RoomButton.h"
 #include "CJS/CJS_InnerWorldParticleActor.h"
@@ -25,19 +24,19 @@
 #include "Engine/Texture2D.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/WrapBox.h"
 
 
 void UKGW_RoomList::NativeConstruct()
 {
     Super::NativeConstruct();
 
+    btn_ShowCharacter->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowCharacterUI);
     btn_ShowParticle->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowParticleUI);
 	btn_MyRoom_List->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowMyRoomListUI);
 	btn_List_of_all_rooms->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowListOfAllRooms);
     btn_MyRoom->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickInnerWorld);
     btn_MultiWorld->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickMultiWorld);
-    btn_ShowCharacter->OnClicked.AddDynamic(this, &UKGW_RoomList::ShowCharacterUI);
+    
 
     pc = Cast<AJS_RoomController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
     if (!pc) {
@@ -64,7 +63,7 @@ void UKGW_RoomList::NativeConstruct()
     {
         UE_LOG(LogTemp, Error, TEXT("KGW_RoomList::BeginPlay() No SessionGI"));
     }
-    InitializeOnClickRoomUI();
+   /* SettingImagePath();*/
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
     if (LevelName == "Main_Sky") {
         //GetWorld()->GetTimerManager().SetTimer(SpawnBallTimerHandle, this, &UKGW_RoomList::SpawnBall, 3.2f, false);
@@ -133,41 +132,31 @@ void UKGW_RoomList::ChangeCanvas(int32 index)
         switch (index)
         {
         case 1:
-            //처음 아무것도 없는 화면 세팅
-            HideOnClickRoomUI();
-            ShowMenuUI();
+            // 캐릭터 데이터 받아서 보여주기
+            if (CurrentParticleActor) CleanParticle();
+            SpawnBall();
+            break;
         case 2:
             //파티클 스폰
-            HideOnClickRoomUI();
             if (CurrentBallActor) DestroyBall();
             SpawnParticle();     
             break;
         case 3:
             //AI 결과 저장해서 보여주기
-            HideOnClickRoomUI();
             if (CurrentBallActor) DestroyBall();
             if (CurrentParticleActor) CleanParticle();
             break;
         case 4:
             // 내방목록 데이터 받아서 보여주기
-            HideOnClickRoomUI();
             if (CurrentBallActor) DestroyBall();
             if (CurrentParticleActor) CleanParticle();
             break;
         case 5:
             // 전체방목록 데이터 받아서 보여주기
-            HideOnClickRoomUI();
             if (CurrentBallActor) DestroyBall();
             if (CurrentParticleActor) CleanParticle();
             break;
-        case 6:
-            // 캐릭터 데이터 받아서 보여주기
-            HideOnClickRoomUI();
-            if (CurrentParticleActor) CleanParticle();
-            SpawnBall();
-            break;
         default:
-            HideOnClickRoomUI();
             if (CurrentParticleActor) CleanParticle();
             if (CurrentBallActor) DestroyBall();
             break;
@@ -179,7 +168,7 @@ void UKGW_RoomList::ChangeCanvas(int32 index)
 }
 void UKGW_RoomList::ShowMenuUI()
 {
-    ChangeCanvas(1);
+    //ChangeCanvas(1);
 }
 void UKGW_RoomList::ShowParticleUI()
 {
@@ -195,6 +184,7 @@ void UKGW_RoomList::ShowMyRoomListUI()
         bIsListMyRooms = true;
         bRoomList = true;
         bMultiRoomList = false;
+        RoomNumberCounter = 0; // 카운터 리셋
         SettingPath();
         for (int32 i = 0; i < 21; i++) {
             FString RandomPath = GetRandomPath();
@@ -209,6 +199,7 @@ void UKGW_RoomList::ShowListOfAllRooms()
         bIsListAllRooms = true;
         bRoomList = false;
         bMultiRoomList = true;
+        RoomNumberCounter = 0; // 카운터 리셋
         SettingPath();
         for (int32 i = 0; i < 21; i++) {
             FString RandomPath = GetRandomPath();
@@ -220,14 +211,12 @@ void UKGW_RoomList::ShowListOfAllRooms()
 }
 void UKGW_RoomList::ShowCharacterUI()
 {
-    ChangeCanvas(6);
+    ChangeCanvas(1);
 }
 
 // GridPanel 부분 -------------------------------------------------------------
 void UKGW_RoomList::AddImageToGrid(FString TexturePath)
 {
-    static int32 RoomNumberCounter = 0; // RoomNumber 초기화 및 카운터 설정
-
     // 텍스처 로드
     UTexture2D* ImageTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, *TexturePath));
 
@@ -239,8 +228,8 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
 
     // SizeBox 생성
     USizeBox* SizeBox = NewObject<USizeBox>(this);
-    SizeBox->SetWidthOverride(400.0f);
-    SizeBox->SetHeightOverride(150.0f);
+    SizeBox->SetWidthOverride(1200.0f);
+    SizeBox->SetHeightOverride(450.0f);
 
     // 버튼 생성
     UJS_RoomButton* ImageButton = NewObject<UJS_RoomButton>(this);
@@ -303,6 +292,10 @@ void UKGW_RoomList::SettingPath()
     ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_5"));
     ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_6"));
     ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_7"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_8"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_9"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_10"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_11"));
 //     ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_1"));
 //     ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_1"));
  }
@@ -317,43 +310,7 @@ FString UKGW_RoomList::GetRandomPath()
     int32 RandomIndex = FMath::RandRange(0, ImagePath.Num() - 1); // 랜덤 인덱스 선택
     return ImagePath[RandomIndex];
 }
-void UKGW_RoomList::InitializeOnClickRoomUI()
-{
-    OnClickRoomUI = CreateWidget<UJS_OnClickRoomUI>(this, OnClickRoomUIFactory);
-    if (OnClickRoomUI)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::InitializeUIWidgets() OnClickRoomUI set"));
 
-        if (RoomWrapBox)
-        {
-            RoomWrapBox->AddChild(OnClickRoomUI);
-            UE_LOG(LogTemp, Warning, TEXT("OnClickRoomUI added to RoomWrapBox"));
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("RoomWrapBox is null! Make sure it's set in the Widget Blueprint."));
-        }
-
-        OnClickRoomUI->SetVisibility(ESlateVisibility::Hidden);
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Failed to create OnClickRoomUI!"));
-    }
-}
-void UKGW_RoomList::ShowOnClickRoomUI()
-{
-    if (OnClickRoomUI) {
-        OnClickRoomUI->SetVisibility(ESlateVisibility::Visible);
-//         OnClickRoomUI->SettingData();
-    }
-}
-void UKGW_RoomList::HideOnClickRoomUI()
-{
-    if (OnClickRoomUI) {
-        OnClickRoomUI->SetVisibility(ESlateVisibility::Hidden);
-    }
-}
 void UKGW_RoomList::OnImageHovered()
 {
     // 호버 시 댓글 UI 표시
@@ -436,6 +393,97 @@ void UKGW_RoomList::CleanParticle()
         CurrentParticleActor = nullptr;
     }
 }
+// OnClickUI쪽에서 가져온 곳 ----------------------------------------------------------------
+FString UKGW_RoomList::SettingImagePath()
+{
+    SGImagePath = {
+            TEXT("/Game/Main/Assets/UI/room_1.room_1"),
+            TEXT("/Game/Main/Assets/UI/room_2.room_2"),
+            TEXT("/Game/Main/Assets/UI/room_3.room_3"),
+            TEXT("/Game/Main/Assets/UI/room_4.room_4"),
+            TEXT("/Game/Main/Assets/UI/room_5.room_5"),
+            TEXT("/Game/Main/Assets/UI/room_6.room_6"),
+            TEXT("/Game/Main/Assets/UI/room_7.room_7"),
+            TEXT("/Game/Main/Assets/UI/room_7.room_8"),
+            TEXT("/Game/Main/Assets/UI/room_7.room_9"),
+            TEXT("/Game/Main/Assets/UI/room_7.room_10"),
+            TEXT("/Game/Main/Assets/UI/room_7.room_11")
+    };
+
+    int32 RandomIndex = FMath::RandRange(0, SGImagePath.Num() - 1);
+
+    FString SelectedPath = SGImagePath[RandomIndex];
+
+    if (!SelectedPath.IsEmpty())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Randomly Selected Path: %s"), *SelectedPath);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to select an ImagePath!"));
+    }
+
+    return SelectedPath;
+}
+
+void UKGW_RoomList::SettingData(FString TexturePath, UJS_RoomButton* Button)
+{
+    // 초기 null 체크
+    if (!pc || !pc->SessionGI || !Button)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Required components are null"));
+        return;
+    }
+
+    UE_LOG(LogTemp, Warning, TEXT("KGW_RoomListUI::SettingData()"));
+    // �ؽ�ó ��ο��� UTexture2D �ε�
+    UTexture2D* ImageTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, *TexturePath));
+
+    // �ؽ�ó�� ����� �ε�Ǿ����� Ȯ��
+    if (!ImageTexture)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load texture from path: %s"), *TexturePath);
+        return;
+    }
+    if (!SG_ImageButton) {
+        UE_LOG(LogTemp, Error, TEXT("Fail to ImageButton"));
+        return;
+    }
+
+    //Image Setting
+    SG_RoomImage->SetBrushFromTexture(ImageTexture, true);
+    // suggest_list 접근
+    const TArray<FMySuggest_List>& SuggestList = pc->SessionGI->WorldSetting.suggest_list;
+    if (SuggestList.Num() == 0)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Suggest list is empty"));
+        return;
+    }
+
+
+    // 버튼 인덱스 처리
+    int32 ButtonIndex = Button->GetIndex();
+    if (ButtonIndex < 0 || ButtonIndex >= SuggestList.Num())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Invalid button index: %d"), ButtonIndex);
+        return;
+    }
+    // 데이터 설정
+    const FMySuggest_List& Suggestion = SuggestList[ButtonIndex];
+
+    // UI 컴포넌트 null 체크 후 설정
+    if (SG_RoomName)
+        SG_RoomName->SetText(FText::FromString(Suggestion.room_name));
+    if (SG_RoomOwner)
+        SG_RoomOwner->SetText(FText::FromString(Suggestion.room_id));
+    if (SG_Similarity)
+        SG_Similarity->SetText(FText::FromString(FString::Printf(TEXT("Similarity: %s%"), *Suggestion.percent_message)));
+    if (SG_ReasonForRecommendation)
+        SG_ReasonForRecommendation->SetText(FText::FromString(Suggestion.reason_message));
+    if (SG_RoomComment)
+        SG_RoomComment->SetText(FText::FromString(Suggestion.reason_message));
+}
+// OnClickUI쪽에서 가져온 곳 ----------------------------------------------------------------
 
 void UKGW_RoomList::AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos)
 {
