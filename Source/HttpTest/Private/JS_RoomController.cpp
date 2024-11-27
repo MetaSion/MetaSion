@@ -100,7 +100,7 @@ void AJS_RoomController::BeginPlay()
 
     SessionGI = Cast<USessionGameInstance>(GetGameInstance());
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
-    if (LevelName.Contains("Main_LV"))
+    /*if (LevelName.Contains("Main_LV"))
     {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_LV"));
         if (SessionGI) {
@@ -111,8 +111,8 @@ void AJS_RoomController::BeginPlay()
         {
             UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
         }
-    }
-    else if (LevelName.Contains("Test_Main_Sky"))
+    }*/
+    if (LevelName.Contains("Test_Main_Sky"))
     {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Test_Main_Sky"));
         PlayUIAnimation();

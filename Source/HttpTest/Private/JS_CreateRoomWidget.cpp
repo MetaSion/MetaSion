@@ -131,7 +131,10 @@ void UJS_CreateRoomWidget::OnClikExplanation()
 				else
 				{
 					UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::OnClikExplanation() Invalid index: %d, MyRooms size: %d"), idx, ArraySize);
-					SetExplanation(TEXT("Invalid room information."));
+					int32 changedIdx = 0;  // <--- 버튼 번호가 20보다 클 경우 고정값
+					FString Changedtext = SessionGI->WorldSetting.MyRooms[changedIdx].MyRoomName;
+					UE_LOG(LogTemp, Error, TEXT("UJS_CreateRoomWidget::OnClikExplanation() changedIdx: %d"), changedIdx);
+					SetExplanation(Changedtext);
 				}
 			}
 			else
