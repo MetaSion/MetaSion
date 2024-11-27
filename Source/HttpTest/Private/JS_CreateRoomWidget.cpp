@@ -197,6 +197,7 @@ void UJS_CreateRoomWidget::OnClickGood()
 				UJS_RoomButton* ImageButton = NewObject<UJS_RoomButton>(this);
 				ImageButton->Initialize();   // <-- 수정 필요!!
 				UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() Change SessionGI->SetbMyRoomWatchingOn(false) : %d"), SessionGI->GetbMyRoomWatchingOn());
+				httpActor->SetBackgroundSound();
 			}
 			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClickGood() Move From InnerWorld to Main_Sky"));
 			UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
@@ -248,6 +249,8 @@ void UJS_CreateRoomWidget::OnClikBad()
 				UJS_RoomButton* ImageButton = NewObject<UJS_RoomButton>(this);
 				ImageButton->Initialize();  // <-- 수정 필요!!
 				UE_LOG(LogTemp, Warning, TEXT(" UJS_CreateRoomWidget::OnClickGood() Change SessionGI->SetbMyRoomWatchingOn(false) : %d"), SessionGI->GetbMyRoomWatchingOn());
+				httpActor->SetBackgroundSound();
+
 			}
 			UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::OnClickGood() Move From InnerWorld to Main_Sky"));
 			UGameplayStatics::OpenLevel(this, FName("Main_Sky"));
