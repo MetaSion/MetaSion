@@ -144,7 +144,7 @@
         },
         {
             "percent_message": "85.40%",
-            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요. 서로의 감정을 공감하며 연결되어 보세요.",
+            "reason_message": "당신과 비슷한 감정을 느끼고 있어요. 감정을 공감하며 연결되어 보세요.",
             "room_id": "testuser",
             "room_num": "1222",
             "room_name": "고요한 바람결",
@@ -160,7 +160,7 @@
         },
         {
             "percent_message": "60.40%",
-            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요. 서로의 감정을 공감하며 연결되어 보세요.",
+            "reason_message": "당신과 비슷한 감정을 느끼고 있어요. 감정을 공감하며 연결되어 보세요.",
             "room_id": "testuser",
             "room_num": "1222",
             "room_name": "별빛 그림자",
@@ -208,7 +208,7 @@
         },
         {
             "percent_message": "81.20%",
-            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요. 서로의 감정을 공감하며 연결되어 보세요.",
+            "reason_message": "당신과 비슷한 감정을 느끼고 있어요. 감정을 공감하며 연결되어 보세요.",
             "room_id": "testuser",
             "room_num": "1222",
             "room_name": "아스라이 빛나는",
@@ -248,7 +248,7 @@
         },
         {
             "percent_message": "83.70%",
-            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요. 서로의 감정을 공감하며 치유의 시간을 가져보세요.",
+            "reason_message": "당신과 비슷한 감정을 느끼고 있어요. 서로의 감정을 공감하며 치유의 시간을 가져보세요.",
             "room_id": "Extra_14",
             "room_num": "R14",
             "room_name": "눈꽃의 속삭임",
