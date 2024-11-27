@@ -8,9 +8,9 @@
 
 void UJS_RoomButton::Initialize()
 {
-    //Å¬¸¯ÇÔ¼ö ¹ÙÀÎµå
+    //Å¬ï¿½ï¿½ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½Îµï¿½
     this->OnClicked.AddDynamic(this, &UJS_RoomButton::OnImageClicked);
-    //RoomNumÃÊ±â°ª
+    //RoomNumï¿½Ê±â°ª
     RoomNum = -1;
 }
 
@@ -26,10 +26,34 @@ int32 UJS_RoomButton::GetIndex() const
 
 void UJS_RoomButton::OnImageClicked()
 {
+    UE_LOG(LogTemp, Warning, TEXT("UJS_RoomButton::OnImageClicked()"));
+
     if (!RL)
     {
         UE_LOG(LogTemp, Error, TEXT("RL is null in OnImageClicked!"));
-        return; // RLÀÌ nullptrÀÌ¸é ÇÔ¼ö Á¾·á
+        return; // RLï¿½ï¿½ nullptrï¿½Ì¸ï¿½ ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+    }
+    
+    // ë§ˆì§€ë§‰ ëˆ„ë¥¸ ë°© ë²ˆí˜¸ ê¸°ì–µ
+    LastBtnIdx = GetIndex();
+    UE_LOG(LogTemp, Error, TEXT("UJS_RoomButton::OnImageClicked() LastBtnIdx %d"), LastBtnIdx);
+
+    USessionGameInstance* SessionGI = Cast<USessionGameInstance>(GetGameInstance());
+    if (SessionGI)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("UJS_RoomButton::OnImageClicked() Set SessionGI"));
+        UE_LOG(LogTemp, Warning, TEXT("UJS_RoomButton::OnImageClicked() Get SessionGI->bMyRoomWatchingOn() %d"), SessionGI->GetbMyRoomWatchingOn());
+        if (!SessionGI->GetbMyRoomWatchingOn())
+        {
+            SessionGI->SetbtMyRoomWatchingOn(true);
+            SessionGI->SetLastMyWolrdBtnIdx(LastBtnIdx);
+            UE_LOG(LogTemp, Warning, TEXT("UJS_RoomButton::OnImageClicked() After Set SessionGI->bMyRoomWatchingOn() %d"), SessionGI->GetbMyRoomWatchingOn());
+            UE_LOG(LogTemp, Warning, TEXT("UJS_RoomButton::OnImageClicked() After Set SessionGI->LastMyWorldBnIdx() %d"), SessionGI->GetLastMyWolrdBtnIdx());
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("UJS_RoomButton::OnImageClicked() SessionGI->bMyRoomWatchingOn() true right now %d"), SessionGI->GetbMyRoomWatchingOn());
+        }
     }
 
     /*OnRoomClicked.Broadcast(RoomNum);*/
@@ -37,11 +61,11 @@ void UJS_RoomButton::OnImageClicked()
         UGameplayStatics::OpenLevel(GetWorld(), FName("Main_LV_Fall"));
     }
     else if (RL->bMultiRoomList) {
-        // »õ·Î¿î UI°¡ ¶ß°í ¶á UI¿¡¼­ ¹æÀÌ¸§, ¹æÀ¯»çµµ, ÄÚ¸àÆ® ³Ö¾î¼­ º¸¿©ÁÖ±â
+        // ï¿½ï¿½ï¿½Î¿ï¿½ UIï¿½ï¿½ ï¿½ß°ï¿½ ï¿½ï¿½ UIï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½çµµ, ï¿½Ú¸ï¿½Æ® ï¿½Ö¾î¼­ ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½
         RL->ShowOnClickRoomUI();
         RL->pc->HideRoomListUI();
         if (RL->OnClickRoomUI) {
-            RL->OnClickRoomUI->SettingData(RL->OnClickRoomUI->ImagePath, this);
+            RL->OnClickRoomUI->SettingData(RL->OnClickRoomUI->SettingImagePath(), this);
         }
     }
 }

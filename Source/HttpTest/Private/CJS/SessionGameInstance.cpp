@@ -479,6 +479,30 @@ void USessionGameInstance::SetbRefRoomUIMultiOn(bool value)
 	bRefRoomUIMultiOn = value;
 }
 
+// 마이룸 리스트에서 클릭 시 ui 관련 변수
+bool USessionGameInstance::GetbMyRoomWatchingOn()
+{
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::GetbMyRoomWatchingOn() bMyRoomWatchingOn %d"), bMyRoomWatchingOn);
+	return bMyRoomWatchingOn;
+}
+void USessionGameInstance::SetbtMyRoomWatchingOn(bool value)
+{
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::SetbtMyRoomWatchingOn() value %d"), value);
+	bMyRoomWatchingOn = value;
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::SetbtMyRoomWatchingOn() bMyRoomWatchingOn %d"), bMyRoomWatchingOn);
+}
+
+// 마이페이지의 마이월드 목록의 버튼 인덱스 저장용
+int32 USessionGameInstance::GetLastMyWolrdBtnIdx()
+{
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::GetLastMyWolrdBtnIdx() LastMyWolrdBtnIdx %d"), LastMyWolrdBtnIdx);
+	return LastMyWolrdBtnIdx;
+}
+void USessionGameInstance::SetLastMyWolrdBtnIdx(int32 value)
+{
+	LastMyWolrdBtnIdx = value;
+}
+
 void USessionGameInstance::ChangePlayerController(UWorld* World, TSubclassOf<APlayerController> NewControllerClass)
 {
 	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::ChangePlayerController()"));

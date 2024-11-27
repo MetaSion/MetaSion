@@ -21,7 +21,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-
+    
     /* Input */
     virtual void SetupInputComponent() override;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
@@ -30,6 +30,8 @@ public:
 	UInputAction* IA_LeftMouse;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* IA_SettingUI;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UInputAction* IA_MyWorldUI;
 
 
     /* UI */
@@ -49,9 +51,9 @@ public:
 	class UJS_CreateRoomWidget* CR_UI;
 	UPROPERTY()
 	class UJS_RoomWidget* R_UI;
-    UPROPERTY(EditAnywhere)
+    UPROPERTY()
 	class UJS_ExplainWidget* Ex_UI;
-    UPROPERTY(EditAnywhere)
+    UPROPERTY()
 	class UKGW_RoomList* RL_UI;
 
     //ShowRoomList TimerHandler
@@ -139,7 +141,12 @@ public:
 
     /* Inner World UI */
     void ShowInnerWorldUIZero();
+    //void ShowInnerWorldUIZero(int32 widgetIdx);
     void HideInnerWorldUI();
+
+    /* My World Watching UI */
+    void ShowMyWorldUI();
+    void HideMyWorldUI();
 
     /* Chat Widget */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")

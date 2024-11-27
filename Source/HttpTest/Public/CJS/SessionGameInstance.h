@@ -232,6 +232,15 @@ public:
 	bool GetbRefRoomUIMultiOn();
 	void SetbRefRoomUIMultiOn(bool value);
 
+	// 마이 룸 리스트에서 입장시
+	bool bMyRoomWatchingOn = false;
+	bool GetbMyRoomWatchingOn();
+	void SetbtMyRoomWatchingOn(bool value);
+
+	int32 LastMyWolrdBtnIdx = -1;
+	int32 GetLastMyWolrdBtnIdx();
+	void SetLastMyWolrdBtnIdx(int32 value);
+
 
 	/* --------------------------------------------------------------------------------------------------------------------------- */
 	// MyWorld Setting 시 필요한 정보 저장한 구조체의 변수
@@ -240,6 +249,7 @@ public:
     FMyWorldSetting WorldSetting;
 
 	bool bmyWorldPageOn = false;
+
 
 	/* --------------------------------------------------------------------------------------------------------------------------- */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="PlayerController")
@@ -260,13 +270,14 @@ public:
     TArray<FMyWorldRoomInfo> RoomInfoList;
 
 
-	//JS
+	//JS ---------------------------------------------------------------------
 	bool bSuccess = false; // 상태 유지 변수
 	bool bNotFirst = false;
 	FString UserId = TEXT("testuser");
 	FString AIResult;
 
-	//playMusic
+
+	//playMusic ---------------------------------------------------------------
 		UFUNCTION(BlueprintCallable)
 
 	void PlayMusic(USoundBase* Music);
@@ -276,7 +287,6 @@ public:
 	void StopMusic();
 	UPROPERTY(EditAnywhere)
 	class UAudioComponent* MusicSound;
-
 
     UPROPERTY()
     FTimerHandle FadeOutTimerHandle;

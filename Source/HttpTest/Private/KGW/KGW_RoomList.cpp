@@ -25,6 +25,7 @@
 #include "Engine/Texture2D.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/WrapBox.h"
 
 
 void UKGW_RoomList::NativeConstruct()
@@ -84,7 +85,7 @@ void UKGW_RoomList::SpawnBall()
         CurrentBallActor->Destroy();
         CurrentBallActor = nullptr;
     }*/
-    FVector Location = FVector(-470356, 643800, 648165);
+    FVector Location = FVector(-470356, 643770.0, 648165);
     FRotator Rotation = FRotator::ZeroRotator;
 
     FMyRGBColor RGB = SGI->WorldSetting.RGB;
@@ -225,6 +226,8 @@ void UKGW_RoomList::ShowCharacterUI()
 // GridPanel 부분 -------------------------------------------------------------
 void UKGW_RoomList::AddImageToGrid(FString TexturePath)
 {
+    static int32 RoomNumberCounter = 0; // RoomNumber 초기화 및 카운터 설정
+
     // 텍스처 로드
     UTexture2D* ImageTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, *TexturePath));
 
@@ -236,15 +239,17 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
 
     // SizeBox 생성
     USizeBox* SizeBox = NewObject<USizeBox>(this);
-    SizeBox->SetWidthOverride(600.0f);
-    SizeBox->SetHeightOverride(500.0f);
+    SizeBox->SetWidthOverride(400.0f);
+    SizeBox->SetHeightOverride(150.0f);
 
     // 버튼 생성
     UJS_RoomButton* ImageButton = NewObject<UJS_RoomButton>(this);
     ImageButton->Initialize();
     ImageButton->RL = this;
-    //버튼의 인덱스 할당
-    ImageButton->SetIndex(RoomNumber);
+
+    // 버튼의 인덱스 할당
+    ImageButton->SetIndex(RoomNumberCounter);
+    RoomNumberCounter++; // RoomNumber 카운터 증가
 
     // 버튼의 배경 스타일 설정
     FButtonStyle ButtonStyle;
@@ -260,11 +265,6 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
     NewImage->SetBrushFromTexture(ImageTexture, true);
     NewImage->SetDesiredSizeOverride(FVector2D(600, 500));
 
-    // 이미지의 배경 브러시 설정
-    FSlateBrush ImageBrush = NewImage->Brush;
-    ImageBrush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // 이미지 자체는 완전 불투명
-    NewImage->SetBrush(ImageBrush);
-
     // 이미지를 버튼의 자식으로 추가
     ImageButton->AddChild(NewImage);
 
@@ -274,33 +274,38 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
     // 버튼 이벤트 바인딩
     ImageButton->OnHovered.AddDynamic(this, &UKGW_RoomList::OnImageHovered);
     ImageButton->OnUnhovered.AddDynamic(this, &UKGW_RoomList::OnImageUnhovered);
-    //ImageButton->OnClicked.AddDynamic(this, &UKGW_RoomList::OnClickedImageRoomList);
 
-    if (bRoomList) {
+    // RoomList UI에 버튼 추가
+    if (bRoomList)
+    {
         int32 RowCount = UGP_RoomList->GetChildrenCount() / 3;
         int32 ColCount = UGP_RoomList->GetChildrenCount() % 3;
         UGP_RoomList->AddChildToUniformGrid(SizeBox, RowCount, ColCount);
     }
-    if (bMultiRoomList) {
+    if (bMultiRoomList)
+    {
         int32 RowCount = UGP_Multi_RoomList->GetChildrenCount() / 3;
         int32 ColCount = UGP_Multi_RoomList->GetChildrenCount() % 3;
         UGP_Multi_RoomList->AddChildToUniformGrid(SizeBox, RowCount, ColCount);
     }
+
+    // 디버깅 로그 추가
+    UE_LOG(LogTemp, Warning, TEXT("AddImageToGrid: Added button with index: %d"), ImageButton->GetIndex());
 }
 
 void UKGW_RoomList::SettingPath()
 {
     ImagePath.Empty(); // 기존 배열 초기화
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/Thunder"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/BG"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/cloudy"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/partlysunny"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/Rainy"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/snow"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/storm"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/sunny"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/Thunder"));
-}
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_1"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_2"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_3"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_4"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_5"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_6"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_7"));
+//     ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_1"));
+//     ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_1"));
+ }
 
 FString UKGW_RoomList::GetRandomPath()
 {
@@ -317,15 +322,30 @@ void UKGW_RoomList::InitializeOnClickRoomUI()
     OnClickRoomUI = CreateWidget<UJS_OnClickRoomUI>(this, OnClickRoomUIFactory);
     if (OnClickRoomUI)
     {
-        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() OnClickRoomUI set"));
-        OnClickRoomUI->AddToViewport();
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::InitializeUIWidgets() OnClickRoomUI set"));
+
+        if (RoomWrapBox)
+        {
+            RoomWrapBox->AddChild(OnClickRoomUI);
+            UE_LOG(LogTemp, Warning, TEXT("OnClickRoomUI added to RoomWrapBox"));
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("RoomWrapBox is null! Make sure it's set in the Widget Blueprint."));
+        }
+
         OnClickRoomUI->SetVisibility(ESlateVisibility::Hidden);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to create OnClickRoomUI!"));
     }
 }
 void UKGW_RoomList::ShowOnClickRoomUI()
 {
     if (OnClickRoomUI) {
         OnClickRoomUI->SetVisibility(ESlateVisibility::Visible);
+//         OnClickRoomUI->SettingData();
     }
 }
 void UKGW_RoomList::HideOnClickRoomUI()
@@ -379,7 +399,7 @@ void UKGW_RoomList::SpawnParticle()
     CleanParticle();
     
     //FVector Location = FVector(-470990.0f, 643286.0f, 648362.0f); 
-    FVector Location = FVector(-470356.0f, 643800.0f, 648165.0f); 
+    FVector Location = FVector(-470047.589317f, 643880.898148f, 648118.610643);
     FRotator Rotation = FRotator::ZeroRotator;
 
     CurrentParticleActor = GetWorld()->SpawnActor<ACJS_InnerWorldParticleActor>(

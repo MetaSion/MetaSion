@@ -100,7 +100,7 @@ void AJS_RoomController::BeginPlay()
 
     SessionGI = Cast<USessionGameInstance>(GetGameInstance());
     FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
-    if (LevelName.Contains("Main_LV"))
+    /*if (LevelName.Contains("Main_LV"))
     {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Main_LV"));
         if (SessionGI) {
@@ -111,8 +111,8 @@ void AJS_RoomController::BeginPlay()
         {
             UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::BeginPlay() NO SessionGI"));
         }
-    }
-    else if (LevelName.Contains("Test_Main_Sky"))
+    }*/
+    if (LevelName.Contains("Test_Main_Sky"))
     {
         UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::BeginPlay() LevelName.Contains->Test_Main_Sky"));
         PlayUIAnimation();
@@ -205,8 +205,10 @@ void AJS_RoomController::SetupInputComponent()
          UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::SetupPlayerInputComponent UEnhancedInputComponent set"));
          // Mouse Click Event
          EnhancedInputComponent->BindAction(IA_LeftMouse, ETriggerEvent::Triggered, this, &AJS_RoomController::OnMouseClick);
-         // Inner World Setting UI
+         // Inner World Setting UI (키보드 <)
          EnhancedInputComponent->BindAction(IA_SettingUI, ETriggerEvent::Started, this, &AJS_RoomController::ShowSettingUI);
+         // My World Watching UI (키보드 >)
+         EnhancedInputComponent->BindAction(IA_MyWorldUI, ETriggerEvent::Started, this, &AJS_RoomController::ShowMyWorldUI);
     }
 }
 
@@ -958,6 +960,7 @@ void AJS_RoomController::InitInnerWorldSetting()
 void AJS_RoomController::ShowInnerWorldUIZero()
 {
     UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowInnerWorldUIZero()"));
+    //UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() widgetIdx %d"), widgetIdx);
     if (CR_UIFactory)
     {
         if (!CR_UI)
@@ -969,7 +972,7 @@ void AJS_RoomController::ShowInnerWorldUIZero()
 				UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() InnerWorldUI assigned"));
 				CR_UI->SetVisibility(ESlateVisibility::Visible);
                 CR_UI->SwitchToWidget(0);
-				UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() InnerWorldUI set Visible"));
+				//UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() InnerWorldUI set Visible widgetIdx %d"), widgetIdx);
 			}
 			else
 			{
@@ -981,7 +984,7 @@ void AJS_RoomController::ShowInnerWorldUIZero()
             UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::ShowInnerWorldUIZero() already exsited InnerWorldUI"));
             CR_UI->SetVisibility(ESlateVisibility::Visible);
             CR_UI->SwitchToWidget(0);
-            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIZero() InnerWorldUI set Visible"));
+            //UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowInnerWorldUIZero() InnerWorldUI set Visible %d"), widgetIdx);
         }
 
     }
@@ -989,8 +992,6 @@ void AJS_RoomController::ShowInnerWorldUIZero()
     {
         UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::ShowInnerWorldUIZero() Failed to create CR_UIFactory"));
     }
-  
-
 }
 void AJS_RoomController::HideInnerWorldUI()
 {
@@ -1013,36 +1014,85 @@ void AJS_RoomController::HideInnerWorldUI()
     }
 }
 
-//Initial Inner World Setting End --------------------------------------------------------------------------
-
-//Inner World Setting UI Start -----------------------------------------------------------------------------
-void AJS_RoomController::ShowSettingUI()
+// 마이 월드 목록 클릭 시, 감상 모드 (키보드 >)
+void AJS_RoomController::ShowMyWorldUI()
 {
-    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowSettingUI()"));
-    // SettingUIFactory가 유효하고 SettingUI가 생성되지 않은 경우에만 생성
-    if (SettingUIFactory && !SettingUI)
+    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowMyWorldUI()"));
+    if (CR_UIFactory)
     {
-        SettingUI = CreateWidget<UCJS_InnerWorldSettingWidget>(GetWorld(), SettingUIFactory);
-
-        if (SettingUI)
+        if (!CR_UI)
         {
-            // 화면에 추가
-            SettingUI->AddToViewport();
-            UE_LOG(LogTemp, Warning, TEXT("Setting UI shown"));
+            UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowMyWorldUI() not exsited InnerWorldUI"));
+            CR_UI = CreateWidget<UJS_CreateRoomWidget>(GetWorld(), CR_UIFactory);
+            if (CR_UI)
+            {
+                UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::ShowMyWorldUI() InnerWorldUI assigned"));
+                CR_UI->SetVisibility(ESlateVisibility::Visible);
+                CR_UI->SwitchToWidget(3);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::ShowMyWorldUI() No InnerWorldUI"));
+            }
         }
         else
         {
-            UE_LOG(LogTemp, Error, TEXT("Failed to create Setting UI"));
+            UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::ShowMyWorldUI() already exsited InnerWorldUI"));
+            CR_UI->SetVisibility(ESlateVisibility::Visible);
+            CR_UI->SwitchToWidget(3);
         }
     }
     else
     {
-        UE_LOG(LogTemp, Error, TEXT("Failed to create SettingUIFactory"));
+        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::ShowMyWorldUI() Failed to create CR_UIFactory"));
+    }
+}
+void AJS_RoomController::HideMyWorldUI()
+{
+    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::HideMyWorldUI()"));
+    if (CR_UI)
+    {
+        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::HideMyWorldUI() CR_UI exsied"));
+ 
+        CR_UI->RemoveFromParent();
+        CR_UI = nullptr;
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::HideMyWorldUI() Inner World UI Remove"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT(" AJS_RoomController::HideMyWorldUI() No InnerWorldUI"));
+    }
+}
+
+//Initial Inner World Setting End --------------------------------------------------------------------------
+
+//Inner World Setting UI Start(키보드 <) -----------------------------------------------------------------------------
+void AJS_RoomController::ShowSettingUI()
+{
+    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowSettingUI()"));
+    // SettingUIFactory가 유효하고 SettingUI가 생성되지 않은 경우에만 생성
+    if (SettingUIFactory && !SettingUI)
+    {
+        SettingUI = CreateWidget<UCJS_InnerWorldSettingWidget>(GetWorld(), SettingUIFactory);
+        if (SettingUI)
+        {
+            // 화면에 추가
+			SettingUI->AddToViewport();		
+            UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::ShowSettingUI() Setting UI shown"));
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::ShowSettingUI() Failed to create Setting UI"));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::ShowSettingUI() Failed to create SettingUIFactory"));
     }
 }
 void AJS_RoomController::HideSettingUI()
 {
-    UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::HideSettingUI()"));
+    UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::HideSettingUI()"));
     if (SettingUI)
     {
         // SettingUI를 화면에서 제거
@@ -1051,11 +1101,11 @@ void AJS_RoomController::HideSettingUI()
         // SettingUI 포인터를 nullptr로 설정하여 다시 ShowSettingUI에서 새로 생성할 수 있도록 함
         SettingUI = nullptr;
 
-        UE_LOG(LogTemp, Warning, TEXT("Setting UI hidden"));
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::HideSettingUI() Setting UI hidden"));
     }
     else
     {
-        UE_LOG(LogTemp, Error, TEXT("Failed to create Setting UI"));
+        UE_LOG(LogTemp, Error, TEXT("AJS_RoomController::HideSettingUI() Failed to create Setting UI"));
     }
 }
 // Inner World Setting UI End ------------------------------------------------------------------------------
