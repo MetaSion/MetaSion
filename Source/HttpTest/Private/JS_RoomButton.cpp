@@ -65,7 +65,7 @@ void UJS_RoomButton::OnImageClicked()
         RL->ShowOnClickRoomUI();
         RL->pc->HideRoomListUI();
         if (RL->OnClickRoomUI) {
-            RL->OnClickRoomUI->SettingData(RL->OnClickRoomUI->ImagePath, this);
+            RL->OnClickRoomUI->SettingData(RL->OnClickRoomUI->SettingImagePath(), this);
         }
     }
 }
