@@ -1348,7 +1348,9 @@ FString AHttpActor::ReadAndParseJSON()
 {
     UE_LOG(LogTemp, Warning, TEXT("AHttpActor::ReadAndParseJSON()"));
 
-    FString FilePath = FPaths::ProjectDir() + TEXT("SavedData.txt");
+    FString FilePath = FPaths::ProjectDir() + TEXT("processAndSendData.txt");
+    //FString FilePath = FPaths::ProjectDir() + TEXT("saveRoomData.txt");
+    //FString FilePath = FPaths::ProjectDir() + TEXT("sendEmotionUpdate.txt");
     // 디버깅용 경로 출력
     UE_LOG(LogTemp, Warning, TEXT("File Path: %s"), *FilePath);
 

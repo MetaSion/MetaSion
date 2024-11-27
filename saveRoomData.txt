@@ -1,0 +1,298 @@
+{
+    "RGB": {
+        "R": "0.32",
+        "G": "0.12",
+        "B": "1.00"
+    },
+    "RGB18": {
+        "R1": "0.54",
+        "G1": "0.46",
+        "B1": "0.57",
+        "R2": "0.64",
+        "G2": "0.55",
+        "B2": "0.51",
+        "R3": "0.51",
+        "G3": "0.43",
+        "B3": "0.67",
+        "R4": "0.56",
+        "G4": "0.53",
+        "B4": "0.64",
+        "R5": "0.57",
+        "G5": "0.53",
+        "B5": "0.57",
+        "R6": "0.66",
+        "G6": "0.49",
+        "B6": "0.65"
+    },
+    "userMusic": "Music_02",
+    "Quadrant": "3",
+    "UltraSky_TimeOfDay": "2000",
+    "UltraWeather_CloudCoverage": "3",
+    "UltraWeather_Fog": "4",
+    "UltraWeather_Rain": "5",
+    "UltraWeather_Snow": "6",
+    "UltraWeather_Dust": "0",
+    "UltraWeather_Thunder": "0",
+    "MainObject": "Tree1",
+    "SubObject": "Flower3",
+    "Background": "Mountain4",
+    "SeasonParticle": "particle_maple",
+    "Particle_num": 3,
+    "result": "testuser님, 방금 방문한 월드에서 새로운 감정의 한 조각을 느끼셨나요?
+설렘으로 시작했던 하루가, 조금 더 차분하고 깊어진 감정으로 채워진 것 같아요.
+이 새로운 감정을 기반으로 또 다른 월드를 창조하거나,
+다른 사용자들의 월드를 탐험하며 감정을 더 풍부하게 만들어 보세요!
+당신의 감정 여정은 계속될 거예요.",
+    "result2": "안녕하세요! testuser님, 저는 당신의 감정 구슬이에요.
+조금 전 당신이 방문한 월드에서 느낀 감정이 저에게 새로운 색을 더해주었어요.
+오늘의 설렘에 약간의 고요와 깊이를 더한 모습으로, 지금의 당신을 표현하고 있어요.
+이 새로운 모습으로 함께 다음 여정을 떠나볼까요?",
+    "result3": "지금의 감정이 새로운 리듬을 만들어내고 있어요!
+방금 방문한 월드에서 느낀 어둡고 우울한 분위기가
+당신의 설렘에 잔잔한 흔적을 남기며, 파티클의 움직임을 살짝 바꾸었어요.
+음악과 함께, 이 새로운 감정 스펙트럼이 흘러가는 모습을 감상해보세요.",
+     "rooms": [
+        {
+            "room_num": 1341,
+            "room_name": "어제의 속삭임"
+        },
+        {
+            "room_num": 1340,
+            "room_name": "봄의 흔적"
+        },
+        {
+            "room_num": 1339,
+            "room_name": "끝나지 않은 여름"
+        },
+        {
+            "room_num": 1338,
+            "room_name": "은빛 새벽"
+        },
+        {
+            "room_num": 1337,
+            "room_name": "기억의 모래시계"
+        },
+        {
+            "room_num": 1336,
+            "room_name": "달빛 울림"
+        },
+        {
+            "room_num": 1335,
+            "room_name": "첫눈의 약속"
+        },
+        {
+            "room_num": 1334,
+            "room_name": "떠나간 바다"
+        },
+        {
+            "room_num": 1333,
+            "room_name": "12월31일 내생일"
+        },
+        {
+            "room_num": 1332,
+            "room_name": "O!M!G!"
+        },
+        {
+            "room_num": 1331,
+            "room_name": "너와 나의 거리"
+        },
+        {
+            "room_num": 1330,
+            "room_name": "떠나간 바다"
+        },
+        {
+            "room_num": 1329,
+            "room_name": "깊은 숨결"
+        },
+        {
+            "room_num": 1328,
+            "room_name": "끝에서 시작"
+        },
+        {
+            "room_num": 1327,
+            "room_name": "잔잔한 떨림"
+        },
+        {
+            "room_num": 1326,
+            "room_name": "가슴에 새긴 이름"
+        },
+        {
+            "room_num": 1305,
+            "room_name": "푸른 심장"
+        },
+        {
+            "room_num": 1304,
+            "room_name": "봄꽃 속으로"
+        },
+        {
+            "room_num": 1303,
+            "room_name": "별 헤는 밤"
+        },
+        {
+            "room_num": 1302,
+            "room_name": "그림나무"
+        }
+    ],
+    "suggest_list": [
+        {
+            "percent_message": "33.76%",
+            "reason_message": "당신과 반대되는 감정이 담긴 월드예요. 이곳에서 새로운 에너지를 느껴보세요.",
+            "room_id": "user_02",
+            "room_num": "1",
+            "room_name": "잃어버린 낙원",
+            "roomdescription": "평온함이 어딘가에 숨어 있어."
+        },
+        {
+            "percent_message": "85.40%",
+            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요. 서로의 감정을 공감하며 연결되어 보세요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_name": "고요한 바람결",
+            "roomdescription": "마음을 어루만지는 부드러운 바람"
+        },
+        {
+            "percent_message": "90.00%",
+            "reason_message": "당신의 기쁨이 이 월드와 만나 더 커질 거예요!",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_name": "웃음의 잔향",
+            "roomdescription": "은은한 웃음소리"
+        },
+        {
+            "percent_message": "60.40%",
+            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요. 서로의 감정을 공감하며 연결되어 보세요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_name": "별빛 그림자",
+            "roomdescription": "밤하늘의 빛과 어둠이 조화를 이루는 공간"
+        },
+        {
+            "percent_message": "95.76%",
+            "reason_message": "당신의 기쁨이 이 월드와 만나 더 커질 거예요!",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_name": "붉게 물든 거리",
+            "roomdescription": "석양에 물들어 따뜻함을 느낄 수 있는 길"
+        },
+        {
+            "percent_message": "50.51%",
+            "reason_message": "슬픔 속에서도 밝은 기쁨을 찾는 여정을 시작해보세요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_name": "끝나지 않은 이야기",
+            "roomdescription": "여전히 계속되는 우리 이야기"
+        },
+        {
+            "percent_message": "20.98%",
+            "reason_message": "당신과 반대되는 감정이 담긴 월드예요. 이곳에서 새로운 에너지를 느껴보세요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_name": "향기의 무늬",
+            "roomdescription": "익숙한 향기가 잔잔히 퍼지는 아늑한 방"
+        },
+        {
+            "percent_message": "79.67%",
+            "reason_message": "이곳은 많은 사용자들에게 사랑받고 있는 특별한 월드예요. 당신도 함께 경험해보세요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_name": "기억의 숨바꼭질",
+            "roomdescription": "죽어가는 백엔드"
+        },
+        {
+            "percent_message": "25.0%",
+            "reason_message": "당신과 반대되는 감정이 담긴 월드예요. 이곳에서 새로운 에너지를 느껴보세요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_name": "창가 너머 꿈",
+            "roomdescription": "창밖 세상으로 펼쳐지는 무한한 상상"
+        },
+        {
+            "percent_message": "81.20%",
+            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요. 서로의 감정을 공감하며 연결되어 보세요.",
+            "room_id": "testuser",
+            "room_num": "1222",
+            "room_name": "아스라이 빛나는",
+            "roomdescription": "희미하지만 따뜻했던 그대"
+        },
+        {
+            "percent_message": "79.23%",
+            "reason_message": "이곳은 많은 사용자들에게 사랑받고 있는 특별한 월드예요. 당신도 함께 경험해보세요.",
+            "room_id": "Extra_10",
+            "room_num": "R10",
+            "room_name": "흩날리는 꿈결",
+            "roomdescription": "바람에 흩날리는 꿈의 흔적"
+        },
+        {
+            "percent_message": "11.30%",
+            "reason_message": "당신과 반대되는 감정이 담긴 월드예요. 이곳에서 새로운 에너지를 느껴보세요.",
+            "room_id": "Extra_11",
+            "room_num": "R11",
+            "room_name": "오래된 서랍",
+            "roomdescription": "잊힌 추억들이 잠들어 있는 곳"
+        },
+        {
+            "percent_message": "59.20%",
+            "reason_message": "이곳은 많은 사용자들에게 사랑받고 있는 특별한 월드예요. 당신도 함께 경험해보세요.",
+            "room_id": "Extra_12",
+            "room_num": "R12",
+            "room_name": "시들지 않는 꽃",
+            "roomdescription": "엄마의 후레지아"
+        },
+        {
+            "percent_message": "85.22%",
+            "reason_message": "이곳은 많은 사용자들에게 사랑받고 있는 특별한 월드예요. 당신도 함께 경험해보세요.",
+            "room_id": "Extra_13",
+            "room_num": "R13",
+            "room_name": "시간의 그림자",
+            "roomdescription": "과거와 현재의 신비로움"
+        },
+        {
+            "percent_message": "83.70%",
+            "reason_message": "이 사용자는 지금 당신과 비슷한 감정을 느끼고 있어요. 서로의 감정을 공감하며 치유의 시간을 가져보세요.",
+            "room_id": "Extra_14",
+            "room_num": "R14",
+            "room_name": "눈꽃의 속삭임",
+            "roomdescription": "하얗게 피어나는 눈꽃처럼 순수했지..."
+        },
+        {
+            "percent_message": "57.32%",
+            "reason_message": "이곳은 많은 사용자들에게 사랑받고 있는 특별한 월드예요. 당신도 함께 경험해보세요.",
+            "room_id": "Extra_15",
+            "room_num": "R15",
+            "room_name": "희미한 조율",
+            "roomdescription": "완전하지만 아름다운 멜로디"
+        },
+        {
+            "percent_message": "94.00%",
+            "reason_message": "당신의 기쁨이 이 월드와 만나 더 커질 거예요!",
+            "room_id": "Extra_16",
+            "room_num": "R16",
+            "room_name": "꿈결의 파도",
+            "roomdescription": "끝없이 이어지는 부드러운 파도가 꿈을 감싸는 곳"
+        },
+        {
+            "percent_message": "84.65%",
+            "reason_message": "이곳은 많은 사용자들에게 사랑받고 있는 특별한 월드예요. 당신도 함께 경험해보세요.",
+            "room_id": "Extra_17",
+            "room_num": "R17",
+            "room_name": "길 위의 추억",
+            "roomdescription": "지나온 발자취가 하나하나 쌓여 있는 방"
+        },
+        {
+            "percent_message": "37.43%",
+            "reason_message": "당신과 반대되는 감정이 담긴 월드예요. 이곳에서 새로운 에너지를 느껴보세요.",
+            "room_id": "Extra_18",
+            "room_num": "R18",
+            "room_name": "달빛에 스민 향기",
+            "roomdescription": "달빛 아래 퍼지는 은은한 향기"
+        },
+        {
+            "percent_message": "66.00%",
+            "reason_message": "슬픔 속에서도 밝은 기쁨을 찾는 여정을 시작해보세요.",
+            "room_id": "Extra_19",
+            "room_num": "R19",
+            "room_name": "눈부신 잔상",
+            "roomdescription": "순간의 찬란함은 영원히 남지!!"
+        }
+    ]
+}
