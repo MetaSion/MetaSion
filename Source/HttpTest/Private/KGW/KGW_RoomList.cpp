@@ -85,7 +85,7 @@ void UKGW_RoomList::SpawnBall()
         CurrentBallActor->Destroy();
         CurrentBallActor = nullptr;
     }*/
-    FVector Location = FVector(-470356, 643800, 648165);
+    FVector Location = FVector(-470356, 643770.0, 648165);
     FRotator Rotation = FRotator::ZeroRotator;
 
     FMyRGBColor RGB = SGI->WorldSetting.RGB;
@@ -240,7 +240,7 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
     // SizeBox 생성
     USizeBox* SizeBox = NewObject<USizeBox>(this);
     SizeBox->SetWidthOverride(400.0f);
-    SizeBox->SetHeightOverride(300.0f);
+    SizeBox->SetHeightOverride(150.0f);
 
     // 버튼 생성
     UJS_RoomButton* ImageButton = NewObject<UJS_RoomButton>(this);
@@ -322,16 +322,30 @@ void UKGW_RoomList::InitializeOnClickRoomUI()
     OnClickRoomUI = CreateWidget<UJS_OnClickRoomUI>(this, OnClickRoomUIFactory);
     if (OnClickRoomUI)
     {
-        UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() OnClickRoomUI set"));
-        OnClickRoomUI-> AddToViewport();
-         RoomWrapBox -> AddChild(OnClickRoomUI);
+        UE_LOG(LogTemp, Warning, TEXT("AJS_RoomController::InitializeUIWidgets() OnClickRoomUI set"));
+
+        if (RoomWrapBox)
+        {
+            RoomWrapBox->AddChild(OnClickRoomUI);
+            UE_LOG(LogTemp, Warning, TEXT("OnClickRoomUI added to RoomWrapBox"));
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("RoomWrapBox is null! Make sure it's set in the Widget Blueprint."));
+        }
+
         OnClickRoomUI->SetVisibility(ESlateVisibility::Hidden);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to create OnClickRoomUI!"));
     }
 }
 void UKGW_RoomList::ShowOnClickRoomUI()
 {
     if (OnClickRoomUI) {
         OnClickRoomUI->SetVisibility(ESlateVisibility::Visible);
+//         OnClickRoomUI->SettingData();
     }
 }
 void UKGW_RoomList::HideOnClickRoomUI()
@@ -385,7 +399,7 @@ void UKGW_RoomList::SpawnParticle()
     CleanParticle();
     
     //FVector Location = FVector(-470990.0f, 643286.0f, 648362.0f); 
-    FVector Location = FVector(-470356.0f, 643800.0f, 648165.0f); 
+    FVector Location = FVector(-470047.589317f, 643880.898148f, 648118.610643);
     FRotator Rotation = FRotator::ZeroRotator;
 
     CurrentParticleActor = GetWorld()->SpawnActor<ACJS_InnerWorldParticleActor>(

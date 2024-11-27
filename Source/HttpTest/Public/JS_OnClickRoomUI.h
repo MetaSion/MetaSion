@@ -35,9 +35,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UMultiLineEditableTextBox* SG_ReasonForRecommendation;
 	
-	FString ImagePath = "";
+	TArray<FString> ImagePath;
 	//경로 세팅
-	void SettingImagePath();
+	FString SettingImagePath();
 	void SettingData(FString TexturePath, UJS_RoomButton* Button);
 	UFUNCTION()
 	void OnImageClicked();
