@@ -25,6 +25,7 @@
 #include "Engine/Texture2D.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/WrapBox.h"
 
 
 void UKGW_RoomList::NativeConstruct()
@@ -238,8 +239,8 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
 
     // SizeBox 생성
     USizeBox* SizeBox = NewObject<USizeBox>(this);
-    SizeBox->SetWidthOverride(600.0f);
-    SizeBox->SetHeightOverride(500.0f);
+    SizeBox->SetWidthOverride(400.0f);
+    SizeBox->SetHeightOverride(300.0f);
 
     // 버튼 생성
     UJS_RoomButton* ImageButton = NewObject<UJS_RoomButton>(this);
@@ -295,16 +296,16 @@ void UKGW_RoomList::AddImageToGrid(FString TexturePath)
 void UKGW_RoomList::SettingPath()
 {
     ImagePath.Empty(); // 기존 배열 초기화
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/Thunder"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/BG"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/cloudy"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/partlysunny"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/Rainy"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/snow"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/storm"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/sunny"));
-    ImagePath.Add(TEXT("/Game/Main/Assets/UI/Thunder"));
-}
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_1"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_2"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_3"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_4"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_5"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_6"));
+    ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_7"));
+//     ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_1"));
+//     ImagePath.Add(TEXT("/Game/Main/Assets/UI/room_1"));
+ }
 
 FString UKGW_RoomList::GetRandomPath()
 {
@@ -322,7 +323,8 @@ void UKGW_RoomList::InitializeOnClickRoomUI()
     if (OnClickRoomUI)
     {
         UE_LOG(LogTemp, Warning, TEXT(" AJS_RoomController::InitializeUIWidgets() OnClickRoomUI set"));
-        OnClickRoomUI->AddToViewport();
+        OnClickRoomUI-> AddToViewport();
+         RoomWrapBox -> AddChild(OnClickRoomUI);
         OnClickRoomUI->SetVisibility(ESlateVisibility::Hidden);
     }
 }

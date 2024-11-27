@@ -73,6 +73,11 @@ public:
 	UPROPERTY(EditAnywhere)
     class UJS_OnClickRoomUI* OnClickRoomUI;
 
+	//Wrap Box
+		UPROPERTY(meta = (BindWidget))
+	class UWrapBox* RoomWrapBox;
+
+
 	// SpawnBall �κ� ----------------------------------------------
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
     TSubclassOf<class AJS_ShowColorActor> SpawnShowColorActorFactory;
