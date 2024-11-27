@@ -24,7 +24,7 @@
         "G6": "0.31",
         "B6": "0.74"
     },
-    "RecommendedMusic": "Music_03",
+    "RecommendedMusic": "Music_07",
     "Quadrant": 1,
     "Particle_num": 4,
     "result": "오늘, 당신은 맑고 편안한 감정 속에서 설렘을 담은 이너월드를 완성했군요.
