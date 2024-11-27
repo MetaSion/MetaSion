@@ -338,6 +338,23 @@ void ACJS_BallPlayer::BeginPlay()
 // 
 // 	// 기본 이동 힘 설정
 // 	MoveForce = 150.0f;
+	FString UserMusic = TEXT("Music_12");
+	FString AssetPath = FString::Printf(TEXT("/Game/Main/Sound/%s.%s"), *UserMusic, *UserMusic);
+
+	// ���� ������ �������� �ε�
+	USoundBase* NewSound = Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, *AssetPath));
+
+	if (NewSound)
+	{
+		SessionGI->FadeOutAndPlayNewMusic(NewSound);
+		UE_LOG(LogTemp, Warning, TEXT("Background sound changed and started playing: %s"), *UserMusic);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to load sound: %s"), *AssetPath);
+	}
+
+
 
 }
 
@@ -851,6 +868,29 @@ void ACJS_BallPlayer::OnMyActionMoveRefWorld(const FInputActionValue& Value)
 				1.0f,                             // 대기 시간
 				false                             // 반복 여부
 			);
+
+			
+				UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SetBackgroundSound() SessionGI  OK"));
+				// Get UserMusic from WorldSetting and play it
+				FString UserMusic = TEXT("Music_02");
+				FString AssetPath = FString::Printf(TEXT("/Game/Main/Sound/%s.%s"), *UserMusic, *UserMusic);
+
+				// ���� ������ �������� �ε�
+				USoundBase* NewSound = Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, *AssetPath));
+
+				if (NewSound)
+				{
+					SessionGI->FadeOutAndPlayNewMusic(NewSound);
+					UE_LOG(LogTemp, Warning, TEXT("Background sound changed and started playing: %s"), *UserMusic);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("Failed to load sound: %s"), *AssetPath);
+				}
+
+				//         SoundActor->SetBackgroundSoundByFileName(UserMusic);
+			
+
 		}
 		else
 		{
@@ -1336,6 +1376,27 @@ void ACJS_BallPlayer::MoveToLobby(APlayerController* RequestingPC)
 	// 뷰를 다시 ControlledPawn으로 전환
 	RequestingPC->SetViewTargetWithBlend(this, 0.5f);
 	UE_LOG(LogTemp, Warning, TEXT("MoveToLobby():: View switched back to BallPlayer."));
+
+	UE_LOG(LogTemp, Warning, TEXT("AHttpActor::SetBackgroundSound() SessionGI  OK"));
+	// Get UserMusic from WorldSetting and play it
+	FString UserMusic = TEXT("Music_12");
+	FString AssetPath = FString::Printf(TEXT("/Game/Main/Sound/%s.%s"), *UserMusic, *UserMusic);
+
+	// ���� ������ �������� �ε�
+	USoundBase* NewSound = Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, *AssetPath));
+
+	if (NewSound)
+	{
+		SessionGI->FadeOutAndPlayNewMusic(NewSound);
+		UE_LOG(LogTemp, Warning, TEXT("Background sound changed and started playing: %s"), *UserMusic);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to load sound: %s"), *AssetPath);
+	}
+
+	//         SoundActor->SetBackgroundSoundByFileName(UserMusic);
+
 }
 
 // 로비 진입 시, 캐릭터 초기 설정 ================================================================================================
