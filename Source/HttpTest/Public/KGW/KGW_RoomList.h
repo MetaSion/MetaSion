@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "CJS/CJS_InnerWorldParticleActor.h"
 #include "JS_ShowColorActor.h"
+#include "JS_RoomButton.h"
 #include "KGW_RoomList.generated.h"
 
 /**
@@ -53,6 +54,28 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* btn_ShowCharacter;
 
+	// OnClickRoomUI에 구현 했었던 부분 -----------------------------------------
+	UPROPERTY(meta = (BindWidget))
+	class UButton* SG_ImageButton;
+	UPROPERTY(meta = (BindWidget))
+	class UImage* SG_RoomImage;
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* SG_RoomName;
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* SG_RoomOwner;
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* SG_Similarity;
+	UPROPERTY(meta = (BindWidget))
+	class UMultiLineEditableTextBox* SG_RoomComment;
+	UPROPERTY(meta = (BindWidget))
+	class UMultiLineEditableTextBox* SG_ReasonForRecommendation;
+	
+	TArray<FString> SGImagePath;
+	//경로 세팅
+	FString SettingImagePath();
+	void SettingData(FString TexturePath, UJS_RoomButton* Button);
+	// OnClickRoomUI에 구현 했었던 부분 -----------------------------------------
+
 	//Reasons for recommending particles
 	UPROPERTY(meta = (BindWidget))
 	class UMultiLineEditableTextBox* txt_SG_ParticleReason;
@@ -66,17 +89,6 @@ public:
 	// Particle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
     TSubclassOf<ACJS_InnerWorldParticleActor> ParticleActorFactory;
-
-	// MyPage �κ� ------------------------------------
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Factory")
-	TSubclassOf<class UJS_OnClickRoomUI> OnClickRoomUIFactory;
-	UPROPERTY(EditAnywhere)
-    class UJS_OnClickRoomUI* OnClickRoomUI;
-
-	//Wrap Box
-		UPROPERTY(meta = (BindWidget))
-	class UWrapBox* RoomWrapBox;
-
 
 	// SpawnBall �κ� ----------------------------------------------
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
@@ -97,10 +109,6 @@ public:
 	TArray<FString> ImagePath;
 	void SettingPath();
 	FString GetRandomPath();
-
-	void InitializeOnClickRoomUI();
-	void ShowOnClickRoomUI();
-	void HideOnClickRoomUI();
 
 	void CleanParticle();
 	void AddSessionSlotWidget(const TArray<FMyWorldRoomInfo>& RoomInfos);
@@ -183,4 +191,7 @@ public:
 	void StartHttpMultyWorld();
 
 	int32 RoomNumber = -1;
+
+	UPROPERTY()
+	int32 RoomNumberCounter = 0; // RoomNumber 초기화 및 카운터 설정
 };

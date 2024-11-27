@@ -18,7 +18,6 @@ public class HttpTest : ModuleRules
                 "UnrealEd",
                 "BlueprintGraph",
                 "KismetCompiler",
-                 "PythonScriptPlugin" // public¿∏∑Œ 
 
             });
         }

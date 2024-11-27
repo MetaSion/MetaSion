@@ -14,7 +14,7 @@
 #include "Components/WidgetComponent.h"
 #include "KGW/WBP_Image.h"
 #include "Camera/CameraActor.h"
-#include "../../../../Plugins/Experimental/PythonScriptPlugin/Source/PythonScriptPlugin/Public/IPythonScriptPlugin.h"
+//#include "../../../../Plugins/Experimental/PythonScriptPlugin/Source/PythonScriptPlugin/Public/IPythonScriptPlugin.h"
 #include "HighResScreenshot.h"
 #include "Engine/World.h"
 #include "Engine/Engine.h"

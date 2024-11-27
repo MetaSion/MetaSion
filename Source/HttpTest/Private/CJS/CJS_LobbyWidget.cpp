@@ -320,7 +320,6 @@ void UCJS_LobbyWidget::OnClickMyWorld()
 	UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::OnClickMyWorld()"));
 	USessionGameInstance* SessionGI = Cast<USessionGameInstance>(GetGameInstance());
 	FString UserId;
-	auto* ball = Cast<ACJS_BallPlayer>(GetWorld()->GetFirstPlayerController());
 	if (SessionGI)
 	{
 		if (HttpActor)

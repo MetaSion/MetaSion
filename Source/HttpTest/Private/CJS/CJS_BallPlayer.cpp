@@ -34,7 +34,7 @@
 #include "JsonUtilities.h" // JSON 관련 유틸리티
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
-#include "../../../../Plugins/Experimental/PythonScriptPlugin/Source/PythonScriptPlugin/Public/IPythonScriptPlugin.h"  // 파이썬 자동 실행
+//#include "../../../../Plugins/Experimental/PythonScriptPlugin/Source/PythonScriptPlugin/Public/IPythonScriptPlugin.h"  // 파이썬 자동 실행
 
 #include "Math/Color.h"
 #include "../../../../Plugins/FX/Niagara/Source/Niagara/Classes/NiagaraSystem.h"
@@ -1703,15 +1703,15 @@ void ACJS_BallPlayer::ExecuteWallPaperPython()
 	FString ScriptPath = FPaths::ProjectContentDir() + TEXT("Python/Wallpaper.py");
 
 	// 파이썬 스크립트 실행
-	IPythonScriptPlugin* PythonPlugin = IPythonScriptPlugin::Get();
-	if (PythonPlugin && PythonPlugin->IsPythonAvailable())
-	{
-		PythonPlugin->ExecPythonCommand(*ScriptPath);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Python is not available in this build."));
-	}
+	//IPythonScriptPlugin* PythonPlugin = IPythonScriptPlugin::Get();
+	//if (PythonPlugin && PythonPlugin->IsPythonAvailable())
+	//{
+	//	PythonPlugin->ExecPythonCommand(*ScriptPath);
+	//}
+	//else
+	//{
+	//	UE_LOG(LogTemp, Error, TEXT("Python is not available in this build."));
+	//}
 }
 
 
