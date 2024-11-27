@@ -275,6 +275,7 @@ void UJS_CreateRoomWidget::SetExplanation(const FString& Text)
 
 void UJS_CreateRoomWidget::SetParticle()
 {
+	UE_LOG(LogTemp, Warning, TEXT("UJS_CreateRoomWidget::SetParticle()"));
 	if (!ParticleFactory)
 	{
 		UE_LOG(LogTemp, Error, TEXT("ParticleFactory is not set!"));
@@ -452,6 +453,7 @@ void UJS_CreateRoomWidget::CompleteCreateRoom()
 
 	SetParticle();
 	httpActor->SetNewBackGroundSound();
+
 }
 void UJS_CreateRoomWidget::DelayedSwitchToWidget()
 {

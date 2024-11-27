@@ -323,9 +323,22 @@ void UCJS_LobbyWidget::OnClickMyWorld()
 	auto* ball = Cast<ACJS_BallPlayer>(GetWorld()->GetFirstPlayerController());
 	if (SessionGI)
 	{
+		if (HttpActor)
+		{
+			//HttpActor->OnReqPostLastRoom(HttpActor->MultiToLastRoom, JsonRequest);
+			//UE_LOG(LogTemp, Error, TEXT("OnClickMyWorld json is %s"), *JsonRequest);
+
+			UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::OnClickMyWorld() HttpActor exsited"));
+			// 마지막 데이터 저장 호출
+			HttpActor->CallThirdJsonData();
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("HttpActor is null at OnClickMyWorld!"));
+		}
+
 		UE_LOG(LogTemp, Warning, TEXT("UCJS_LobbyWidget::OnClickMyWorld() SessionGI set"));
-		SessionGI->ExitSession();  // <------ 수정 예정
-		UserId = "testuser";
+		SessionGI->ExitSession();  
+		//UserId = "testuser";
 		//UserId = GameInstance->MySessionName;
 // 		if(ball)
 // 		{
@@ -335,30 +348,17 @@ void UCJS_LobbyWidget::OnClickMyWorld()
 // 		{
 // 			UE_LOG(LogTemp, Error, TEXT("Ball player is null!"));
 // 		}
-		TMap<FString, FString> MyRoomData;
-		MyRoomData.Add("UserId", UserId);
-		// 	MyRoomData.Add("Last_room_num", lastroomnum);
+		//TMap<FString, FString> MyRoomData;
+		//MyRoomData.Add("UserId", UserId);
+		//// 	MyRoomData.Add("Last_room_num", lastroomnum);
 
-		MyRoomData.Add("Last_room_num", "2");
-		// JSON 형식으로 변환
-		FString JsonRequest = UJsonParseLib::MakeJson(MyRoomData);
-
-		if (HttpActor)
-		{
-			HttpActor->OnReqPostLastRoom(HttpActor->MultiToLastRoom, JsonRequest);
-			UE_LOG(LogTemp, Error, TEXT("OnClickMyWorld json is %s"), *JsonRequest);
-
-		}
-		else {
-			UE_LOG(LogTemp, Error, TEXT("HttpActor is null at OnClickMyWorld!"));
-		}
-
+		//MyRoomData.Add("Last_room_num", "2");
+		//// JSON 형식으로 변환
+		//FString JsonRequest = UJsonParseLib::MakeJson(MyRoomData);
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("UCJS_LobbyWidget::OnClickMyWorld() SessionGI is null!"));
 	}
-
-
 }
 // List Panel End --------------------------------------------------------------------------------------------------------

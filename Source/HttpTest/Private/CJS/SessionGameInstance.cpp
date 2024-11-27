@@ -346,8 +346,6 @@ void USessionGameInstance::OnMyDestroySessionComplete(FName SessionName, bool bW
 		pc->ClientTravel(TEXT("/Game/Main/Maps/Main_Sky"), ETravelType::TRAVEL_Absolute);
 		UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::OnMyDestroySessionComplete() Move Main_Sky Map"));
 	}
-
-	// 통신 부분 추가 작업하기
 }
 
 
@@ -501,6 +499,19 @@ int32 USessionGameInstance::GetLastMyWolrdBtnIdx()
 void USessionGameInstance::SetLastMyWolrdBtnIdx(int32 value)
 {
 	LastMyWolrdBtnIdx = value;
+}
+
+// JSON 저장 변수
+void USessionGameInstance::SetStoredJsonResponse(FString data)
+{
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::SetStoredJsonResponse() data %s"), *data);
+	StoredJsonResponse = data;
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::SetStoredJsonResponse() StoredJsonResponse %s"), *StoredJsonResponse);
+}
+FString USessionGameInstance::GetStoredJsonResponse()
+{
+	UE_LOG(LogTemp, Warning, TEXT("USessionGameInstance::GetStoredJsonResponse() StoredJsonResponse %s"), *StoredJsonResponse);
+	return StoredJsonResponse;
 }
 
 void USessionGameInstance::ChangePlayerController(UWorld* World, TSubclassOf<APlayerController> NewControllerClass)

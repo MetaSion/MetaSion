@@ -102,7 +102,7 @@ void UKGW_ChoiceSaveBF::SaveChoicesToJsonFile(UObject* WorldContextObject)
     if (PostChoice)
     {
         //PostChoice->ReqPostChoice(ServerURL, JsonString);
-        PostChoice->OnResPostChoice();  // 통신x 테스트용
+        PostChoice->CallFirstJsonData();  // 통신x 테스트용
         UE_LOG(LogTemp, Warning, TEXT("ReqPostChoice called successfully with userID: %s"), *userID);
     }
     else
@@ -115,44 +115,42 @@ void UKGW_ChoiceSaveBF::SaveChoicesToJsonFile(UObject* WorldContextObject)
 
 void UKGW_ChoiceSaveBF::RoomDataSend(UObject* WorldContextObject)
 {
-    if (!WorldContextObject)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Invalid WorldContextObject: null object passed."));
-        return;  // null�̸� �Լ� ����
-    }
+    UE_LOG(LogTemp, Warning, TEXT("UKGW_ChoiceSaveBF::RoomDataSend()"));
+    //if (!WorldContextObject)
+    //{
+    //    UE_LOG(LogTemp, Warning, TEXT("Invalid WorldContextObject: null object passed."));
+    //    return;  // null�̸� �Լ� ����
+    //}
 
-    TMap<FString, FString> RoomData;
+    //TMap<FString, FString> RoomData;
 
-    for (const TPair<FString, FString>& Pair : WheaterChoices)
-        //for (const TPair<FString, FString>& Pair : SelectedChoices)
-    {
-        RoomData.Add(Pair.Key, FString::FString(Pair.Value));  // int32 ���� FString���� ��ȯ
-        //ChoiceMap.Add(Pair.Key, FString::FString(Pair.Value));  // int32 ���� FString���� ��ȯ
-    }
+    //for (const TPair<FString, FString>& Pair : WheaterChoices)
+    //    //for (const TPair<FString, FString>& Pair : SelectedChoices)
+    //{
+    //    RoomData.Add(Pair.Key, FString::FString(Pair.Value));  // int32 ���� FString���� ��ȯ
+    //    //ChoiceMap.Add(Pair.Key, FString::FString(Pair.Value));  // int32 ���� FString���� ��ȯ
+    //}
 
-    FString JsonString = UJsonParseLib::MakeJson(RoomData);
+    //FString JsonString = UJsonParseLib::MakeJson(RoomData);
 
-    UE_LOG(LogTemp, Warning, TEXT("Generated JSON: %s"), *JsonString);
+    //UE_LOG(LogTemp, Warning, TEXT("UKGW_ChoiceSaveBF::RoomDataSend() Generated JSON: %s"), *JsonString);
 
+    //FString ServerURL = FString::Printf(TEXT("mirrora.duckdns.org:3326/api/auth/saveRoomData"));
 
-
-
-    FString ServerURL = FString::Printf(TEXT("mirrora.duckdns.org:3326/api/auth/saveRoomData"));
-
-    UE_LOG(LogTemp, Warning, TEXT("Generated Server URL: %s"), *ServerURL);
+    //UE_LOG(LogTemp, Warning, TEXT("Generated Server URL: %s"), *ServerURL);
 
     AHttpActor* isData = Cast<AHttpActor>(UGameplayStatics::GetActorOfClass(WorldContextObject->GetWorld(), AHttpActor::StaticClass()));
     if (isData)
     {
-        isData->RoomSendDataReqPost(ServerURL, JsonString);
+        //isData->RoomSendDataReqPost(ServerURL, JsonString);
+        UE_LOG(LogTemp, Warning, TEXT("UKGW_ChoiceSaveBF::RoomDataSend() AHttpActor set"));
+        isData->CallSecondJsonData();
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("Failed to find AHttpActor instance."));
+        UE_LOG(LogTemp, Error, TEXT("Failed to find AHttpActor instance."));
     }
-
     //      WorldContextObject�� ���� ���� �ν��Ͻ��� ������
-
 }
 
 
