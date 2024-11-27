@@ -4,7 +4,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "KGW/KGW_RoomList.h"
 #include "JS_RoomController.h"
-#include "JS_OnClickRoomUI.h"
 
 void UJS_RoomButton::Initialize()
 {
@@ -58,14 +57,15 @@ void UJS_RoomButton::OnImageClicked()
 
     /*OnRoomClicked.Broadcast(RoomNum);*/
     if (RL->bRoomList) {
+        RL->bIsListMyRooms = false;
+        SessionGI->StopMusic();
         UGameplayStatics::OpenLevel(GetWorld(), FName("Main_LV_Fall"));
     }
     else if (RL->bMultiRoomList) {
-        // ���ο� UI�� �߰� �� UI���� ���̸�, �����絵, �ڸ�Ʈ �־ �����ֱ�
-        RL->ShowOnClickRoomUI();
-        RL->pc->HideRoomListUI();
-        if (RL->OnClickRoomUI) {
-            RL->OnClickRoomUI->SettingData(RL->OnClickRoomUI->SettingImagePath(), this);
+        RL->bIsListAllRooms = false;
+        //OnClickShowUI 했던부분
+        if (RL) {
+			RL->SettingData(RL->SettingImagePath(), this);
         }
     }
 }
