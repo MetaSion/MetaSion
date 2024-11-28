@@ -287,7 +287,7 @@ void UJS_CreateRoomWidget::SetParticle()
 	}
 // 	CleanParticle();
 // 	(X = 102.397720, Y = 303.903661, Z = -316.892022)
-	FVector Location = FVector(102.397720f, 303.903661f, -316.892022f);
+	FVector Location = FVector(-177.602280f, 303.903656, -316.892029f);
 	FRotator Rotation = FRotator::ZeroRotator;
 
 	auto* CurrentParticleActor = GetWorld()->SpawnActor<ACJS_InnerWorldParticleActor>(
