@@ -356,7 +356,7 @@ void UKGW_RoomList::SpawnParticle()
     CleanParticle();
     
     //FVector Location = FVector(-470990.0f, 643286.0f, 648362.0f); 
-    FVector Location = FVector(-470047.589317f, 643880.898148f, 648118.610643);
+    FVector Location = FVector(-471497.593750f, 643690.875000f, 648118.610643);
     FRotator Rotation = FRotator::ZeroRotator;
 
     CurrentParticleActor = GetWorld()->SpawnActor<ACJS_InnerWorldParticleActor>(
