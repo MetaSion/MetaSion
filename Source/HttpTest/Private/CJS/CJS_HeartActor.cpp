@@ -51,7 +51,7 @@ void ACJS_HeartActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Heart Actor Spawned!"));
+//     GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Heart Actor Spawned!"));
 
     // 예: 랜덤 색상 설정
     if (SphereMeshComp)
