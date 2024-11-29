@@ -443,6 +443,8 @@ void UJS_CreateRoomWidget::CreateRoomChooseNo()
 
 void UJS_CreateRoomWidget::CompleteCreateRoom()
 {
+	httpActor->SetNewBackGroundSound();
+
 	if (ED_RoomName && !ED_RoomName->GetText().IsEmpty()) {
 		SwitchToWidget(2);
 // 		ShowUIForLimitedTime(1.5);
@@ -453,10 +455,12 @@ void UJS_CreateRoomWidget::CompleteCreateRoom()
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UJS_CreateRoomWidget::DelayedSwitchToWidget, 0.7f, false);
 // 		SwitchToWidget(3);
-	}
 
-	SetParticle();
-	httpActor->SetNewBackGroundSound();
+	}
+	FTimerHandle Handle;
+
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &UJS_CreateRoomWidget::SetParticle, 6.0f, false);
+
 
 }
 void UJS_CreateRoomWidget::DelayedSwitchToWidget()
