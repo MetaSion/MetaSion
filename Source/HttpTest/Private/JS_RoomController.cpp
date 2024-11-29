@@ -904,10 +904,10 @@ void AJS_RoomController::RunAsyncPythonScript(const FString& path)
     {
         // Python 프로세스를 실행
         FPlatformProcess::CreateProc(*PythonExePath, *path, true, false, false, nullptr, 0, nullptr, nullptr);
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("자체 python에서 실행"));
+        //GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("자체 python에서 실행"));
     }
     else {
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("자체 python에서 실행 실패"));
+        //GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("자체 python에서 실행 실패"));
     }
 }
 //Wallpaper Python Auto Execute End ------------------------------------------------------------------------
